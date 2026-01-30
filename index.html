@@ -26,6 +26,7 @@
             overflow: hidden;
         }
 
+        /* --- Header --- */
         header {
             background-color: #2c3e50;
             color: white;
@@ -37,9 +38,9 @@
             padding: 0 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 100;
+            -webkit-flex-shrink: 0; flex-shrink: 0; /* منع انكماش الهيدر */
         }
 
-        /* الجزء الأيمن: العنوان والعداد */
         .header-right {
             display: -webkit-flex; display: flex;
             -webkit-flex-direction: column; flex-direction: column;
@@ -50,7 +51,6 @@
         header h1 { font-size: 1.1rem; margin: 0; line-height: 1.2; font-weight: bold; }
         .total-badge { font-size: 0.7rem; color: #bdc3c7; font-weight: normal; }
 
-        /* الجزء الأوسط: شريط البحث */
         .header-center {
             -webkit-flex: 1; flex: 1;
             padding: 0 10px;
@@ -72,7 +72,6 @@
             font-weight: bold;
         }
 
-        /* الجزء الأيسر: الأزرار */
         .header-left { display: -webkit-flex; display: flex; }
         
         .header-btn {
@@ -88,29 +87,87 @@
             height: 35px;
         }
 
+        /* --- Container Layout --- */
         .container {
             display: -webkit-flex;
             display: flex;
             height: calc(100vh - 60px);
             overflow: hidden;
-            -webkit-flex-direction: row-reverse;
+            -webkit-flex-direction: row-reverse; /* يجعل الترتيب بصرياً من اليسار لليمين */
             flex-direction: row-reverse;
         }
 
-        /* 1. عمود المفاتيح */
+        /* العمود الأول: السلالم */
         .col-keys {
-            width: 15%; min-width: 60px; max-width: 100px;
+            width: 150px; /* عرض مبدئي بالبكسل للتحكم */
+            min-width: 80px;
             background: #e0e0e0;
-            border-right: 1px solid #ccc;
-            overflow-y: auto;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-flex-direction: column;
-            flex-direction: column;
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
         }
 
+        /* العمود الثاني: العناوين */
+        .col-titles {
+            width: 250px; /* عرض مبدئي بالبكسل */
+            min-width: 100px;
+            background: #fff;
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
+        }
+
+        /* العمود الثالث: الكلمات */
+        .col-lyrics {
+            -webkit-flex: 1; flex: 1; /* يأخذ باقي المساحة */
+            background: #fdf6e3;
+            overflow-y: auto;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1.3;
+            white-space: pre-wrap; 
+            color: #000;
+            min-width: 150px;
+        }
+
+        /* --- الأجزاء المشتركة داخل الأعمدة --- */
+        .col-header {
+            background: #dcdde1;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #aaa;
+            -webkit-flex-shrink: 0; flex-shrink: 0; /* ثابت لا يتحرك */
+            height: 45px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .scroll-list {
+            -webkit-flex: 1; flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* --- الفاصل القابل للسحب (Resizer) --- */
+        .resizer {
+            width: 8px;
+            background-color: #bdc3c7;
+            cursor: col-resize;
+            -webkit-flex-shrink: 0; flex-shrink: 0;
+            border-left: 1px solid #95a5a6;
+            border-right: 1px solid #95a5a6;
+            z-index: 10;
+            touch-action: none; /* مهم للموبايل لمنع التمرير أثناء السحب */
+        }
+        .resizer:hover, .resizer:active {
+            background-color: #e74c3c; /* لون عند اللمس */
+        }
+
+        /* --- تنسيق محتوى القوائم --- */
         .key-btn {
-            padding: 10px 2px;
+            padding: 12px 2px;
             text-align: center;
             background: none;
             border: none;
@@ -132,53 +189,29 @@
         .key-btn.active { background-color: #c0392b; color: white; }
         .key-btn.active .key-count { color: #c0392b; background: white; }
 
-        /* 2. عمود العناوين */
-        .col-titles { width: 30%; background: #fff; border-right: 1px solid #ccc; overflow-y: auto; }
-        .col-header { background: #dcdde1; padding: 10px; text-align: center; font-weight: bold; font-size: 1.1rem; position: sticky; top: 0; border-bottom: 1px solid #aaa; z-index: 10; }
-
         .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; }
         .song-item:hover { background-color: #f1f1f1; }
         .song-item.active { background-color: #fadbd8; color: #c0392b; }
 
-        /* 3. عمود الكلمات (التنسيق الجديد: كبير وعريض) */
-        .col-lyrics {
-            flex: 1; -webkit-flex: 1;
-            background: #fdf6e3;
-            overflow-y: auto;
-            padding: 10px 5px; /* حواف جانبية قليلة */
-            text-align: center;
-            font-size: 1.8rem; /* خط كبير */
-            font-weight: 900; /* خط عريض جداً */
-            line-height: 1.3; /* مسافات مضغوطة */
-            white-space: pre-wrap; 
-            color: #000;
-        }
-
-        /* تكبير الخط أكثر للشاشات الكبيرة */
+        /* ميديا للكبار */
         @media (min-width: 768px) {
-            .col-lyrics {
-                font-size: 2.5rem; /* خط ضخم للكمبيوتر */
-                line-height: 1.4;
-                padding: 20px 10px;
-            }
+            .col-lyrics { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
             header h1 { font-size: 1.5rem; }
             #mainSearchInput { font-size: 1.2rem; }
+            .col-header { font-size: 1.3rem; height: 55px; padding: 12px; }
         }
 
-        /* لوحة التحكم والمودال */
+        /* --- Panel & Modal Styles --- */
         .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
         .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
         .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; }
-
         .btn-big { padding: 10px 20px; border: none; border-radius: 5px; color: white; font-family: 'Cairo', sans-serif; cursor: pointer; font-weight: bold; text-align: center; margin-bottom: 5px; }
         .btn-add { background: #27ae60; width: 100%; margin-bottom: 15px; }
         .btn-export { background: #8e44ad; width: 48%; float: right; }
         .btn-import { background: #2980b9; width: 48%; float: left; }
         .btn-reload { background: #e67e22; width: 100%; margin-top: 10px; }
         .backup-section { overflow: hidden; margin-bottom: 15px; }
-
         .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
-        
         .manage-list { list-style: none; padding: 0; margin: 0; }
         .manage-item { background: white; padding: 15px; border-bottom: 1px solid #ddd; overflow: hidden; }
         .manage-info-box { float: right; }
@@ -187,7 +220,6 @@
         .manage-btns button { margin-left: 5px; padding: 5px 10px; border: none; border-radius: 3px; color: white; cursor: pointer; }
         .btn-edit { background: #f39c12; }
         .btn-delete { background: #c0392b; }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         .modal input, .modal textarea, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; }
@@ -198,12 +230,13 @@
 
         @media (max-width: 600px) {
             .container { -webkit-flex-direction: column; flex-direction: column; }
-            .col-keys { width: 100%; max-width: none; height: 60px; -webkit-flex-direction: row; flex-direction: row; border-right: none; border-bottom: 2px solid #333; }
-            .key-btn { width: auto; min-width: 60px; border-bottom: none; border-left: 1px solid #ccc; padding: 5px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; }
-            .key-btn .key-count { margin-top: 0; margin-left: 5px; display: inline; }
-            .key-btn span { display: inline; }
-            .col-titles { width: 100%; height: 35%; border-right: none; border-bottom: 2px solid #ccc; }
+            .resizer { display: none; } /* إخفاء السحب في الموبايل العمودي لعدم الحاجة */
+            .col-keys { width: 100% !important; height: 60px; -webkit-flex-direction: row; flex-direction: row; }
+            .key-btn { width: auto; min-width: 60px; padding: 5px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; }
+            .col-header { display: none; } /* إخفاء الهيدر في الموبايل لتوفير مساحة */
+            .col-titles { width: 100% !important; height: 35%; }
             .col-lyrics { width: 100%; height: 65%; font-size: 1.6rem; padding: 5px; }
+            .scroll-list { height: 100%; }
         }
     </style>
 </head>
@@ -225,12 +258,26 @@
     </div>
 </header>
 
-<div class="container">
-    <div class="col-keys" id="keys-list"></div>
-    <div class="col-titles">
-        <div class="col-header">العناوين</div>
-        <div id="titles-list"></div>
+<div class="container" id="container">
+    <!-- العمود الأول: السلالم -->
+    <div class="col-keys" id="colKeys">
+        <div class="col-header">السلالم</div>
+        <div class="scroll-list" id="keys-list"></div>
     </div>
+
+    <!-- الفاصل الأول -->
+    <div class="resizer" id="resizer1"></div>
+
+    <!-- العمود الثاني: العناوين -->
+    <div class="col-titles" id="colTitles">
+        <div class="col-header">العناوين</div>
+        <div class="scroll-list" id="titles-list"></div>
+    </div>
+
+    <!-- الفاصل الثاني -->
+    <div class="resizer" id="resizer2"></div>
+
+    <!-- العمود الثالث: الكلمات -->
     <div class="col-lyrics" id="lyrics-view">
         <div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر السلم ثم الترنيمة</div>
     </div>
@@ -250,8 +297,7 @@
         </div>
         
         <button class="btn-big btn-add" onclick="openEditModal(null)">+ إضافة ترنيمة جديدة</button>
-        
-        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من السيرفر (Github)</button>
+        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث (Download)</button>
 
         <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
         
@@ -280,15 +326,12 @@
 
 <script>
     var keys = ["C", "Cm", "D", "Dm", "E", "Em", "F", "Fm", "G", "Gm", "A", "Am", "B", "Bm"];
-    
-    // قائمة فارغة
     var defaultSongs = [];
-    
     var saved = localStorage.getItem('mySongs');
     var songs = saved ? JSON.parse(saved) : defaultSongs;
-    
     var currentKey = "C";
     
+    // Elements
     var keysList = document.getElementById('keys-list');
     var titlesList = document.getElementById('titles-list');
     var lyricsView = document.getElementById('lyrics-view');
@@ -299,6 +342,59 @@
     var keySelect = document.getElementById('editSongKey');
     var mainSearchInput = document.getElementById('mainSearchInput');
     var panelSearchInput = document.getElementById('panelSearchInput');
+
+    // --- منطق السحب وتغيير الحجم (Resizing) متوافق مع اندرويد 4 ---
+    var resizer1 = document.getElementById('resizer1');
+    var resizer2 = document.getElementById('resizer2');
+    var colKeys = document.getElementById('colKeys');
+    var colTitles = document.getElementById('colTitles');
+    var container = document.getElementById('container');
+
+    // إضافة مستمعي الأحداث للفواصل
+    setupResizer(resizer1, colKeys);
+    setupResizer(resizer2, colTitles);
+
+    function setupResizer(resizer, column) {
+        var startX, startWidth;
+
+        function onTouchStart(e) {
+            // للأندرويد القديم والحديث
+            var touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startWidth = parseInt(window.getComputedStyle(column).width, 10);
+            
+            // منع التحديد أثناء السحب
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+            
+            // إضافة مستمعي الحركة
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+            document.addEventListener('mousemove', onTouchMove);
+            document.addEventListener('mouseup', onTouchEnd);
+        }
+
+        function onTouchMove(e) {
+            var touch = e.touches ? e.touches[0] : e;
+            // حساب الفرق. لاحظ أن الصفحة معكوسة (row-reverse)
+            // لذا الحركة لليمين تزيد العرض (لأن العناصر تبدأ من اليسار بصرياً بسبب العكس)
+            var dx = touch.clientX - startX;
+            column.style.width = (startWidth + dx) + 'px';
+        }
+
+        function onTouchEnd() {
+            document.body.style.userSelect = 'auto';
+            document.body.style.webkitUserSelect = 'auto';
+            document.removeEventListener('touchmove', onTouchMove);
+            document.removeEventListener('touchend', onTouchEnd);
+            document.removeEventListener('mousemove', onTouchMove);
+            document.removeEventListener('mouseup', onTouchEnd);
+        }
+
+        // ربط الأحداث
+        resizer.addEventListener('mousedown', onTouchStart);
+        resizer.addEventListener('touchstart', onTouchStart);
+    }
 
     function tryFullScreen() {
         var doc = window.document;
@@ -406,7 +502,6 @@
                     var items = document.querySelectorAll('.song-item');
                     for(var x=0; x<items.length; x++) items[x].classList.remove('active');
                     div.classList.add('active');
-                    // تنظيف المسافات الزائدة
                     var cleanLyrics = song.lyrics.replace(/\n\s*\n\s*\n/g, '\n\n');
                     lyricsView.innerText = cleanLyrics;
                 };
@@ -436,7 +531,6 @@
                     var items = document.querySelectorAll('.song-item');
                     for(var x=0; x<items.length; x++) items[x].classList.remove('active');
                     div.classList.add('active');
-                    // تنظيف المسافات الزائدة
                     var cleanLyrics = song.lyrics.replace(/\n\s*\n\s*\n/g, '\n\n');
                     lyricsView.innerText = cleanLyrics;
                 };
