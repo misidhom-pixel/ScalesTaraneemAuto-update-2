@@ -38,7 +38,7 @@
             padding: 0 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
             z-index: 100;
-            -webkit-flex-shrink: 0; flex-shrink: 0; /* منع انكماش الهيدر */
+            -webkit-flex-shrink: 0; flex-shrink: 0;
         }
 
         .header-right {
@@ -87,19 +87,19 @@
             height: 35px;
         }
 
-        /* --- Container Layout --- */
+        /* --- Container --- */
         .container {
             display: -webkit-flex;
             display: flex;
             height: calc(100vh - 60px);
             overflow: hidden;
-            -webkit-flex-direction: row-reverse; /* يجعل الترتيب بصرياً من اليسار لليمين */
+            -webkit-flex-direction: row-reverse;
             flex-direction: row-reverse;
         }
 
         /* العمود الأول: السلالم */
         .col-keys {
-            width: 150px; /* عرض مبدئي بالبكسل للتحكم */
+            width: 150px;
             min-width: 80px;
             background: #e0e0e0;
             display: -webkit-flex; display: flex;
@@ -108,7 +108,7 @@
 
         /* العمود الثاني: العناوين */
         .col-titles {
-            width: 250px; /* عرض مبدئي بالبكسل */
+            width: 250px;
             min-width: 100px;
             background: #fff;
             display: -webkit-flex; display: flex;
@@ -117,7 +117,7 @@
 
         /* العمود الثالث: الكلمات */
         .col-lyrics {
-            -webkit-flex: 1; flex: 1; /* يأخذ باقي المساحة */
+            -webkit-flex: 1; flex: 1;
             background: #fdf6e3;
             overflow-y: auto;
             padding: 10px 5px;
@@ -130,7 +130,7 @@
             min-width: 150px;
         }
 
-        /* --- الأجزاء المشتركة داخل الأعمدة --- */
+        /* الأجزاء المشتركة */
         .col-header {
             background: #dcdde1;
             padding: 10px;
@@ -138,7 +138,7 @@
             font-weight: bold;
             font-size: 1.1rem;
             border-bottom: 2px solid #aaa;
-            -webkit-flex-shrink: 0; flex-shrink: 0; /* ثابت لا يتحرك */
+            -webkit-flex-shrink: 0; flex-shrink: 0;
             height: 45px;
             white-space: nowrap;
             overflow: hidden;
@@ -150,7 +150,7 @@
             border-bottom: 1px solid #ccc;
         }
 
-        /* --- الفاصل القابل للسحب (Resizer) --- */
+        /* الفواصل (Resizers) */
         .resizer {
             width: 8px;
             background-color: #bdc3c7;
@@ -159,13 +159,10 @@
             border-left: 1px solid #95a5a6;
             border-right: 1px solid #95a5a6;
             z-index: 10;
-            touch-action: none; /* مهم للموبايل لمنع التمرير أثناء السحب */
+            touch-action: none;
         }
-        .resizer:hover, .resizer:active {
-            background-color: #e74c3c; /* لون عند اللمس */
-        }
+        .resizer:hover, .resizer:active { background-color: #e74c3c; }
 
-        /* --- تنسيق محتوى القوائم --- */
         .key-btn {
             padding: 12px 2px;
             text-align: center;
@@ -189,11 +186,14 @@
         .key-btn.active { background-color: #c0392b; color: white; }
         .key-btn.active .key-count { color: #c0392b; background: white; }
 
+        /* تمييز خاص لزر No Scale */
+        .key-btn.no-scale { background-color: #7f8c8d; color: #eee; }
+        .key-btn.no-scale.active { background-color: #c0392b; color: white; }
+
         .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; }
         .song-item:hover { background-color: #f1f1f1; }
         .song-item.active { background-color: #fadbd8; color: #c0392b; }
 
-        /* ميديا للكبار */
         @media (min-width: 768px) {
             .col-lyrics { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
             header h1 { font-size: 1.5rem; }
@@ -201,7 +201,7 @@
             .col-header { font-size: 1.3rem; height: 55px; padding: 12px; }
         }
 
-        /* --- Panel & Modal Styles --- */
+        /* Panel & Modal */
         .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
         .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
         .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; }
@@ -209,7 +209,6 @@
         .btn-add { background: #27ae60; width: 100%; margin-bottom: 15px; }
         .btn-export { background: #8e44ad; width: 48%; float: right; }
         .btn-import { background: #2980b9; width: 48%; float: left; }
-        .btn-reload { background: #e67e22; width: 100%; margin-top: 10px; }
         .backup-section { overflow: hidden; margin-bottom: 15px; }
         .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
         .manage-list { list-style: none; padding: 0; margin: 0; }
@@ -230,10 +229,10 @@
 
         @media (max-width: 600px) {
             .container { -webkit-flex-direction: column; flex-direction: column; }
-            .resizer { display: none; } /* إخفاء السحب في الموبايل العمودي لعدم الحاجة */
+            .resizer { display: none; }
             .col-keys { width: 100% !important; height: 60px; -webkit-flex-direction: row; flex-direction: row; }
             .key-btn { width: auto; min-width: 60px; padding: 5px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; }
-            .col-header { display: none; } /* إخفاء الهيدر في الموبايل لتوفير مساحة */
+            .col-header { display: none; }
             .col-titles { width: 100% !important; height: 35%; }
             .col-lyrics { width: 100%; height: 65%; font-size: 1.6rem; padding: 5px; }
             .scroll-list { height: 100%; }
@@ -247,11 +246,9 @@
         <h1>🎹 Scales</h1>
         <span class="total-badge" id="totalCountDisplay">الإجمالي: 0</span>
     </div>
-    
     <div class="header-center">
         <input type="text" id="mainSearchInput" placeholder="بحث (كلمات أو عناوين)..." onkeyup="mainSearch()">
     </div>
-
     <div class="header-left">
         <button class="header-btn" onclick="tryFullScreen()">⛶</button>
         <button class="header-btn" onclick="openControlPanel()">⚙️</button>
@@ -259,25 +256,16 @@
 </header>
 
 <div class="container" id="container">
-    <!-- العمود الأول: السلالم -->
     <div class="col-keys" id="colKeys">
         <div class="col-header">السلالم</div>
         <div class="scroll-list" id="keys-list"></div>
     </div>
-
-    <!-- الفاصل الأول -->
     <div class="resizer" id="resizer1"></div>
-
-    <!-- العمود الثاني: العناوين -->
     <div class="col-titles" id="colTitles">
         <div class="col-header">العناوين</div>
         <div class="scroll-list" id="titles-list"></div>
     </div>
-
-    <!-- الفاصل الثاني -->
     <div class="resizer" id="resizer2"></div>
-
-    <!-- العمود الثالث: الكلمات -->
     <div class="col-lyrics" id="lyrics-view">
         <div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر السلم ثم الترنيمة</div>
     </div>
@@ -297,10 +285,8 @@
         </div>
         
         <button class="btn-big btn-add" onclick="openEditModal(null)">+ إضافة ترنيمة جديدة</button>
-        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث (Download)</button>
-
-        <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
         
+        <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
         <div style="border-top:1px solid #ddd; margin: 15px 0;"></div>
         <ul class="manage-list" id="manageList"></ul>
     </div>
@@ -325,13 +311,23 @@
 </div>
 
 <script>
-    var keys = ["C", "Cm", "D", "Dm", "E", "Em", "F", "Fm", "G", "Gm", "A", "Am", "B", "Bm"];
+    // قائمة السلالم بالترتيب الجديد + No Scale
+    var keys = [
+        "C", "Cm", "C#m",
+        "D", "Dm", "Db", "Dbm",
+        "E", "Em", "Eb",
+        "F", "Fm", "F#m",
+        "G", "Gm", "G#m",
+        "A", "Am", "Ab", "Abm", 
+        "B", "Bm", "Bb", "Bbm",
+        "No Scale"
+    ];
+    
     var defaultSongs = [];
     var saved = localStorage.getItem('mySongs');
     var songs = saved ? JSON.parse(saved) : defaultSongs;
     var currentKey = "C";
     
-    // Elements
     var keysList = document.getElementById('keys-list');
     var titlesList = document.getElementById('titles-list');
     var lyricsView = document.getElementById('lyrics-view');
@@ -343,45 +339,32 @@
     var mainSearchInput = document.getElementById('mainSearchInput');
     var panelSearchInput = document.getElementById('panelSearchInput');
 
-    // --- منطق السحب وتغيير الحجم (Resizing) متوافق مع اندرويد 4 ---
     var resizer1 = document.getElementById('resizer1');
     var resizer2 = document.getElementById('resizer2');
     var colKeys = document.getElementById('colKeys');
     var colTitles = document.getElementById('colTitles');
-    var container = document.getElementById('container');
 
-    // إضافة مستمعي الأحداث للفواصل
     setupResizer(resizer1, colKeys);
     setupResizer(resizer2, colTitles);
 
     function setupResizer(resizer, column) {
         var startX, startWidth;
-
         function onTouchStart(e) {
-            // للأندرويد القديم والحديث
             var touch = e.touches ? e.touches[0] : e;
             startX = touch.clientX;
             startWidth = parseInt(window.getComputedStyle(column).width, 10);
-            
-            // منع التحديد أثناء السحب
             document.body.style.userSelect = 'none';
             document.body.style.webkitUserSelect = 'none';
-            
-            // إضافة مستمعي الحركة
             document.addEventListener('touchmove', onTouchMove);
             document.addEventListener('touchend', onTouchEnd);
             document.addEventListener('mousemove', onTouchMove);
             document.addEventListener('mouseup', onTouchEnd);
         }
-
         function onTouchMove(e) {
             var touch = e.touches ? e.touches[0] : e;
-            // حساب الفرق. لاحظ أن الصفحة معكوسة (row-reverse)
-            // لذا الحركة لليمين تزيد العرض (لأن العناصر تبدأ من اليسار بصرياً بسبب العكس)
             var dx = touch.clientX - startX;
             column.style.width = (startWidth + dx) + 'px';
         }
-
         function onTouchEnd() {
             document.body.style.userSelect = 'auto';
             document.body.style.webkitUserSelect = 'auto';
@@ -390,8 +373,6 @@
             document.removeEventListener('mousemove', onTouchMove);
             document.removeEventListener('mouseup', onTouchEnd);
         }
-
-        // ربط الأحداث
         resizer.addEventListener('mousedown', onTouchStart);
         resizer.addEventListener('touchstart', onTouchStart);
     }
@@ -408,32 +389,6 @@
         }
     }
 
-    function loadSongsFromJSON(forceUpdate) {
-        if(songs.length > 0 && !forceUpdate) { return; }
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'songs.json', true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    try {
-                        var jsonSongs = JSON.parse(xhr.responseText);
-                        if(Array.isArray(jsonSongs)) {
-                            songs = jsonSongs;
-                            localStorage.setItem('mySongs', JSON.stringify(songs));
-                            renderKeys();
-                            renderTitles(currentKey);
-                            updateTotalCount();
-                            if(forceUpdate) alert("تم تحديث " + songs.length + " ترنيمة من السيرفر!");
-                        }
-                    } catch(e) { console.log("Error parsing JSON"); }
-                } else {
-                    if(forceUpdate) alert("تعذر الوصول للملف (songs.json)");
-                }
-            }
-        };
-        xhr.send();
-    }
-
     function init() {
         keySelect.innerHTML = "";
         for (var i = 0; i < keys.length; i++) {
@@ -442,8 +397,6 @@
             opt.innerText = keys[i];
             keySelect.appendChild(opt);
         }
-        
-        loadSongsFromJSON(false);
         renderKeys();
         renderTitles(currentKey);
         updateTotalCount();
@@ -456,9 +409,14 @@
                 var count = 0;
                 for(var j=0; j<songs.length; j++) {
                     if(songs[j].key === k) count++;
+                    // "No Scale" Logic
+                    if(k === "No Scale" && (!songs[j].key || songs[j].key === "No Scale")) count++;
                 }
                 var btn = document.createElement('button');
-                btn.className = 'key-btn' + (k === currentKey ? ' active' : '');
+                var className = 'key-btn' + (k === currentKey ? ' active' : '');
+                if(k === "No Scale") className += ' no-scale';
+                
+                btn.className = className;
                 btn.innerHTML = '<span class="key-name">' + k + '</span><span class="key-count">' + count + '</span>';
                 btn.onclick = function() { selectKey(k); };
                 keysList.appendChild(btn);
@@ -466,9 +424,7 @@
         }
     }
 
-    function updateTotalCount() {
-        totalCountDisplay.innerText = 'الإجمالي: ' + songs.length;
-    }
+    function updateTotalCount() { totalCountDisplay.innerText = 'الإجمالي: ' + songs.length; }
 
     function selectKey(key) {
         currentKey = key;
@@ -497,7 +453,7 @@
             (function(song) {
                 var div = document.createElement('div');
                 div.className = 'song-item';
-                div.innerHTML = song.title + ' <span style="font-size:0.7em; color:#888;">(' + song.key + ')</span>';
+                div.innerHTML = song.title + ' <span style="font-size:0.7em; color:#888;">(' + (song.key || "No Scale") + ')</span>';
                 div.onclick = function() {
                     var items = document.querySelectorAll('.song-item');
                     for(var x=0; x<items.length; x++) items[x].classList.remove('active');
@@ -515,7 +471,12 @@
         lyricsView.innerHTML = '<div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر ترنيمة</div>';
         var filtered = [];
         for(var i=0; i<songs.length; i++) {
-            if(songs[i].key === key) filtered.push(songs[i]);
+            // منطق التصفية الجديد (بما في ذلك No Scale)
+            if(key === "No Scale") {
+                if(!songs[i].key || songs[i].key === "No Scale") filtered.push(songs[i]);
+            } else {
+                if(songs[i].key === key) filtered.push(songs[i]);
+            }
         }
         filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
         if(filtered.length === 0) {
@@ -574,7 +535,8 @@
             (function(song) {
                 var li = document.createElement('li');
                 li.className = 'manage-item';
-                var html = '<div class="manage-info-box"><span class="manage-info">' + song.title + '</span> <span class="manage-key">' + song.key + '</span></div>';
+                var keyDisplay = song.key ? song.key : "No Scale";
+                var html = '<div class="manage-info-box"><span class="manage-info">' + song.title + '</span> <span class="manage-key">' + keyDisplay + '</span></div>';
                 html += '<div class="manage-btns">';
                 html += '<button class="btn-edit" id="btn-edit-'+song.id+'">تعديل</button>';
                 html += '<button class="btn-delete" id="btn-del-'+song.id+'">حذف</button>';
@@ -602,7 +564,7 @@
                 idField.value = song.id;
                 titleField.value = song.title;
                 lyricsField.value = song.lyrics;
-                keyField.value = song.key;
+                keyField.value = song.key || "No Scale";
                 modalTitle.innerText = "تعديل الترنيمة";
             }
         } else {
