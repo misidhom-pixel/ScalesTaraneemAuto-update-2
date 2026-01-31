@@ -97,25 +97,20 @@
             flex-direction: row-reverse;
         }
 
-        /* العمود الأول: السلالم */
         .col-keys {
-            width: 150px;
-            min-width: 80px;
+            width: 150px; min-width: 80px;
             background: #e0e0e0;
             display: -webkit-flex; display: flex;
             -webkit-flex-direction: column; flex-direction: column;
         }
 
-        /* العمود الثاني: العناوين */
         .col-titles {
-            width: 250px;
-            min-width: 100px;
+            width: 250px; min-width: 100px;
             background: #fff;
             display: -webkit-flex; display: flex;
             -webkit-flex-direction: column; flex-direction: column;
         }
 
-        /* العمود الثالث: الكلمات */
         .col-lyrics {
             -webkit-flex: 1; flex: 1;
             background: #fdf6e3;
@@ -185,8 +180,6 @@
         }
         .key-btn.active { background-color: #c0392b; color: white; }
         .key-btn.active .key-count { color: #c0392b; background: white; }
-
-        /* تمييز خاص لزر No Scale */
         .key-btn.no-scale { background-color: #7f8c8d; color: #eee; }
         .key-btn.no-scale.active { background-color: #c0392b; color: white; }
 
@@ -209,6 +202,10 @@
         .btn-add { background: #27ae60; width: 100%; margin-bottom: 15px; }
         .btn-export { background: #8e44ad; width: 48%; float: right; }
         .btn-import { background: #2980b9; width: 48%; float: left; }
+        
+        /* زر التحديث */
+        .btn-reload { background: #e67e22; width: 100%; margin-top: 10px; }
+        
         .backup-section { overflow: hidden; margin-bottom: 15px; }
         .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
         .manage-list { list-style: none; padding: 0; margin: 0; }
@@ -286,6 +283,9 @@
         
         <button class="btn-big btn-add" onclick="openEditModal(null)">+ إضافة ترنيمة جديدة</button>
         
+        <!-- زر التحديث من السيرفر (تمت إعادته) -->
+        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من السيرفر (Github)</button>
+
         <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
         <div style="border-top:1px solid #ddd; margin: 15px 0;"></div>
         <ul class="manage-list" id="manageList"></ul>
@@ -311,7 +311,6 @@
 </div>
 
 <script>
-    // قائمة السلالم بالترتيب الجديد + No Scale
     var keys = [
         "C", "Cm", "C#m",
         "D", "Dm", "Db", "Dbm",
@@ -389,6 +388,36 @@
         }
     }
 
+    // دالة التحديث من السيرفر (المعاد إضافتها)
+    function loadSongsFromJSON(forceUpdate) {
+        if(songs.length > 0 && !forceUpdate) { return; }
+        
+        var xhr = new XMLHttpRequest();
+        // تم إضافة v=time لمنع الكاش (عشان يجيب أحدث نسخة دايما)
+        xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
+        
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    try {
+                        var jsonSongs = JSON.parse(xhr.responseText);
+                        if(Array.isArray(jsonSongs)) {
+                            songs = jsonSongs;
+                            localStorage.setItem('mySongs', JSON.stringify(songs));
+                            renderKeys();
+                            renderTitles(currentKey);
+                            updateTotalCount();
+                            if(forceUpdate) alert("تم تحديث " + songs.length + " ترنيمة من السيرفر!");
+                        }
+                    } catch(e) { console.log("Error parsing JSON"); }
+                } else {
+                    if(forceUpdate) alert("تعذر الوصول للملف (songs.json). تأكد أنه بجوار ملف التطبيق");
+                }
+            }
+        };
+        xhr.send();
+    }
+
     function init() {
         keySelect.innerHTML = "";
         for (var i = 0; i < keys.length; i++) {
@@ -397,6 +426,7 @@
             opt.innerText = keys[i];
             keySelect.appendChild(opt);
         }
+        loadSongsFromJSON(false);
         renderKeys();
         renderTitles(currentKey);
         updateTotalCount();
@@ -409,7 +439,6 @@
                 var count = 0;
                 for(var j=0; j<songs.length; j++) {
                     if(songs[j].key === k) count++;
-                    // "No Scale" Logic
                     if(k === "No Scale" && (!songs[j].key || songs[j].key === "No Scale")) count++;
                 }
                 var btn = document.createElement('button');
@@ -471,7 +500,6 @@
         lyricsView.innerHTML = '<div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر ترنيمة</div>';
         var filtered = [];
         for(var i=0; i<songs.length; i++) {
-            // منطق التصفية الجديد (بما في ذلك No Scale)
             if(key === "No Scale") {
                 if(!songs[i].key || songs[i].key === "No Scale") filtered.push(songs[i]);
             } else {
