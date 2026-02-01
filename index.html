@@ -10,194 +10,45 @@
     <title>Scales</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        
         * { box-sizing: border-box; -webkit-box-sizing: border-box; }
+        body { font-family: 'Cairo', sans-serif, Arial; margin: 0; padding: 0; background-color: #f4f7f6; height: 100vh; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; overflow: hidden; }
         
-        body {
-            font-family: 'Cairo', sans-serif, Arial;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f6;
-            height: 100vh;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-flex-direction: column;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* --- Header --- */
-        header {
-            background-color: #2c3e50;
-            color: white;
-            height: 60px;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-align-items: center;
-            align-items: center;
-            padding: 0 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 100;
-            -webkit-flex-shrink: 0; flex-shrink: 0;
-        }
-
-        .header-right {
-            display: -webkit-flex; display: flex;
-            -webkit-flex-direction: column; flex-direction: column;
-            -webkit-justify-content: center; justify-content: center;
-            min-width: 80px;
-        }
-        
+        /* Header */
+        header { background-color: #2c3e50; color: white; height: 60px; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 0 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100; -webkit-flex-shrink: 0; flex-shrink: 0; }
+        .header-right { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; min-width: 80px; }
         header h1 { font-size: 1.1rem; margin: 0; line-height: 1.2; font-weight: bold; }
         .total-badge { font-size: 0.7rem; color: #bdc3c7; font-weight: normal; }
-
-        .header-center {
-            -webkit-flex: 1; flex: 1;
-            padding: 0 10px;
-            display: -webkit-flex; display: flex;
-            -webkit-justify-content: center; justify-content: center;
-        }
-        
-        #mainSearchInput {
-            width: 100%;
-            max-width: 400px;
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: none;
-            outline: none;
-            font-family: 'Cairo', sans-serif;
-            font-size: 1rem;
-            background-color: rgba(255,255,255,0.95);
-            color: #333;
-            font-weight: bold;
-        }
-
+        .header-center { -webkit-flex: 1; flex: 1; padding: 0 10px; display: -webkit-flex; display: flex; -webkit-justify-content: center; justify-content: center; }
+        #mainSearchInput { width: 100%; max-width: 400px; padding: 8px 15px; border-radius: 20px; border: none; outline: none; font-family: 'Cairo', sans-serif; font-size: 1rem; background-color: rgba(255,255,255,0.95); color: #333; font-weight: bold; }
         .header-left { display: -webkit-flex; display: flex; }
+        .header-btn { background-color: #34495e; border: 1px solid #5d6d7e; color: white; padding: 5px 10px; margin-left: 5px; border-radius: 5px; font-family: 'Cairo', sans-serif; cursor: pointer; font-size: 0.85rem; height: 35px; }
+
+        /* Container */
+        .container { display: -webkit-flex; display: flex; height: calc(100vh - 60px); overflow: hidden; -webkit-flex-direction: row-reverse; flex-direction: row-reverse; }
         
-        .header-btn {
-            background-color: #34495e;
-            border: 1px solid #5d6d7e;
-            color: white;
-            padding: 5px 10px;
-            margin-left: 5px;
-            border-radius: 5px;
-            font-family: 'Cairo', sans-serif;
-            cursor: pointer;
-            font-size: 0.85rem;
-            height: 35px;
-        }
+        .col-keys { width: 100px; min-width: 60px; background: #e0e0e0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+        .col-alpha { width: 60px; min-width: 40px; background: #d6dbdf; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; border-right: 1px solid #ccc; }
+        .col-titles { width: 200px; min-width: 100px; background: #fff; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+        .col-lyrics { -webkit-flex: 1; flex: 1; background: #fdf6e3; overflow-y: auto; padding: 10px 5px; text-align: center; font-size: 1.8rem; font-weight: 900; line-height: 1.3; white-space: pre-wrap; color: #000; min-width: 150px; }
 
-        /* --- Container --- */
-        .container {
-            display: -webkit-flex;
-            display: flex;
-            height: calc(100vh - 60px);
-            overflow: hidden;
-            -webkit-flex-direction: row-reverse;
-            flex-direction: row-reverse;
-        }
+        .col-header { background: #dcdde1; padding: 10px 2px; text-align: center; font-weight: bold; font-size: 1rem; border-bottom: 2px solid #aaa; -webkit-flex-shrink: 0; flex-shrink: 0; height: 45px; white-space: nowrap; overflow: hidden; }
+        .scroll-list { -webkit-flex: 1; flex: 1; overflow-y: auto; border-bottom: 1px solid #ccc; }
+        .resizer { width: 8px; background-color: #bdc3c7; cursor: col-resize; -webkit-flex-shrink: 0; flex-shrink: 0; border-left: 1px solid #95a5a6; border-right: 1px solid #95a5a6; z-index: 10; touch-action: none; }
 
-        /* العمود 1: السلالم */
-        .col-keys {
-            width: 100px; min-width: 60px;
-            background: #e0e0e0;
-            display: -webkit-flex; display: flex;
-            -webkit-flex-direction: column; flex-direction: column;
-        }
-
-        /* العمود 2: الحروف (الجديد) */
-        .col-alpha {
-            width: 60px; min-width: 40px;
-            background: #d6dbdf;
-            display: -webkit-flex; display: flex;
-            -webkit-flex-direction: column; flex-direction: column;
-            border-right: 1px solid #ccc;
-        }
-
-        /* العمود 3: العناوين */
-        .col-titles {
-            width: 200px; min-width: 100px;
-            background: #fff;
-            display: -webkit-flex; display: flex;
-            -webkit-flex-direction: column; flex-direction: column;
-        }
-
-        /* العمود 4: الكلمات */
-        .col-lyrics {
-            -webkit-flex: 1; flex: 1;
-            background: #fdf6e3;
-            overflow-y: auto;
-            padding: 10px 5px;
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: 900;
-            line-height: 1.3;
-            white-space: pre-wrap; 
-            color: #000;
-            min-width: 150px;
-        }
-
-        /* الأجزاء المشتركة */
-        .col-header {
-            background: #dcdde1;
-            padding: 10px 2px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1rem;
-            border-bottom: 2px solid #aaa;
-            -webkit-flex-shrink: 0; flex-shrink: 0;
-            height: 45px;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .scroll-list {
-            -webkit-flex: 1; flex: 1;
-            overflow-y: auto;
-            border-bottom: 1px solid #ccc;
-        }
-
-        /* الفواصل (Resizers) */
-        .resizer {
-            width: 8px;
-            background-color: #bdc3c7;
-            cursor: col-resize;
-            -webkit-flex-shrink: 0; flex-shrink: 0;
-            border-left: 1px solid #95a5a6;
-            border-right: 1px solid #95a5a6;
-            z-index: 10;
-            touch-action: none;
-        }
-
-        /* أزرار السلالم */
-        .key-btn {
-            padding: 12px 2px; text-align: center; background: none;
-            border: none; border-bottom: 1px solid #ccc;
-            font-weight: bold; font-size: 1rem; width: 100%;
-            cursor: pointer; font-family: sans-serif; display: block;
-        }
+        /* Buttons */
+        .key-btn { padding: 12px 2px; text-align: center; background: none; border: none; border-bottom: 1px solid #ccc; font-weight: bold; font-size: 1rem; width: 100%; cursor: pointer; font-family: sans-serif; display: block; }
         .key-btn span { display: block; }
-        .key-btn .key-count {
-            font-size: 0.7rem; color: #555; background: rgba(255,255,255,0.6);
-            padding: 1px 4px; border-radius: 10px; margin-top: 3px; display: inline-block;
-        }
+        .key-btn .key-count { font-size: 0.7rem; color: #555; background: rgba(255,255,255,0.6); padding: 1px 4px; border-radius: 10px; margin-top: 3px; display: inline-block; }
         .key-btn.active { background-color: #c0392b; color: white; }
         .key-btn.active .key-count { color: #c0392b; background: white; }
         .key-btn.no-scale { background-color: #7f8c8d; color: #eee; }
         .key-btn.no-scale.active { background-color: #c0392b; color: white; }
 
-        /* أزرار الحروف (الجديد) */
-        .alpha-btn {
-            padding: 10px 0; text-align: center; background: none;
-            border: none; border-bottom: 1px solid #bdc3c7;
-            font-weight: bold; font-size: 1.1rem; width: 100%;
-            cursor: pointer; font-family: 'Cairo', sans-serif; display: block;
-        }
+        .alpha-btn { padding: 10px 0; text-align: center; background: none; border: none; border-bottom: 1px solid #bdc3c7; font-weight: bold; font-size: 1.1rem; width: 100%; cursor: pointer; font-family: 'Cairo', sans-serif; display: block; }
         .alpha-btn:hover { background-color: #ecf0f1; }
         .alpha-btn.active { background-color: #2980b9; color: white; }
-        .alpha-btn.all-btn { font-size: 1.5rem; line-height: 0.8; color: #555; } /* زر الكل */
+        .alpha-btn.all-btn { font-size: 1.5rem; line-height: 0.8; color: #555; }
 
-        /* أزرار الترانيم */
         .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; }
         .song-item:hover { background-color: #f1f1f1; }
         .song-item.active { background-color: #fadbd8; color: #c0392b; }
@@ -209,16 +60,25 @@
             .col-header { font-size: 1.2rem; height: 55px; padding: 12px; }
         }
 
-        /* Panel & Modal */
+        /* Control Panel */
         .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
         .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
         .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; }
+        
         .btn-big { padding: 10px 20px; border: none; border-radius: 5px; color: white; font-family: 'Cairo', sans-serif; cursor: pointer; font-weight: bold; text-align: center; margin-bottom: 5px; }
         .btn-add { background: #27ae60; width: 100%; margin-bottom: 15px; }
         .btn-export { background: #8e44ad; width: 48%; float: right; }
         .btn-import { background: #2980b9; width: 48%; float: left; }
+        
+        /* زر التحديث من الملف (الأساسي) */
         .btn-reload { background: #e67e22; width: 100%; margin-top: 10px; }
+        
+        /* زر السحابة (الإضافي) */
+        .btn-cloud { background: #34495e; width: 100%; margin-top: 5px; border: 1px solid #7f8c8d; font-size: 0.9rem;}
+
+        /* زر الرفع */
         .btn-upload { background: #c0392b; width: 100%; margin-top: 10px; border: 2px solid #a93226; }
+
         .server-settings { background: #ecf0f1; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #bdc3c7; display: none; }
         .settings-input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; }
         .backup-section { overflow: hidden; margin-bottom: 15px; }
@@ -231,6 +91,7 @@
         .manage-btns button { margin-left: 5px; padding: 5px 10px; border: none; border-radius: 3px; color: white; cursor: pointer; }
         .btn-edit { background: #f39c12; }
         .btn-delete { background: #c0392b; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         .modal input, .modal textarea, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; }
@@ -242,13 +103,10 @@
         @media (max-width: 600px) {
             .container { -webkit-flex-direction: column; flex-direction: column; }
             .resizer { display: none; }
-            /* في الموبايل، الأعمدة تأخذ مساحة أفقية صغيرة متجاورة */
             .col-keys { width: 100% !important; height: 60px; -webkit-flex-direction: row; flex-direction: row; }
             .col-alpha { width: 100% !important; height: 50px; -webkit-flex-direction: row; flex-direction: row; border-right: none; border-bottom: 1px solid #aaa; }
-            
             .key-btn { width: auto; min-width: 60px; padding: 5px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; }
             .alpha-btn { width: auto; min-width: 40px; padding: 5px; border-bottom: none; border-left: 1px solid #ccc; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;}
-
             .col-header { display: none; }
             .col-titles { width: 100% !important; height: 35%; }
             .col-lyrics { width: 100%; height: 65%; font-size: 1.6rem; padding: 5px; }
@@ -273,28 +131,21 @@
 </header>
 
 <div class="container" id="container">
-    <!-- 1. السلالم -->
     <div class="col-keys" id="colKeys">
         <div class="col-header">السلم</div>
         <div class="scroll-list" id="keys-list"></div>
     </div>
     <div class="resizer" id="resizer1"></div>
-    
-    <!-- 2. الحروف (جديد) -->
     <div class="col-alpha" id="colAlpha">
         <div class="col-header">الحرف</div>
         <div class="scroll-list" id="alpha-list"></div>
     </div>
     <div class="resizer" id="resizer2"></div>
-
-    <!-- 3. العناوين -->
     <div class="col-titles" id="colTitles">
         <div class="col-header">العناوين</div>
         <div class="scroll-list" id="titles-list"></div>
     </div>
     <div class="resizer" id="resizer3"></div>
-
-    <!-- 4. الكلمات -->
     <div class="col-lyrics" id="lyrics-view">
         <div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر السلم > الحرف > الترنيمة</div>
     </div>
@@ -314,16 +165,23 @@
         </div>
         
         <button class="btn-big btn-add" onclick="openEditModal(null)">+ إضافة ترنيمة جديدة</button>
-        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث (Download)</button>
-        <button class="btn-big btn-upload" onclick="toggleServerSettings()">☁️ رفع للسيرفر (Upload)</button>
+        
+        <!-- الزر السحري: يعمل بدون إعدادات -->
+        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من ملف songs.json</button>
+        
+        <hr>
+        <!-- الخيارات المتقدمة (السحابة) -->
+        <button class="btn-big btn-cloud" onclick="toggleServerSettings()">☁️ خيارات السحابة (إعدادات)</button>
         
         <div class="server-settings" id="serverSettings">
             <h4>إعدادات السيرفر (JSONBin)</h4>
             <input type="text" id="binId" class="settings-input" placeholder="Bin ID">
             <input type="text" id="apiKey" class="settings-input" placeholder="X-Master-Key (API Key)">
             <button class="btn-big btn-save" onclick="saveCloudSettings()">حفظ الإعدادات</button>
-            <hr>
-            <button class="btn-big btn-upload" onclick="uploadToCloud()">🚀 رفع الترانيم الآن</button>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                 <button class="btn-big btn-reload" onclick="downloadFromCloud()">📥 سحب</button>
+                 <button class="btn-big btn-upload" onclick="uploadToCloud()">🚀 رفع</button>
+            </div>
         </div>
 
         <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
@@ -351,9 +209,9 @@
 </div>
 
 <script>
+    var ADMIN_PASSWORD = "2030";
+
     var keys = ["C", "Cm", "C#m", "D", "Dm", "Db", "Dbm", "E", "Em", "Eb", "F", "Fm", "F#m", "G", "Gm", "G#m", "A", "Am", "Ab", "Abm", "B", "Bm", "Bb", "Bbm", "No Scale"];
-    
-    // قائمة الحروف (عربي + إنجليزي)
     var arChars = ['أ','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
     var enChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
     var allChars = arChars.concat(enChars);
@@ -363,8 +221,9 @@
     var songs = saved ? JSON.parse(saved) : defaultSongs;
     
     var currentKey = "C";
-    var currentLetter = ""; // الحرف المختار (فارغ يعني الكل)
+    var currentLetter = "";
     
+    // Elements
     var keysList = document.getElementById('keys-list');
     var alphaList = document.getElementById('alpha-list');
     var titlesList = document.getElementById('titles-list');
@@ -386,7 +245,6 @@
     var colAlpha = document.getElementById('colAlpha');
     var colTitles = document.getElementById('colTitles');
 
-    // Setup Resizing
     setupResizer(resizer1, colKeys);
     setupResizer(resizer2, colAlpha);
     setupResizer(resizer3, colTitles);
@@ -434,7 +292,35 @@
         }
     }
 
-    // --- JSONBin ---
+    // --- Local File Update (No Settings Needed) ---
+    function loadSongsFromJSON(forceUpdate) {
+        if(songs.length > 0 && !forceUpdate) { return; }
+        
+        var xhr = new XMLHttpRequest();
+        // هذا الرابط يبحث عن ملف songs.json بجانب التطبيق
+        xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
+        
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    try {
+                        var jsonSongs = JSON.parse(xhr.responseText);
+                        if(Array.isArray(jsonSongs)) {
+                            songs = jsonSongs;
+                            localStorage.setItem('mySongs', JSON.stringify(songs));
+                            refreshUI();
+                            if(forceUpdate) alert("تم التحديث من الملف المحلي (songs.json) بنجاح!");
+                        }
+                    } catch(e) { console.log("Error parsing JSON"); }
+                } else {
+                    if(forceUpdate) alert("لم يتم العثور على ملف songs.json بجانب التطبيق.");
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    // --- Cloud Functions (Optional) ---
     function toggleServerSettings() {
         if(serverSettingsDiv.style.display === 'block') {
             serverSettingsDiv.style.display = 'none';
@@ -478,7 +364,11 @@
         var binId = localStorage.getItem('binId');
         var apiKey = localStorage.getItem('apiKey');
         if(!binId || !apiKey) { alert("أدخل الإعدادات أولاً"); return; }
+        
+        var pass = prompt("⚠️ أدخل كلمة المرور للمتابعة:");
+        if (pass !== ADMIN_PASSWORD) { alert("كلمة المرور خاطئة! 🚫"); return; }
         if(!confirm("هل أنت متأكد؟ سيتم استبدال بيانات السيرفر!")) return;
+
         var xhr = new XMLHttpRequest();
         xhr.open("PUT", "https://api.jsonbin.io/v3/b/" + binId, true);
         xhr.setRequestHeader("Content-Type", "application/json");
@@ -491,28 +381,6 @@
         };
         xhr.send(JSON.stringify(songs));
     }
-    
-    function loadSongsFromJSON(forceUpdate) {
-        if(songs.length > 0 && !forceUpdate) { return; }
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    try {
-                        var jsonSongs = JSON.parse(xhr.responseText);
-                        if(Array.isArray(jsonSongs)) {
-                            songs = jsonSongs;
-                            localStorage.setItem('mySongs', JSON.stringify(songs));
-                            refreshUI();
-                            if(forceUpdate) alert("تم التحديث من الملف المحلي!");
-                        }
-                    } catch(e) { console.log("Error parsing JSON"); }
-                } else { if(forceUpdate) alert("الملف غير موجود"); }
-            }
-        };
-        xhr.send();
-    }
 
     function init() {
         keySelect.innerHTML = "";
@@ -523,10 +391,7 @@
             keySelect.appendChild(opt);
         }
         loadSongsFromJSON(false);
-        renderKeys();
-        renderAlphabet(); // رسم عمود الحروف
-        renderTitles(currentKey);
-        updateTotalCount();
+        refreshUI();
     }
 
     function refreshUI() {
@@ -556,18 +421,14 @@
         }
     }
 
-    // --- دالة رسم الحروف ---
     function renderAlphabet() {
         alphaList.innerHTML = "";
-        
-        // زر "الكل" (الافتراضي)
         var allBtn = document.createElement('button');
         allBtn.className = 'alpha-btn all-btn' + (currentLetter === "" ? ' active' : '');
         allBtn.innerText = "-";
         allBtn.onclick = function() { selectLetter(""); };
         alphaList.appendChild(allBtn);
 
-        // باقي الحروف
         for(var i=0; i<allChars.length; i++) {
             (function(char) {
                 var btn = document.createElement('button');
@@ -584,15 +445,14 @@
     function selectKey(key) {
         currentKey = key;
         mainSearchInput.value = ''; 
-        renderKeys(); // لتحديث اللون
-        // لا نعيد تصفير الحرف (ليتمكن المستخدم من تصفح نفس الحرف في سلالم مختلفة)
+        renderKeys(); 
         renderTitles(key);
     }
 
     function selectLetter(letter) {
         currentLetter = letter;
         mainSearchInput.value = '';
-        renderAlphabet(); // لتحديث اللون
+        renderAlphabet();
         renderTitles(currentKey);
     }
 
@@ -623,7 +483,6 @@
         
         var filtered = [];
         for(var i=0; i<songs.length; i++) {
-            // 1. فلتر السلم
             var keyMatch = false;
             if(key === "No Scale") {
                 if(!songs[i].key || songs[i].key === "No Scale") keyMatch = true;
@@ -631,12 +490,9 @@
                 if(songs[i].key === key) keyMatch = true;
             }
 
-            // 2. فلتر الحرف
             var letterMatch = true;
             if(currentLetter !== "") {
-                // التأكد من الحرف الأول (تطبيع بسيط)
                 var firstChar = songs[i].title.charAt(0);
-                // التعامل مع الهمزات لو لم تكن موحدة (اختياري)
                 if(currentLetter === "أ" || currentLetter === "ا") {
                      letterMatch = (firstChar === "أ" || firstChar === "ا" || firstChar === "إ" || firstChar === "آ");
                 } else {
