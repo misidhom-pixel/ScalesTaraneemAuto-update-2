@@ -1,822 +1,821 @@
-
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#2c3e50">
-    <title>Scales</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        
-        * { box-sizing: border-box; -webkit-box-sizing: border-box; }
-        
-        body {
-            font-family: 'Cairo', sans-serif, Arial;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7f6;
-            height: 100vh;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-flex-direction: column;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* --- Header --- */
-        header {
-            background-color: #2c3e50;
-            color: white;
-            height: 60px;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-align-items: center;
-            align-items: center;
-            padding: 0 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 100;
-            -webkit-flex-shrink: 0; flex-shrink: 0;
-        }
-
-        .header-right {
-            display: -webkit-flex; display: flex;
-            -webkit-flex-direction: column; flex-direction: column;
-            -webkit-justify-content: center; justify-content: center;
-            min-width: 80px;
-        }
-        
-        header h1 { font-size: 1.1rem; margin: 0; line-height: 1.2; font-weight: bold; }
-        .total-badge { font-size: 0.7rem; color: #bdc3c7; font-weight: normal; }
-
-        .header-center {
-            -webkit-flex: 1; flex: 1;
-            padding: 0 10px;
-            display: -webkit-flex; display: flex;
-            -webkit-justify-content: center; justify-content: center;
-        }
-        
-        #mainSearchInput {
-            width: 100%;
-            max-width: 400px;
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: none;
-            outline: none;
-            font-family: 'Cairo', sans-serif;
-            font-size: 1rem;
-            background-color: rgba(255,255,255,0.95);
-            color: #333;
-            font-weight: bold;
-        }
-
-        .header-left { display: -webkit-flex; display: flex; }
-        
-        .header-btn {
-            background-color: #34495e;
-            border: 1px solid #5d6d7e;
-            color: white;
-            padding: 5px 10px;
-            margin-left: 5px;
-            border-radius: 5px;
-            font-family: 'Cairo', sans-serif;
-            cursor: pointer;
-            font-size: 0.85rem;
-            height: 35px;
-        }
-
-        /* --- Container --- */
-        .container {
-            display: -webkit-flex;
-            display: flex;
-            height: calc(100vh - 60px);
-            overflow: hidden;
-            -webkit-flex-direction: row-reverse;
-            flex-direction: row-reverse;
-        }
-
-        /* العمود الأول: السلالم */
-        .col-keys {
-            width: 150px;
-            min-width: 80px;
-            background: #e0e0e0;
-            display: -webkit-flex; display: flex;
-            -webkit-flex-direction: column; flex-direction: column;
-        }
-
-        /* العمود الثاني: الحروف */
-        .col-alpha {
-            width: 60px; min-width: 40px;
-            background: #d6dbdf;
-            display: -webkit-flex; display: flex;
-            -webkit-flex-direction: column; flex-direction: column;
-            border-right: 1px solid #ccc;
-        }
-
-        /* العمود الثالث: العناوين */
-        .col-titles {
-            width: 250px;
-            min-width: 100px;
-            background: #fff;
-            display: -webkit-flex; display: flex;
-            -webkit-flex-direction: column; flex-direction: column;
-        }
-
-        /* العمود الرابع: الكلمات */
-        .col-lyrics {
-            -webkit-flex: 1; flex: 1;
-            background: #fdf6e3;
-            overflow-y: auto;
-            padding: 10px 5px;
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: 900;
-            line-height: 1.3;
-            white-space: pre-wrap; 
-            color: #000;
-            min-width: 150px;
-        }
-
-        /* الأجزاء المشتركة */
-        .col-header {
-            background: #dcdde1;
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-bottom: 2px solid #aaa;
-            -webkit-flex-shrink: 0; flex-shrink: 0;
-            height: 45px;
-            white-space: nowrap;
-            overflow: hidden;
-        }
-
-        .scroll-list {
-            -webkit-flex: 1; flex: 1;
-            overflow-y: auto;
-            border-bottom: 1px solid #ccc;
-        }
-
-        /* الفواصل (Resizers) */
-        .resizer {
-            width: 8px;
-            background-color: #bdc3c7;
-            cursor: col-resize;
-            -webkit-flex-shrink: 0; flex-shrink: 0;
-            border-left: 1px solid #95a5a6;
-            border-right: 1px solid #95a5a6;
-            z-index: 10;
-            touch-action: none;
-        }
-        .resizer:hover, .resizer:active { background-color: #e74c3c; }
-
-        .key-btn {
-            padding: 12px 2px;
-            text-align: center;
-            background: none;
-            border: none;
-            border-bottom: 1px solid #ccc;
-            font-weight: bold;
-            font-size: 1.1rem;
-            width: 100%;
-            cursor: pointer;
-            font-family: sans-serif;
-            display: block;
-        }
-        .key-btn span { display: block; }
-        .key-btn .key-count {
-            font-size: 0.75rem; color: #555;
-            background: rgba(255,255,255,0.6);
-            padding: 2px 6px; border-radius: 10px;
-            margin-top: 3px; display: inline-block;
-        }
-        .key-btn.active { background-color: #c0392b; color: white; }
-        .key-btn.active .key-count { color: #c0392b; background: white; }
-        .key-btn.no-scale { background-color: #7f8c8d; color: #eee; }
-        .key-btn.no-scale.active { background-color: #c0392b; color: white; }
-
-        /* أزرار الحروف */
-        .alpha-btn {
-            padding: 10px 0; text-align: center; background: none;
-            border: none; border-bottom: 1px solid #bdc3c7;
-            font-weight: bold; font-size: 1.1rem; width: 100%;
-            cursor: pointer; font-family: 'Cairo', sans-serif; display: block;
-        }
-        .alpha-btn:hover { background-color: #ecf0f1; }
-        .alpha-btn.active { background-color: #2980b9; color: white; }
-        .alpha-btn.all-btn { font-size: 1.5rem; line-height: 0.8; color: #555; }
-
-        .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; }
-        .song-item:hover { background-color: #f1f1f1; }
-        .song-item.active { background-color: #fadbd8; color: #c0392b; }
-
-        @media (min-width: 768px) {
-            .col-lyrics { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
-            header h1 { font-size: 1.5rem; }
-            #mainSearchInput { font-size: 1.2rem; }
-            .col-header { font-size: 1.3rem; height: 55px; padding: 12px; }
-        }
-
-        /* Panel & Modal */
-        .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
-        .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
-        .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; }
-        .btn-big { padding: 10px 20px; border: none; border-radius: 5px; color: white; font-family: 'Cairo', sans-serif; cursor: pointer; font-weight: bold; text-align: center; margin-bottom: 5px; }
-        .btn-add { background: #27ae60; width: 100%; margin-bottom: 15px; }
-        .btn-export { background: #8e44ad; width: 48%; float: right; }
-        .btn-import { background: #2980b9; width: 48%; float: left; }
-        
-        .btn-reload { background: #e67e22; width: 100%; margin-top: 10px; }
-        
-        .backup-section { overflow: hidden; margin-bottom: 15px; }
-        .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
-        
-        /* تنسيق فلاتر لوحة التحكم الجديدة */
-        .filter-row { display: -webkit-flex; display: flex; gap: 5px; margin-bottom: 10px; }
-        .filter-row select { -webkit-flex: 1; flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 1rem; background: white; font-weight: bold; }
-
-        .manage-list { list-style: none; padding: 0; margin: 0; }
-        .manage-item { background: white; padding: 15px; border-bottom: 1px solid #ddd; overflow: hidden; }
-        .manage-info-box { float: right; }
-        .manage-btns { float: left; }
-        .manage-key { background: #eee; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; }
-        .manage-btns button { margin-left: 5px; padding: 5px 10px; border: none; border-radius: 3px; color: white; cursor: pointer; }
-        .btn-edit { background: #f39c12; }
-        .btn-delete { background: #c0392b; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
-        .modal input, .modal textarea, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; }
-        .modal textarea { height: 100px; }
-        .modal-buttons { text-align: left; }
-        .btn-save { background: #2c3e50; color: white; border: none; padding: 8px 15px; border-radius: 4px; }
-        .btn-cancel { background: #ccc; border: none; padding: 8px 15px; border-radius: 4px; }
-
-        @media (max-width: 600px) {
-            .container { -webkit-flex-direction: column; flex-direction: column; }
-            .resizer { display: none; }
-            .col-keys { width: 100% !important; height: 60px; -webkit-flex-direction: row; flex-direction: row; }
-            .col-alpha { width: 100% !important; height: 50px; -webkit-flex-direction: row; flex-direction: row; border-right: none; border-bottom: 1px solid #aaa; }
-            .key-btn { width: auto; min-width: 60px; padding: 5px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; }
-            .alpha-btn { width: auto; min-width: 40px; padding: 5px; border-bottom: none; border-left: 1px solid #ccc; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;}
-            .col-header { display: none; }
-            .col-titles { width: 100% !important; height: 35%; }
-            .col-lyrics { width: 100%; height: 65%; font-size: 1.6rem; padding: 5px; }
-            .scroll-list { height: 100%; }
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <div class="header-right">
-        <h1>🎹 Scales</h1>
-        <span class="total-badge" id="totalCountDisplay">الإجمالي: 0</span>
-    </div>
-    <div class="header-center">
-        <input type="text" id="mainSearchInput" placeholder="بحث (كلمات أو عناوين)..." onkeyup="mainSearch()">
-    </div>
-    <div class="header-left">
-        <button class="header-btn" onclick="tryFullScreen()">⛶</button>
-        <button class="header-btn" onclick="openControlPanel()">⚙️</button>
-    </div>
-</header>
-
-<div class="container" id="container">
-    <div class="col-keys" id="colKeys">
-        <div class="col-header">السلم</div>
-        <div class="scroll-list" id="keys-list"></div>
-    </div>
-    <div class="resizer" id="resizer1"></div>
-    <div class="col-alpha" id="colAlpha">
-        <div class="col-header">الحرف</div>
-        <div class="scroll-list" id="alpha-list"></div>
-    </div>
-    <div class="resizer" id="resizer2"></div>
-    <div class="col-titles" id="colTitles">
-        <div class="col-header">العناوين</div>
-        <div class="scroll-list" id="titles-list"></div>
-    </div>
-    <div class="resizer" id="resizer3"></div>
-    <div class="col-lyrics" id="lyrics-view">
-        <div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر السلم > الحرف > الترنيمة</div>
-    </div>
-</div>
-
-<!-- Panel -->
-<div class="panel-overlay" id="controlPanel">
-    <div class="panel-header">
-        <h3>إدارة الترانيم</h3>
-        <button class="header-btn" onclick="closeControlPanel()">عودة</button>
-    </div>
-    <div class="panel-content">
-        <div class="backup-section">
-            <button class="btn-big btn-export" onclick="exportData()">💾 حفظ ملف</button>
-            <button class="btn-big btn-import" onclick="document.getElementById('fileInput').click()">📂 استيراد ملف</button>
-            <input type="file" id="fileInput" style="display:none" onchange="importData(this)">
-        </div>
-        
-        <button class="btn-big btn-add" onclick="openEditModal(null)">+ إضافة ترنيمة جديدة</button>
-        
-        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من السيرفر (songs.json)</button>
-        
-        <br><br>
-        <!-- فلاتر لوحة التحكم الجديدة -->
-        <div class="filter-row">
-            <select id="panelFilterLetter" onchange="searchPanelSongs()">
-                <option value="">كل الحروف</option>
-            </select>
-            <select id="panelFilterKey" onchange="searchPanelSongs()">
-                <option value="">كل السلالم</option>
-            </select>
-        </div>
-
-        <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
-        <div style="border-top:1px solid #ddd; margin: 15px 0;"></div>
-        <ul class="manage-list" id="manageList"></ul>
-    </div>
-</div>
-
-<!-- Modal -->
-<div class="modal" id="editModal">
-    <div class="modal-content">
-        <h3 id="modalTitle" style="margin:0 0 10px 0">ترنيمة جديدة</h3>
-        <input type="hidden" id="editSongId">
-        <label>السلم:</label>
-        <select id="editSongKey"></select>
-        <label>العنوان:</label>
-        <input type="text" id="editSongTitle" placeholder="اسم الترنيمة">
-        <label>الكلمات:</label>
-        <textarea id="editSongLyrics" placeholder="كلمات الترنيمة..."></textarea>
-        <div class="modal-buttons">
-            <button class="btn-cancel" onclick="closeEditModal()">إلغاء</button>
-            <button class="btn-save" onclick="saveSong()">حفظ</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    var keys = ["C", "Cm", "C#m", "D", "Dm", "Db", "Dbm", "E", "Em", "Eb", "F", "Fm", "F#m", "G", "Gm", "G#m", "A", "Am", "Ab", "Abm", "B", "Bm", "Bb", "Bbm", "No Scale"];
-    var arChars = ['أ','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
-    var enChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    var allChars = arChars.concat(enChars);
-
-    var defaultSongs = [];
-    var saved = localStorage.getItem('mySongs');
-    var songs = saved ? JSON.parse(saved) : defaultSongs;
-    
-    var currentKey = "C";
-    var currentLetter = "";
-    
-    // Elements
-    var keysList = document.getElementById('keys-list');
-    var alphaList = document.getElementById('alpha-list');
-    var titlesList = document.getElementById('titles-list');
-    var lyricsView = document.getElementById('lyrics-view');
-    var totalCountDisplay = document.getElementById('totalCountDisplay');
-    var controlPanel = document.getElementById('controlPanel');
-    var manageList = document.getElementById('manageList');
-    var editModal = document.getElementById('editModal');
-    var keySelect = document.getElementById('editSongKey');
-    var mainSearchInput = document.getElementById('mainSearchInput');
-    var panelSearchInput = document.getElementById('panelSearchInput');
-    var panelFilterLetter = document.getElementById('panelFilterLetter');
-    var panelFilterKey = document.getElementById('panelFilterKey');
-
-    // Resizers
-    var resizer1 = document.getElementById('resizer1');
-    var resizer2 = document.getElementById('resizer2');
-    var resizer3 = document.getElementById('resizer3');
-    var colKeys = document.getElementById('colKeys');
-    var colAlpha = document.getElementById('colAlpha');
-    var colTitles = document.getElementById('colTitles');
-
-    setupResizer(resizer1, colKeys);
-    setupResizer(resizer2, colAlpha);
-    setupResizer(resizer3, colTitles);
-
-    function setupResizer(resizer, column) {
-        if(!resizer) return;
-        var startX, startWidth;
-        function onTouchStart(e) {
-            var touch = e.touches ? e.touches[0] : e;
-            startX = touch.clientX;
-            startWidth = parseInt(window.getComputedStyle(column).width, 10);
-            document.body.style.userSelect = 'none';
-            document.body.style.webkitUserSelect = 'none';
-            document.addEventListener('touchmove', onTouchMove);
-            document.addEventListener('touchend', onTouchEnd);
-            document.addEventListener('mousemove', onTouchMove);
-            document.addEventListener('mouseup', onTouchEnd);
-        }
-        function onTouchMove(e) {
-            var touch = e.touches ? e.touches[0] : e;
-            var dx = touch.clientX - startX;
-            column.style.width = (startWidth + dx) + 'px';
-        }
-        function onTouchEnd() {
-            document.body.style.userSelect = 'auto';
-            document.body.style.webkitUserSelect = 'auto';
-            document.removeEventListener('touchmove', onTouchMove);
-            document.removeEventListener('touchend', onTouchEnd);
-            document.removeEventListener('mousemove', onTouchMove);
-            document.removeEventListener('mouseup', onTouchEnd);
-        }
-        resizer.addEventListener('mousedown', onTouchStart);
-        resizer.addEventListener('touchstart', onTouchStart);
-    }
-
-    function tryFullScreen() {
-        var doc = window.document;
-        var docEl = doc.documentElement;
-        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
-        if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
-            if(requestFullScreen) requestFullScreen.call(docEl);
-        } else {
-            if(cancelFullScreen) cancelFullScreen.call(doc);
-        }
-    }
-
-    // --- Auto Update ---
-    function loadSongsFromJSON(forceUpdate) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    try {
-                        var jsonSongs = JSON.parse(xhr.responseText);
-                        if(Array.isArray(jsonSongs)) {
-                            if (jsonSongs.length !== songs.length || forceUpdate) {
-                                songs = jsonSongs;
-                                localStorage.setItem('mySongs', JSON.stringify(songs));
-                                refreshUI();
-                                if(forceUpdate) alert("تم التحديث من الملف المحلي (songs.json) بنجاح!");
-                            }
-                        }
-                    } catch(e) { console.log("Error parsing JSON"); }
-                } else {
-                    if(forceUpdate) alert("لم يتم العثور على ملف songs.json بجانب التطبيق.");
-                }
-            }
-        };
-        xhr.send();
-    }
-    
-    // محاولة التحديث التلقائي عند الاتصال بالانترنت
-    window.addEventListener('online', function() { loadSongsFromJSON(false); });
-
-    function init() {
-        // ملء قائمة السلالم في المودال
-        keySelect.innerHTML = "";
-        for (var i = 0; i < keys.length; i++) {
-            var opt = document.createElement('option');
-            opt.value = keys[i];
-            opt.innerText = keys[i];
-            keySelect.appendChild(opt);
-        }
-
-        // ملء فلاتر لوحة التحكم
-        var letterFilter = document.getElementById('panelFilterLetter');
-        for (var j = 0; j < allChars.length; j++) {
-            var opt2 = document.createElement('option');
-            opt2.value = allChars[j];
-            opt2.innerText = allChars[j];
-            letterFilter.appendChild(opt2);
-        }
-
-        var keyFilter = document.getElementById('panelFilterKey');
-        for (var k = 0; k < keys.length; k++) {
-            var opt3 = document.createElement('option');
-            opt3.value = keys[k];
-            opt3.innerText = keys[k];
-            keyFilter.appendChild(opt3);
-        }
-
-        loadSongsFromJSON(false);
-        refreshUI();
-    }
-
-    function refreshUI() {
-        renderKeys();
-        renderAlphabet();
-        renderTitles(currentKey);
-        updateTotalCount();
-    }
-
-    function renderKeys() {
-        keysList.innerHTML = "";
-        for (var i = 0; i < keys.length; i++) {
-            (function(k) {
-                var count = 0;
-                for(var j=0; j<songs.length; j++) {
-                    if(songs[j].key === k) count++;
-                    if(k === "No Scale" && (!songs[j].key || songs[j].key === "No Scale")) count++;
-                }
-                var btn = document.createElement('button');
-                var className = 'key-btn' + (k === currentKey ? ' active' : '');
-                if(k === "No Scale") className += ' no-scale';
-                btn.className = className;
-                btn.innerHTML = '<span class="key-name">' + k + '</span><span class="key-count">' + count + '</span>';
-                btn.onclick = function() { selectKey(k); };
-                keysList.appendChild(btn);
-            })(keys[i]);
-        }
-    }
-
-    function renderAlphabet() {
-        alphaList.innerHTML = "";
-        var allBtn = document.createElement('button');
-        allBtn.className = 'alpha-btn all-btn' + (currentLetter === "" ? ' active' : '');
-        allBtn.innerText = "-";
-        allBtn.onclick = function() { selectLetter(""); };
-        alphaList.appendChild(allBtn);
-
-        for(var i=0; i<allChars.length; i++) {
-            (function(char) {
-                var btn = document.createElement('button');
-                btn.className = 'alpha-btn' + (currentLetter === char ? ' active' : '');
-                btn.innerText = char;
-                btn.onclick = function() { selectLetter(char); };
-                alphaList.appendChild(btn);
-            })(allChars[i]);
-        }
-    }
-
-    function updateTotalCount() { totalCountDisplay.innerText = 'الإجمالي: ' + songs.length; }
-
-    function selectKey(key) {
-        currentKey = key;
-        mainSearchInput.value = ''; 
-        renderKeys(); 
-        renderTitles(key);
-    }
-
-    function selectLetter(letter) {
-        currentLetter = letter;
-        mainSearchInput.value = '';
-        renderAlphabet();
-        renderTitles(currentKey);
-    }
-
-    function mainSearch() {
-        var query = mainSearchInput.value.toLowerCase();
-        if(query.length === 0) { renderTitles(currentKey); return; }
-        
-        titlesList.innerHTML = "";
-        var filtered = [];
-        for(var i=0; i<songs.length; i++) {
-            if(songs[i].title.toLowerCase().indexOf(query) !== -1 || 
-               songs[i].lyrics.toLowerCase().indexOf(query) !== -1) {
-                filtered.push(songs[i]);
-            }
-        }
-        filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
-        
-        if(filtered.length === 0) {
-            titlesList.innerHTML = '<div style="padding:10px; color:#999; font-size:0.8rem; text-align:center">لا توجد نتائج</div>';
-            return;
-        }
-        displaySongsList(filtered);
-    }
-
-    function renderTitles(key) {
-        titlesList.innerHTML = "";
-        lyricsView.innerHTML = '<div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر ترنيمة</div>';
-        
-        var filtered = [];
-        for(var i=0; i<songs.length; i++) {
-            var keyMatch = false;
-            if(key === "No Scale") {
-                if(!songs[i].key || songs[i].key === "No Scale") keyMatch = true;
-            } else {
-                if(songs[i].key === key) keyMatch = true;
-            }
-
-            var letterMatch = true;
-            if(currentLetter !== "") {
-                var firstChar = songs[i].title.charAt(0);
-                if(currentLetter === "أ" || currentLetter === "ا") {
-                     letterMatch = (firstChar === "أ" || firstChar === "ا" || firstChar === "إ" || firstChar === "آ");
-                } else {
-                    letterMatch = (firstChar.toUpperCase() === currentLetter.toUpperCase());
-                }
-            }
-
-            if(keyMatch && letterMatch) filtered.push(songs[i]);
-        }
-        
-        filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
-
-        if(filtered.length === 0) {
-            titlesList.innerHTML = '<div style="padding:10px; color:#999; font-size:0.8rem; text-align:center">لا توجد ترانيم</div>';
-            return;
-        }
-        displaySongsList(filtered);
-    }
-
-    function displaySongsList(list) {
-        titlesList.innerHTML = "";
-        for(var j=0; j<list.length; j++) {
-            (function(song) {
-                var div = document.createElement('div');
-                div.className = 'song-item';
-                var keyHint = (song.key && song.key !== "No Scale") ? ' <span style="font-size:0.7em; color:#888;">(' + song.key + ')</span>' : '';
-                div.innerHTML = song.title + keyHint;
-                div.onclick = function() {
-                    var items = document.querySelectorAll('.song-item');
-                    for(var x=0; x<items.length; x++) items[x].classList.remove('active');
-                    div.classList.add('active');
-                    var cleanLyrics = song.lyrics.replace(/\n\s*\n\s*\n/g, '\n\n');
-                    lyricsView.innerText = cleanLyrics;
-                };
-                titlesList.appendChild(div);
-            })(list[j]);
-        }
-    }
-
-    function openControlPanel() {
-        controlPanel.style.display = 'flex';
-        if(controlPanel.style.display !== 'flex') controlPanel.style.display = '-webkit-flex';
-        panelSearchInput.value = '';
-        renderManageList(songs);
-    }
-
-    function closeControlPanel() {
-        controlPanel.style.display = 'none';
-        if(mainSearchInput.value.length > 0) mainSearch(); else renderTitles(currentKey);
-        refreshUI();
-    }
-
-    // --- منطق البحث والفلترة في لوحة التحكم (الجديد) ---
-    function searchPanelSongs() {
-        var query = panelSearchInput.value.toLowerCase();
-        var filterKey = document.getElementById('panelFilterKey').value;
-        var filterLetter = document.getElementById('panelFilterLetter').value;
-
-        var filteredSongs = [];
-        for(var i=0; i<songs.length; i++) {
-            var s = songs[i];
-            
-            // 1. فلتر النص
-            var matchesSearch = true;
-            if (query !== "") {
-                matchesSearch = (s.title.toLowerCase().indexOf(query) !== -1);
-            }
-            
-            // 2. فلتر السلم
-            var matchesKey = true;
-            if(filterKey !== "") {
-                var sKey = s.key || "No Scale";
-                matchesKey = (sKey === filterKey);
-            }
-
-            // 3. فلتر الحرف
-            var matchesLetter = true;
-            if(filterLetter !== "") {
-                var firstChar = s.title.charAt(0);
-                if(filterLetter === "أ" || filterLetter === "ا") {
-                     matchesLetter = (firstChar === "أ" || firstChar === "ا" || firstChar === "إ" || firstChar === "آ");
-                } else {
-                    matchesLetter = (firstChar.toUpperCase() === filterLetter.toUpperCase());
-                }
-            }
-
-            if(matchesSearch && matchesKey && matchesLetter) {
-                filteredSongs.push(s);
-            }
-        }
-        renderManageList(filteredSongs);
-    }
-
-    function renderManageList(dataSource) {
-        manageList.innerHTML = "";
-        if(!dataSource || dataSource.length === 0) {
-            manageList.innerHTML = "<p style='text-align:center; color:#888;'>لا توجد نتائج</p>";
-            return;
-        }
-        var sorted = dataSource.slice(0);
-        sorted.sort(function(a, b) { return a.title.localeCompare(b.title); });
-        for(var i=0; i<sorted.length; i++) {
-            (function(song) {
-                var li = document.createElement('li');
-                li.className = 'manage-item';
-                var html = '<div class="manage-info-box"><span class="manage-info">' + song.title + '</span> <span class="manage-key">' + (song.key || "No Scale") + '</span></div>';
-                html += '<div class="manage-btns">';
-                html += '<button class="btn-edit" id="btn-edit-'+song.id+'">تعديل</button>';
-                html += '<button class="btn-delete" id="btn-del-'+song.id+'">حذف</button>';
-                html += '</div>';
-                li.innerHTML = html;
-                manageList.appendChild(li);
-                document.getElementById('btn-edit-'+song.id).onclick = function() { openEditModal(song.id); };
-                document.getElementById('btn-del-'+song.id).onclick = function() { deleteSong(song.id); };
-            })(sorted[i]);
-        }
-    }
-
-    function openEditModal(songId) {
-        editModal.style.display = 'flex';
-        if(editModal.style.display !== 'flex') editModal.style.display = '-webkit-flex';
-        var titleField = document.getElementById('editSongTitle');
-        var lyricsField = document.getElementById('editSongLyrics');
-        var keyField = document.getElementById('editSongKey');
-        var idField = document.getElementById('editSongId');
-        var modalTitle = document.getElementById('modalTitle');
-        if(songId) {
-            var song = null;
-            for(var i=0; i<songs.length; i++) { if(songs[i].id === songId) { song = songs[i]; break; } }
-            if(song) {
-                idField.value = song.id;
-                titleField.value = song.title;
-                lyricsField.value = song.lyrics;
-                keyField.value = song.key || "No Scale";
-                modalTitle.innerText = "تعديل الترنيمة";
-            }
-        } else {
-            idField.value = "";
-            titleField.value = "";
-            lyricsField.value = "";
-            keyField.value = currentKey;
-            modalTitle.innerText = "إضافة ترنيمة جديدة";
-        }
-    }
-
-    function closeEditModal() { editModal.style.display = 'none'; }
-
-    function saveSong() {
-        var id = document.getElementById('editSongId').value;
-        var title = document.getElementById('editSongTitle').value;
-        var lyrics = document.getElementById('editSongLyrics').value;
-        var key = document.getElementById('editSongKey').value;
-        if(!title || !lyrics) { alert("أكمل البيانات"); return; }
-        if(id) {
-            for(var i=0; i<songs.length; i++) {
-                if(songs[i].id == id) {
-                    songs[i] = { id: Number(id), title: title, lyrics: lyrics, key: key };
-                    break;
-                }
-            }
-        } else {
-            songs.push({ id: new Date().getTime(), title: title, lyrics: lyrics, key: key });
-        }
-        localStorage.setItem('mySongs', JSON.stringify(songs));
-        closeEditModal();
-        searchPanelSongs(); // تحديث البحث في اللوحة
-        updateTotalCount();
-        renderKeys();
-    }
-
-    function deleteSong(id) {
-        if(confirm("هل أنت متأكد من الحذف؟")) {
-            var newSongs = [];
-            for(var i=0; i<songs.length; i++) {
-                if(songs[i].id !== id) newSongs.push(songs[i]);
-            }
-            songs = newSongs;
-            localStorage.setItem('mySongs', JSON.stringify(songs));
-            searchPanelSongs(); // تحديث البحث في اللوحة
-            updateTotalCount();
-            renderKeys();
-        }
-    }
-
-    function exportData() {
-        try {
-            var dataStr = JSON.stringify(songs);
-            var blob = new Blob([dataStr], {type: "application/json"});
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = "songs_backup.json";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        } catch(e) { alert("عذراً، هاتفك لا يدعم التصدير."); }
-    }
-
-    function importData(input) {
-        var file = input.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                var importedSongs = JSON.parse(e.target.result);
-                if (importedSongs && importedSongs.length !== undefined) {
-                    if(confirm("سيتم استبدال البيانات. متأكد؟")) {
-                        songs = importedSongs;
-                        localStorage.setItem('mySongs', JSON.stringify(songs));
-                        alert("تم الاستيراد!");
-                        location.reload();
-                    }
-                } else { alert("الملف غير صالح"); }
-            } catch (err) { alert("خطأ في الملف"); }
-        };
-        reader.readAsText(file);
-    }
-
-    init();
-</script>
-</body>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#2c3e50">
+    <title>Scales</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+        
+        * { box-sizing: border-box; -webkit-box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cairo', sans-serif, Arial;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            height: 100vh;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: #2c3e50;
+            color: white;
+            height: 60px;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-align-items: center;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 100;
+            -webkit-flex-shrink: 0; flex-shrink: 0;
+        }
+
+        .header-right {
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
+            -webkit-justify-content: center; justify-content: center;
+            min-width: 80px;
+        }
+        
+        header h1 { font-size: 1.1rem; margin: 0; line-height: 1.2; font-weight: bold; }
+        .total-badge { font-size: 0.7rem; color: #bdc3c7; font-weight: normal; }
+
+        .header-center {
+            -webkit-flex: 1; flex: 1;
+            padding: 0 10px;
+            display: -webkit-flex; display: flex;
+            -webkit-justify-content: center; justify-content: center;
+        }
+        
+        #mainSearchInput {
+            width: 100%;
+            max-width: 400px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            background-color: rgba(255,255,255,0.95);
+            color: #333;
+            font-weight: bold;
+        }
+
+        .header-left { display: -webkit-flex; display: flex; }
+        
+        .header-btn {
+            background-color: #34495e;
+            border: 1px solid #5d6d7e;
+            color: white;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            font-size: 0.85rem;
+            height: 35px;
+        }
+
+        /* --- Container --- */
+        .container {
+            display: -webkit-flex;
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+            -webkit-flex-direction: row-reverse;
+            flex-direction: row-reverse;
+        }
+
+        /* العمود الأول: السلالم */
+        .col-keys {
+            width: 150px;
+            min-width: 80px;
+            background: #e0e0e0;
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
+        }
+
+        /* العمود الثاني: الحروف */
+        .col-alpha {
+            width: 60px; min-width: 40px;
+            background: #d6dbdf;
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
+            border-right: 1px solid #ccc;
+        }
+
+        /* العمود الثالث: العناوين */
+        .col-titles {
+            width: 250px;
+            min-width: 100px;
+            background: #fff;
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
+        }
+
+        /* العمود الرابع: الكلمات */
+        .col-lyrics {
+            -webkit-flex: 1; flex: 1;
+            background: #fdf6e3;
+            overflow-y: auto;
+            padding: 10px 5px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1.3;
+            white-space: pre-wrap; 
+            color: #000;
+            min-width: 150px;
+        }
+
+        /* الأجزاء المشتركة */
+        .col-header {
+            background: #dcdde1;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #aaa;
+            -webkit-flex-shrink: 0; flex-shrink: 0;
+            height: 45px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .scroll-list {
+            -webkit-flex: 1; flex: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* الفواصل (Resizers) */
+        .resizer {
+            width: 8px;
+            background-color: #bdc3c7;
+            cursor: col-resize;
+            -webkit-flex-shrink: 0; flex-shrink: 0;
+            border-left: 1px solid #95a5a6;
+            border-right: 1px solid #95a5a6;
+            z-index: 10;
+            touch-action: none;
+        }
+        .resizer:hover, .resizer:active { background-color: #e74c3c; }
+
+        .key-btn {
+            padding: 12px 2px;
+            text-align: center;
+            background: none;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-weight: bold;
+            font-size: 1.1rem;
+            width: 100%;
+            cursor: pointer;
+            font-family: sans-serif;
+            display: block;
+        }
+        .key-btn span { display: block; }
+        .key-btn .key-count {
+            font-size: 0.75rem; color: #555;
+            background: rgba(255,255,255,0.6);
+            padding: 2px 6px; border-radius: 10px;
+            margin-top: 3px; display: inline-block;
+        }
+        .key-btn.active { background-color: #c0392b; color: white; }
+        .key-btn.active .key-count { color: #c0392b; background: white; }
+        .key-btn.no-scale { background-color: #7f8c8d; color: #eee; }
+        .key-btn.no-scale.active { background-color: #c0392b; color: white; }
+
+        /* أزرار الحروف */
+        .alpha-btn {
+            padding: 10px 0; text-align: center; background: none;
+            border: none; border-bottom: 1px solid #bdc3c7;
+            font-weight: bold; font-size: 1.1rem; width: 100%;
+            cursor: pointer; font-family: 'Cairo', sans-serif; display: block;
+        }
+        .alpha-btn:hover { background-color: #ecf0f1; }
+        .alpha-btn.active { background-color: #2980b9; color: white; }
+        .alpha-btn.all-btn { font-size: 1.5rem; line-height: 0.8; color: #555; }
+
+        .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; }
+        .song-item:hover { background-color: #f1f1f1; }
+        .song-item.active { background-color: #fadbd8; color: #c0392b; }
+
+        @media (min-width: 768px) {
+            .col-lyrics { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
+            header h1 { font-size: 1.5rem; }
+            #mainSearchInput { font-size: 1.2rem; }
+            .col-header { font-size: 1.3rem; height: 55px; padding: 12px; }
+        }
+
+        /* Panel & Modal */
+        .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
+        .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
+        .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; }
+        .btn-big { padding: 10px 20px; border: none; border-radius: 5px; color: white; font-family: 'Cairo', sans-serif; cursor: pointer; font-weight: bold; text-align: center; margin-bottom: 5px; }
+        .btn-add { background: #27ae60; width: 100%; margin-bottom: 15px; }
+        .btn-export { background: #8e44ad; width: 48%; float: right; }
+        .btn-import { background: #2980b9; width: 48%; float: left; }
+        
+        .btn-reload { background: #e67e22; width: 100%; margin-top: 10px; }
+        
+        .backup-section { overflow: hidden; margin-bottom: 15px; }
+        .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        
+        /* تنسيق فلاتر لوحة التحكم الجديدة */
+        .filter-row { display: -webkit-flex; display: flex; gap: 5px; margin-bottom: 10px; }
+        .filter-row select { -webkit-flex: 1; flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 1rem; background: white; font-weight: bold; }
+
+        .manage-list { list-style: none; padding: 0; margin: 0; }
+        .manage-item { background: white; padding: 15px; border-bottom: 1px solid #ddd; overflow: hidden; }
+        .manage-info-box { float: right; }
+        .manage-btns { float: left; }
+        .manage-key { background: #eee; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; }
+        .manage-btns button { margin-left: 5px; padding: 5px 10px; border: none; border-radius: 3px; color: white; cursor: pointer; }
+        .btn-edit { background: #f39c12; }
+        .btn-delete { background: #c0392b; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+        .modal input, .modal textarea, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; }
+        .modal textarea { height: 100px; }
+        .modal-buttons { text-align: left; }
+        .btn-save { background: #2c3e50; color: white; border: none; padding: 8px 15px; border-radius: 4px; }
+        .btn-cancel { background: #ccc; border: none; padding: 8px 15px; border-radius: 4px; }
+
+        @media (max-width: 600px) {
+            .container { -webkit-flex-direction: column; flex-direction: column; }
+            .resizer { display: none; }
+            .col-keys { width: 100% !important; height: 60px; -webkit-flex-direction: row; flex-direction: row; }
+            .col-alpha { width: 100% !important; height: 50px; -webkit-flex-direction: row; flex-direction: row; border-right: none; border-bottom: 1px solid #aaa; }
+            .key-btn { width: auto; min-width: 60px; padding: 5px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; }
+            .alpha-btn { width: auto; min-width: 40px; padding: 5px; border-bottom: none; border-left: 1px solid #ccc; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;}
+            .col-header { display: none; }
+            .col-titles { width: 100% !important; height: 35%; }
+            .col-lyrics { width: 100%; height: 65%; font-size: 1.6rem; padding: 5px; }
+            .scroll-list { height: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-right">
+        <h1>🎹 Scales</h1>
+        <span class="total-badge" id="totalCountDisplay">الإجمالي: 0</span>
+    </div>
+    <div class="header-center">
+        <input type="text" id="mainSearchInput" placeholder="بحث (كلمات أو عناوين)..." onkeyup="mainSearch()">
+    </div>
+    <div class="header-left">
+        <button class="header-btn" onclick="tryFullScreen()">FullScreen</button>
+        <button class="header-btn" onclick="openControlPanel()">Settings</button>
+    </div>
+</header>
+
+<div class="container" id="container">
+    <div class="col-keys" id="colKeys">
+        <div class="col-header">السلم</div>
+        <div class="scroll-list" id="keys-list"></div>
+    </div>
+    <div class="resizer" id="resizer1"></div>
+    <div class="col-alpha" id="colAlpha">
+        <div class="col-header">الحرف</div>
+        <div class="scroll-list" id="alpha-list"></div>
+    </div>
+    <div class="resizer" id="resizer2"></div>
+    <div class="col-titles" id="colTitles">
+        <div class="col-header">العناوين</div>
+        <div class="scroll-list" id="titles-list"></div>
+    </div>
+    <div class="resizer" id="resizer3"></div>
+    <div class="col-lyrics" id="lyrics-view">
+        <div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر السلم > الحرف > الترنيمة</div>
+    </div>
+</div>
+
+<!-- Panel -->
+<div class="panel-overlay" id="controlPanel">
+    <div class="panel-header">
+  Control Panel</h3>
+        <button class="header-btn" onclick="closeControlPanel()">عودة</button>
+    </div>
+    <div class="panel-content">
+        <div class="backup-section">
+            <button class="btn-big btn-export" onclick="exportData()">💾 حفظ ملف</button>
+            <button class="btn-big btn-import" onclick="document.getElementById('fileInput').click()">📂 استيراد ملف</button>
+            <input type="file" id="fileInput" style="display:none" onchange="importData(this)">
+        </div>
+        
+        <button class="btn-big btn-add" onclick="openEditModal(null)">+ إضافة ترنيمة جديدة</button>
+        
+        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من السيرفر (songs.json)</button>
+        
+        <br><br>
+        <!-- فلاتر لوحة التحكم الجديدة -->
+        <div class="filter-row">
+            <select id="panelFilterLetter" onchange="searchPanelSongs()">
+                <option value="">كل الحروف</option>
+            </select>
+            <select id="panelFilterKey" onchange="searchPanelSongs()">
+                <option value="">كل السلالم</option>
+            </select>
+        </div>
+
+        <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
+        <div style="border-top:1px solid #ddd; margin: 15px 0;"></div>
+        <ul class="manage-list" id="manageList"></ul>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h3 id="modalTitle" style="margin:0 0 10px 0">ترنيمة جديدة</h3>
+        <input type="hidden" id="editSongId">
+        <label>السلم:</label>
+        <select id="editSongKey"></select>
+        <label>العنوان:</label>
+        <input type="text" id="editSongTitle" placeholder="اسم الترنيمة">
+        <label>الكلمات:</label>
+        <textarea id="editSongLyrics" placeholder="كلمات الترنيمة..."></textarea>
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="closeEditModal()">إلغاء</button>
+            <button class="btn-save" onclick="saveSong()">حفظ</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    var keys = ["C", "Cm", "C#m", "D", "Dm", "Db", "Dbm", "E", "Em", "Eb", "F", "Fm", "F#m", "G", "Gm", "G#m", "A", "Am", "Ab", "Abm", "B", "Bm", "Bb", "Bbm", "No Scale"];
+    var arChars = ['أ','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
+    var enChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    var allChars = arChars.concat(enChars);
+
+    var defaultSongs = [];
+    var saved = localStorage.getItem('mySongs');
+    var songs = saved ? JSON.parse(saved) : defaultSongs;
+    
+    var currentKey = "C";
+    var currentLetter = "";
+    
+    // Elements
+    var keysList = document.getElementById('keys-list');
+    var alphaList = document.getElementById('alpha-list');
+    var titlesList = document.getElementById('titles-list');
+    var lyricsView = document.getElementById('lyrics-view');
+    var totalCountDisplay = document.getElementById('totalCountDisplay');
+    var controlPanel = document.getElementById('controlPanel');
+    var manageList = document.getElementById('manageList');
+    var editModal = document.getElementById('editModal');
+    var keySelect = document.getElementById('editSongKey');
+    var mainSearchInput = document.getElementById('mainSearchInput');
+    var panelSearchInput = document.getElementById('panelSearchInput');
+    var panelFilterLetter = document.getElementById('panelFilterLetter');
+    var panelFilterKey = document.getElementById('panelFilterKey');
+
+    // Resizers
+    var resizer1 = document.getElementById('resizer1');
+    var resizer2 = document.getElementById('resizer2');
+    var resizer3 = document.getElementById('resizer3');
+    var colKeys = document.getElementById('colKeys');
+    var colAlpha = document.getElementById('colAlpha');
+    var colTitles = document.getElementById('colTitles');
+
+    setupResizer(resizer1, colKeys);
+    setupResizer(resizer2, colAlpha);
+    setupResizer(resizer3, colTitles);
+
+    function setupResizer(resizer, column) {
+        if(!resizer) return;
+        var startX, startWidth;
+        function onTouchStart(e) {
+            var touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startWidth = parseInt(window.getComputedStyle(column).width, 10);
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+            document.addEventListener('mousemove', onTouchMove);
+            document.addEventListener('mouseup', onTouchEnd);
+        }
+        function onTouchMove(e) {
+            var touch = e.touches ? e.touches[0] : e;
+            var dx = touch.clientX - startX;
+            column.style.width = (startWidth + dx) + 'px';
+        }
+        function onTouchEnd() {
+            document.body.style.userSelect = 'auto';
+            document.body.style.webkitUserSelect = 'auto';
+            document.removeEventListener('touchmove', onTouchMove);
+            document.removeEventListener('touchend', onTouchEnd);
+            document.removeEventListener('mousemove', onTouchMove);
+            document.removeEventListener('mouseup', onTouchEnd);
+        }
+        resizer.addEventListener('mousedown', onTouchStart);
+        resizer.addEventListener('touchstart', onTouchStart);
+    }
+
+    function tryFullScreen() {
+        var doc = window.document;
+        var docEl = doc.documentElement;
+        var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+        var cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        if(!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+            if(requestFullScreen) requestFullScreen.call(docEl);
+        } else {
+            if(cancelFullScreen) cancelFullScreen.call(doc);
+        }
+    }
+
+    // --- Auto Update ---
+    function loadSongsFromJSON(forceUpdate) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    try {
+                        var jsonSongs = JSON.parse(xhr.responseText);
+                        if(Array.isArray(jsonSongs)) {
+                            if (jsonSongs.length !== songs.length || forceUpdate) {
+                                songs = jsonSongs;
+                                localStorage.setItem('mySongs', JSON.stringify(songs));
+                                refreshUI();
+                                if(forceUpdate) alert("تم التحديث من الملف المحلي (songs.json) بنجاح!");
+                            }
+                        }
+                    } catch(e) { console.log("Error parsing JSON"); }
+                } else {
+                    if(forceUpdate) alert("لم يتم العثور على ملف songs.json بجانب التطبيق.");
+                }
+            }
+        };
+        xhr.send();
+    }
+    
+    // محاولة التحديث التلقائي عند الاتصال بالانترنت
+    window.addEventListener('online', function() { loadSongsFromJSON(false); });
+
+    function init() {
+        // ملء قائمة السلالم في المودال
+        keySelect.innerHTML = "";
+        for (var i = 0; i < keys.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = keys[i];
+            opt.innerText = keys[i];
+            keySelect.appendChild(opt);
+        }
+
+        // ملء فلاتر لوحة التحكم
+        var letterFilter = document.getElementById('panelFilterLetter');
+        for (var j = 0; j < allChars.length; j++) {
+            var opt2 = document.createElement('option');
+            opt2.value = allChars[j];
+            opt2.innerText = allChars[j];
+            letterFilter.appendChild(opt2);
+        }
+
+        var keyFilter = document.getElementById('panelFilterKey');
+        for (var k = 0; k < keys.length; k++) {
+            var opt3 = document.createElement('option');
+            opt3.value = keys[k];
+            opt3.innerText = keys[k];
+            keyFilter.appendChild(opt3);
+        }
+
+        loadSongsFromJSON(false);
+        refreshUI();
+    }
+
+    function refreshUI() {
+        renderKeys();
+        renderAlphabet();
+        renderTitles(currentKey);
+        updateTotalCount();
+    }
+
+    function renderKeys() {
+        keysList.innerHTML = "";
+        for (var i = 0; i < keys.length; i++) {
+            (function(k) {
+                var count = 0;
+                for(var j=0; j<songs.length; j++) {
+                    if(songs[j].key === k) count++;
+                    if(k === "No Scale" && (!songs[j].key || songs[j].key === "No Scale")) count++;
+                }
+                var btn = document.createElement('button');
+                var className = 'key-btn' + (k === currentKey ? ' active' : '');
+                if(k === "No Scale") className += ' no-scale';
+                btn.className = className;
+                btn.innerHTML = '<span class="key-name">' + k + '</span><span class="key-count">' + count + '</span>';
+                btn.onclick = function() { selectKey(k); };
+                keysList.appendChild(btn);
+            })(keys[i]);
+        }
+    }
+
+    function renderAlphabet() {
+        alphaList.innerHTML = "";
+        var allBtn = document.createElement('button');
+        allBtn.className = 'alpha-btn all-btn' + (currentLetter === "" ? ' active' : '');
+        allBtn.innerText = "-";
+        allBtn.onclick = function() { selectLetter(""); };
+        alphaList.appendChild(allBtn);
+
+        for(var i=0; i<allChars.length; i++) {
+            (function(char) {
+                var btn = document.createElement('button');
+                btn.className = 'alpha-btn' + (currentLetter === char ? ' active' : '');
+                btn.innerText = char;
+                btn.onclick = function() { selectLetter(char); };
+                alphaList.appendChild(btn);
+            })(allChars[i]);
+        }
+    }
+
+    function updateTotalCount() { totalCountDisplay.innerText = 'الإجمالي: ' + songs.length; }
+
+    function selectKey(key) {
+        currentKey = key;
+        mainSearchInput.value = ''; 
+        renderKeys(); 
+        renderTitles(key);
+    }
+
+    function selectLetter(letter) {
+        currentLetter = letter;
+        mainSearchInput.value = '';
+        renderAlphabet();
+        renderTitles(currentKey);
+    }
+
+    function mainSearch() {
+        var query = mainSearchInput.value.toLowerCase();
+        if(query.length === 0) { renderTitles(currentKey); return; }
+        
+        titlesList.innerHTML = "";
+        var filtered = [];
+        for(var i=0; i<songs.length; i++) {
+            if(songs[i].title.toLowerCase().indexOf(query) !== -1 || 
+               songs[i].lyrics.toLowerCase().indexOf(query) !== -1) {
+                filtered.push(songs[i]);
+            }
+        }
+        filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
+        
+        if(filtered.length === 0) {
+            titlesList.innerHTML = '<div style="padding:10px; color:#999; font-size:0.8rem; text-align:center">لا توجد نتائج</div>';
+            return;
+        }
+        displaySongsList(filtered);
+    }
+
+    function renderTitles(key) {
+        titlesList.innerHTML = "";
+        lyricsView.innerHTML = '<div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر ترنيمة</div>';
+        
+        var filtered = [];
+        for(var i=0; i<songs.length; i++) {
+            var keyMatch = false;
+            if(key === "No Scale") {
+                if(!songs[i].key || songs[i].key === "No Scale") keyMatch = true;
+            } else {
+                if(songs[i].key === key) keyMatch = true;
+            }
+
+            var letterMatch = true;
+            if(currentLetter !== "") {
+                var firstChar = songs[i].title.charAt(0);
+                if(currentLetter === "أ" || currentLetter === "ا") {
+                     letterMatch = (firstChar === "أ" || firstChar === "ا" || firstChar === "إ" || firstChar === "آ");
+                } else {
+                    letterMatch = (firstChar.toUpperCase() === currentLetter.toUpperCase());
+                }
+            }
+
+            if(keyMatch && letterMatch) filtered.push(songs[i]);
+        }
+        
+        filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
+
+        if(filtered.length === 0) {
+            titlesList.innerHTML = '<div style="padding:10px; color:#999; font-size:0.8rem; text-align:center">لا توجد ترانيم</div>';
+            return;
+        }
+        displaySongsList(filtered);
+    }
+
+    function displaySongsList(list) {
+        titlesList.innerHTML = "";
+        for(var j=0; j<list.length; j++) {
+            (function(song) {
+                var div = document.createElement('div');
+                div.className = 'song-item';
+                var keyHint = (song.key && song.key !== "No Scale") ? ' <span style="font-size:0.7em; color:#888;">(' + song.key + ')</span>' : '';
+                div.innerHTML = song.title + keyHint;
+                div.onclick = function() {
+                    var items = document.querySelectorAll('.song-item');
+                    for(var x=0; x<items.length; x++) items[x].classList.remove('active');
+                    div.classList.add('active');
+                    var cleanLyrics = song.lyrics.replace(/\n\s*\n\s*\n/g, '\n\n');
+                    lyricsView.innerText = cleanLyrics;
+                };
+                titlesList.appendChild(div);
+            })(list[j]);
+        }
+    }
+
+    function openControlPanel() {
+        controlPanel.style.display = 'flex';
+        if(controlPanel.style.display !== 'flex') controlPanel.style.display = '-webkit-flex';
+        panelSearchInput.value = '';
+        renderManageList(songs);
+    }
+
+    function closeControlPanel() {
+        controlPanel.style.display = 'none';
+        if(mainSearchInput.value.length > 0) mainSearch(); else renderTitles(currentKey);
+        refreshUI();
+    }
+
+    // --- منطق البحث والفلترة في لوحة التحكم (الجديد) ---
+    function searchPanelSongs() {
+        var query = panelSearchInput.value.toLowerCase();
+        var filterKey = document.getElementById('panelFilterKey').value;
+        var filterLetter = document.getElementById('panelFilterLetter').value;
+
+        var filteredSongs = [];
+        for(var i=0; i<songs.length; i++) {
+            var s = songs[i];
+            
+            // 1. فلتر النص
+            var matchesSearch = true;
+            if (query !== "") {
+                matchesSearch = (s.title.toLowerCase().indexOf(query) !== -1);
+            }
+            
+            // 2. فلتر السلم
+            var matchesKey = true;
+            if(filterKey !== "") {
+                var sKey = s.key || "No Scale";
+                matchesKey = (sKey === filterKey);
+            }
+
+            // 3. فلتر الحرف
+            var matchesLetter = true;
+            if(filterLetter !== "") {
+                var firstChar = s.title.charAt(0);
+                if(filterLetter === "أ" || filterLetter === "ا") {
+                     matchesLetter = (firstChar === "أ" || firstChar === "ا" || firstChar === "إ" || firstChar === "آ");
+                } else {
+                    matchesLetter = (firstChar.toUpperCase() === filterLetter.toUpperCase());
+                }
+            }
+
+            if(matchesSearch && matchesKey && matchesLetter) {
+                filteredSongs.push(s);
+            }
+        }
+        renderManageList(filteredSongs);
+    }
+
+    function renderManageList(dataSource) {
+        manageList.innerHTML = "";
+        if(!dataSource || dataSource.length === 0) {
+            manageList.innerHTML = "<p style='text-align:center; color:#888;'>لا توجد نتائج</p>";
+            return;
+        }
+        var sorted = dataSource.slice(0);
+        sorted.sort(function(a, b) { return a.title.localeCompare(b.title); });
+        for(var i=0; i<sorted.length; i++) {
+            (function(song) {
+                var li = document.createElement('li');
+                li.className = 'manage-item';
+                var html = '<div class="manage-info-box"><span class="manage-info">' + song.title + '</span> <span class="manage-key">' + (song.key || "No Scale") + '</span></div>';
+                html += '<div class="manage-btns">';
+                html += '<button class="btn-edit" id="btn-edit-'+song.id+'">تعديل</button>';
+                html += '<button class="btn-delete" id="btn-del-'+song.id+'">حذف</button>';
+                html += '</div>';
+                li.innerHTML = html;
+                manageList.appendChild(li);
+                document.getElementById('btn-edit-'+song.id).onclick = function() { openEditModal(song.id); };
+                document.getElementById('btn-del-'+song.id).onclick = function() { deleteSong(song.id); };
+            })(sorted[i]);
+        }
+    }
+
+    function openEditModal(songId) {
+        editModal.style.display = 'flex';
+        if(editModal.style.display !== 'flex') editModal.style.display = '-webkit-flex';
+        var titleField = document.getElementById('editSongTitle');
+        var lyricsField = document.getElementById('editSongLyrics');
+        var keyField = document.getElementById('editSongKey');
+        var idField = document.getElementById('editSongId');
+        var modalTitle = document.getElementById('modalTitle');
+        if(songId) {
+            var song = null;
+            for(var i=0; i<songs.length; i++) { if(songs[i].id === songId) { song = songs[i]; break; } }
+            if(song) {
+                idField.value = song.id;
+                titleField.value = song.title;
+                lyricsField.value = song.lyrics;
+                keyField.value = song.key || "No Scale";
+                modalTitle.innerText = "تعديل الترنيمة";
+            }
+        } else {
+            idField.value = "";
+            titleField.value = "";
+            lyricsField.value = "";
+            keyField.value = currentKey;
+            modalTitle.innerText = "إضافة ترنيمة جديدة";
+        }
+    }
+
+    function closeEditModal() { editModal.style.display = 'none'; }
+
+    function saveSong() {
+        var id = document.getElementById('editSongId').value;
+        var title = document.getElementById('editSongTitle').value;
+        var lyrics = document.getElementById('editSongLyrics').value;
+        var key = document.getElementById('editSongKey').value;
+        if(!title || !lyrics) { alert("أكمل البيانات"); return; }
+        if(id) {
+            for(var i=0; i<songs.length; i++) {
+                if(songs[i].id == id) {
+                    songs[i] = { id: Number(id), title: title, lyrics: lyrics, key: key };
+                    break;
+                }
+            }
+        } else {
+            songs.push({ id: new Date().getTime(), title: title, lyrics: lyrics, key: key });
+        }
+        localStorage.setItem('mySongs', JSON.stringify(songs));
+        closeEditModal();
+        searchPanelSongs(); // تحديث البحث في اللوحة
+        updateTotalCount();
+        renderKeys();
+    }
+
+    function deleteSong(id) {
+        if(confirm("هل أنت متأكد من الحذف؟")) {
+            var newSongs = [];
+            for(var i=0; i<songs.length; i++) {
+                if(songs[i].id !== id) newSongs.push(songs[i]);
+            }
+            songs = newSongs;
+            localStorage.setItem('mySongs', JSON.stringify(songs));
+            searchPanelSongs(); // تحديث البحث في اللوحة
+            updateTotalCount();
+            renderKeys();
+        }
+    }
+
+    function exportData() {
+        try {
+            var dataStr = JSON.stringify(songs);
+            var blob = new Blob([dataStr], {type: "application/json"});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = "songs_backup.json";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        } catch(e) { alert("عذراً، هاتفك لا يدعم التصدير."); }
+    }
+
+    function importData(input) {
+        var file = input.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                var importedSongs = JSON.parse(e.target.result);
+                if (importedSongs && importedSongs.length !== undefined) {
+                    if(confirm("سيتم استبدال البيانات. متأكد؟")) {
+                        songs = importedSongs;
+                        localStorage.setItem('mySongs', JSON.stringify(songs));
+                        alert("تم الاستيراد!");
+                        location.reload();
+                    }
+                } else { alert("الملف غير صالح"); }
+            } catch (err) { alert("خطأ في الملف"); }
+        };
+        reader.readAsText(file);
+    }
+
+    init();
+</script>
+</body>
 </html>
