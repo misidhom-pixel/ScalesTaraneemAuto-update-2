@@ -10,22 +10,94 @@
     <title>Scales</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        * { box-sizing: border-box; -webkit-box-sizing: border-box; }
-        body { font-family: 'Cairo', sans-serif, Arial; margin: 0; padding: 0; background-color: #f4f7f6; height: 100vh; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; overflow: hidden; }
         
-        /* Header */
-        header { background-color: #2c3e50; color: white; height: 60px; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; padding: 0 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100; -webkit-flex-shrink: 0; flex-shrink: 0; }
-        .header-right { display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; min-width: 80px; }
+        * { box-sizing: border-box; -webkit-box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cairo', sans-serif, Arial;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            height: 100vh;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: #2c3e50;
+            color: white;
+            height: 60px;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-align-items: center;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 100;
+            -webkit-flex-shrink: 0; flex-shrink: 0;
+        }
+
+        .header-right {
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
+            -webkit-justify-content: center; justify-content: center;
+            min-width: 80px;
+        }
+        
         header h1 { font-size: 1.1rem; margin: 0; line-height: 1.2; font-weight: bold; }
         .total-badge { font-size: 0.7rem; color: #bdc3c7; font-weight: normal; }
-        .header-center { -webkit-flex: 1; flex: 1; padding: 0 10px; display: -webkit-flex; display: flex; -webkit-justify-content: center; justify-content: center; }
-        #mainSearchInput { width: 100%; max-width: 400px; padding: 8px 15px; border-radius: 20px; border: none; outline: none; font-family: 'Cairo', sans-serif; font-size: 1rem; background-color: rgba(255,255,255,0.95); color: #333; font-weight: bold; }
-        .header-left { display: -webkit-flex; display: flex; }
-        .header-btn { background-color: #34495e; border: 1px solid #5d6d7e; color: white; padding: 5px 10px; margin-left: 5px; border-radius: 5px; font-family: 'Cairo', sans-serif; cursor: pointer; font-size: 0.85rem; height: 35px; }
 
-        /* Container */
-        .container { display: -webkit-flex; display: flex; height: calc(100vh - 60px); overflow: hidden; -webkit-flex-direction: row-reverse; flex-direction: row-reverse; }
+        .header-center {
+            -webkit-flex: 1; flex: 1;
+            padding: 0 10px;
+            display: -webkit-flex; display: flex;
+            -webkit-justify-content: center; justify-content: center;
+        }
         
+        #mainSearchInput {
+            width: 100%;
+            max-width: 400px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            background-color: rgba(255,255,255,0.95);
+            color: #333;
+            font-weight: bold;
+        }
+
+        .header-left { display: -webkit-flex; display: flex; }
+        
+        .header-btn {
+            background-color: #34495e;
+            border: 1px solid #5d6d7e;
+            color: white;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            font-size: 0.85rem;
+            height: 35px;
+        }
+
+        /* --- Container --- */
+        .container {
+            display: -webkit-flex;
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+            -webkit-flex-direction: row-reverse;
+            flex-direction: row-reverse;
+        }
+
+        /* الأعمدة */
         .col-keys { width: 100px; min-width: 60px; background: #e0e0e0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         .col-alpha { width: 60px; min-width: 40px; background: #d6dbdf; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; border-right: 1px solid #ccc; }
         .col-titles { width: 200px; min-width: 100px; background: #fff; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
@@ -33,6 +105,7 @@
 
         .col-header { background: #dcdde1; padding: 10px 2px; text-align: center; font-weight: bold; font-size: 1rem; border-bottom: 2px solid #aaa; -webkit-flex-shrink: 0; flex-shrink: 0; height: 45px; white-space: nowrap; overflow: hidden; }
         .scroll-list { -webkit-flex: 1; flex: 1; overflow-y: auto; border-bottom: 1px solid #ccc; }
+        
         .resizer { width: 8px; background-color: #bdc3c7; cursor: col-resize; -webkit-flex-shrink: 0; flex-shrink: 0; border-left: 1px solid #95a5a6; border-right: 1px solid #95a5a6; z-index: 10; touch-action: none; }
 
         /* Buttons */
@@ -60,7 +133,7 @@
             .col-header { font-size: 1.2rem; height: 55px; padding: 12px; }
         }
 
-        /* Control Panel */
+        /* Panel & Modal */
         .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
         .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
         .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; }
@@ -69,18 +142,8 @@
         .btn-add { background: #27ae60; width: 100%; margin-bottom: 15px; }
         .btn-export { background: #8e44ad; width: 48%; float: right; }
         .btn-import { background: #2980b9; width: 48%; float: left; }
-        
-        /* زر التحديث من الملف (الأساسي) */
-        .btn-reload { background: #e67e22; width: 100%; margin-top: 10px; }
-        
-        /* زر السحابة (الإضافي) */
-        .btn-cloud { background: #34495e; width: 100%; margin-top: 5px; border: 1px solid #7f8c8d; font-size: 0.9rem;}
+        .btn-reload { background: #e67e22; width: 100%; margin-top: 10px; } /* زر التحديث */
 
-        /* زر الرفع */
-        .btn-upload { background: #c0392b; width: 100%; margin-top: 10px; border: 2px solid #a93226; }
-
-        .server-settings { background: #ecf0f1; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #bdc3c7; display: none; }
-        .settings-input { width: 100%; padding: 8px; margin-bottom: 8px; border: 1px solid #ccc; border-radius: 4px; }
         .backup-section { overflow: hidden; margin-bottom: 15px; }
         .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
         .manage-list { list-style: none; padding: 0; margin: 0; }
@@ -166,24 +229,9 @@
         
         <button class="btn-big btn-add" onclick="openEditModal(null)">+ إضافة ترنيمة جديدة</button>
         
-        <!-- الزر السحري: يعمل بدون إعدادات -->
-        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من ملف songs.json</button>
+        <!-- زر التحديث اليدوي (بدون إعدادات) -->
+        <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من السيرفر (songs.json)</button>
         
-        <hr>
-        <!-- الخيارات المتقدمة (السحابة) -->
-        <button class="btn-big btn-cloud" onclick="toggleServerSettings()">☁️ خيارات السحابة (إعدادات)</button>
-        
-        <div class="server-settings" id="serverSettings">
-            <h4>إعدادات السيرفر (JSONBin)</h4>
-            <input type="text" id="binId" class="settings-input" placeholder="Bin ID">
-            <input type="text" id="apiKey" class="settings-input" placeholder="X-Master-Key (API Key)">
-            <button class="btn-big btn-save" onclick="saveCloudSettings()">حفظ الإعدادات</button>
-            <div style="display:flex; gap:5px; margin-top:10px;">
-                 <button class="btn-big btn-reload" onclick="downloadFromCloud()">📥 سحب</button>
-                 <button class="btn-big btn-upload" onclick="uploadToCloud()">🚀 رفع</button>
-            </div>
-        </div>
-
         <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
         <div style="border-top:1px solid #ddd; margin: 15px 0;"></div>
         <ul class="manage-list" id="manageList"></ul>
@@ -209,8 +257,6 @@
 </div>
 
 <script>
-    var ADMIN_PASSWORD = "2030";
-
     var keys = ["C", "Cm", "C#m", "D", "Dm", "Db", "Dbm", "E", "Em", "Eb", "F", "Fm", "F#m", "G", "Gm", "G#m", "A", "Am", "Ab", "Abm", "B", "Bm", "Bb", "Bbm", "No Scale"];
     var arChars = ['أ','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
     var enChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -235,7 +281,6 @@
     var keySelect = document.getElementById('editSongKey');
     var mainSearchInput = document.getElementById('mainSearchInput');
     var panelSearchInput = document.getElementById('panelSearchInput');
-    var serverSettingsDiv = document.getElementById('serverSettings');
 
     // Resizers
     var resizer1 = document.getElementById('resizer1');
@@ -292,12 +337,11 @@
         }
     }
 
-    // --- Local File Update (No Settings Needed) ---
+    // --- التحديث التلقائي (Auto Update) ---
+    // هذه الدالة ستبحث عن ملف songs.json وتقوم بتحميله
     function loadSongsFromJSON(forceUpdate) {
-        if(songs.length > 0 && !forceUpdate) { return; }
-        
+        // v=timestamp لمنع الكاش وتحميل أحدث نسخة دائماً
         var xhr = new XMLHttpRequest();
-        // هذا الرابط يبحث عن ملف songs.json بجانب التطبيق
         xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
         
         xhr.onreadystatechange = function() {
@@ -306,81 +350,28 @@
                     try {
                         var jsonSongs = JSON.parse(xhr.responseText);
                         if(Array.isArray(jsonSongs)) {
-                            songs = jsonSongs;
-                            localStorage.setItem('mySongs', JSON.stringify(songs));
-                            refreshUI();
-                            if(forceUpdate) alert("تم التحديث من الملف المحلي (songs.json) بنجاح!");
+                            // مقارنة بسيطة: لو العدد مختلف أو طلبنا تحديث إجباري، نحفظ الجديد
+                            if (jsonSongs.length !== songs.length || forceUpdate) {
+                                songs = jsonSongs;
+                                localStorage.setItem('mySongs', JSON.stringify(songs));
+                                refreshUI();
+                                if(forceUpdate) alert("تم التحديث بنجاح! (" + songs.length + " ترنيمة)");
+                                else console.log("Auto-update successful");
+                            }
                         }
                     } catch(e) { console.log("Error parsing JSON"); }
                 } else {
-                    if(forceUpdate) alert("لم يتم العثور على ملف songs.json بجانب التطبيق.");
+                    if(forceUpdate) alert("تعذر الوصول للملف songs.json");
                 }
             }
         };
         xhr.send();
     }
-
-    // --- Cloud Functions (Optional) ---
-    function toggleServerSettings() {
-        if(serverSettingsDiv.style.display === 'block') {
-            serverSettingsDiv.style.display = 'none';
-        } else {
-            serverSettingsDiv.style.display = 'block';
-            document.getElementById('binId').value = localStorage.getItem('binId') || '';
-            document.getElementById('apiKey').value = localStorage.getItem('apiKey') || '';
-        }
-    }
-    function saveCloudSettings() {
-        localStorage.setItem('binId', document.getElementById('binId').value);
-        localStorage.setItem('apiKey', document.getElementById('apiKey').value);
-        alert("تم الحفظ!");
-    }
-    function downloadFromCloud() {
-        var binId = localStorage.getItem('binId');
-        var apiKey = localStorage.getItem('apiKey');
-        if(!binId || !apiKey) { alert("أدخل الإعدادات أولاً"); toggleServerSettings(); return; }
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", "https://api.jsonbin.io/v3/b/" + binId + "/latest", true);
-        xhr.setRequestHeader("X-Master-Key", apiKey);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    try {
-                        var response = JSON.parse(xhr.responseText);
-                        var cloudSongs = response.record; 
-                        if(Array.isArray(cloudSongs)) {
-                            songs = cloudSongs;
-                            localStorage.setItem('mySongs', JSON.stringify(songs));
-                            refreshUI();
-                            alert("تم تحديث " + songs.length + " ترنيمة!");
-                        } else { alert("بيانات السيرفر غير صحيحة"); }
-                    } catch(e) { alert("خطأ في البيانات"); }
-                } else { alert("فشل الاتصال: " + xhr.status); }
-            }
-        };
-        xhr.send();
-    }
-    function uploadToCloud() {
-        var binId = localStorage.getItem('binId');
-        var apiKey = localStorage.getItem('apiKey');
-        if(!binId || !apiKey) { alert("أدخل الإعدادات أولاً"); return; }
-        
-        var pass = prompt("⚠️ أدخل كلمة المرور للمتابعة:");
-        if (pass !== ADMIN_PASSWORD) { alert("كلمة المرور خاطئة! 🚫"); return; }
-        if(!confirm("هل أنت متأكد؟ سيتم استبدال بيانات السيرفر!")) return;
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("PUT", "https://api.jsonbin.io/v3/b/" + binId, true);
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.setRequestHeader("X-Master-Key", apiKey);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) alert("تم الرفع بنجاح! ✅");
-                else alert("فشل الرفع. كود: " + xhr.status);
-            }
-        };
-        xhr.send(JSON.stringify(songs));
-    }
+    
+    // مراقبة الاتصال بالإنترنت للتحديث التلقائي
+    window.addEventListener('online', function() {
+        loadSongsFromJSON(false); // تحديث صامت
+    });
 
     function init() {
         keySelect.innerHTML = "";
@@ -390,7 +381,10 @@
             opt.innerText = keys[i];
             keySelect.appendChild(opt);
         }
+        
+        // محاولة التحديث التلقائي عند الفتح
         loadSongsFromJSON(false);
+        
         refreshUI();
     }
 
