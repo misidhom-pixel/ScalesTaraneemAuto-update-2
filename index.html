@@ -97,6 +97,7 @@
             flex-direction: row-reverse;
         }
 
+        /* الأعمدة */
         .col-keys { width: 100px; min-width: 60px; background: #e0e0e0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         .col-alpha { width: 60px; min-width: 40px; background: #d6dbdf; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; border-right: 1px solid #ccc; }
         .col-titles { width: 200px; min-width: 100px; background: #fff; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
@@ -107,7 +108,8 @@
         
         .resizer { width: 8px; background-color: #bdc3c7; cursor: col-resize; -webkit-flex-shrink: 0; flex-shrink: 0; border-left: 1px solid #95a5a6; border-right: 1px solid #95a5a6; z-index: 10; touch-action: none; }
 
-        .key-btn { padding: 12px 2px; text-align: center; background: none; border: none; border-bottom: 1px solid #ccc; font-weight: bold; font-size: 1rem; width: 100%; cursor: pointer; font-family: sans-serif; display: block; }
+        /* Buttons */
+        .key-btn { padding: 12px 2px; text-align: center; background: none; border: none; border-bottom: 1px solid #ccc; font-weight: bold; font-size: 1rem; width: 100%; cursor: pointer; font-family: sans-serif; display: block; color: #000; }
         .key-btn span { display: block; }
         .key-btn .key-count { font-size: 0.7rem; color: #555; background: rgba(255,255,255,0.6); padding: 1px 4px; border-radius: 10px; margin-top: 3px; display: inline-block; }
         .key-btn.active { background-color: #c0392b; color: white; }
@@ -115,24 +117,17 @@
         .key-btn.no-scale { background-color: #7f8c8d; color: #eee; }
         .key-btn.no-scale.active { background-color: #c0392b; color: white; }
 
-        .alpha-btn { padding: 10px 0; text-align: center; background: none; border: none; border-bottom: 1px solid #bdc3c7; font-weight: bold; font-size: 1.1rem; width: 100%; cursor: pointer; font-family: 'Cairo', sans-serif; display: block; }
+        .alpha-btn { padding: 10px 0; text-align: center; background: none; border: none; border-bottom: 1px solid #bdc3c7; font-weight: bold; font-size: 1.1rem; width: 100%; cursor: pointer; font-family: 'Cairo', sans-serif; display: block; color: #000; }
         .alpha-btn:hover { background-color: #ecf0f1; }
         .alpha-btn.active { background-color: #2980b9; color: white; }
         .alpha-btn.all-btn { font-size: 1.5rem; line-height: 0.8; color: #555; }
 
-        .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; }
+        .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; color: #000; }
         .song-item:hover { background-color: #f1f1f1; }
         .song-item.active { background-color: #fadbd8; color: #c0392b; }
-
-        /* زر عرض المزيد */
-        .load-more-btn {
-            display: block; width: 100%; padding: 15px; 
-            background: #e67e22; color: white; font-weight: bold; 
-            border: none; cursor: pointer; text-align: center;
-            font-family: 'Cairo', sans-serif;
-            border-bottom: 1px solid #ddd;
-        }
-        .load-more-btn:active { background: #d35400; }
+        
+        .load-more-btn { display: block; width: 100%; padding: 15px; background: #e67e22; color: white; font-weight: bold; border: none; cursor: pointer; text-align: center; font-family: 'Cairo', sans-serif; border-bottom: 1px solid #ddd; }
+        .limit-msg { padding: 10px; text-align: center; color: #e67e22; font-weight: bold; font-size: 0.9rem; background: #fff8e1; border-top: 1px dashed #e67e22; }
 
         @media (min-width: 768px) {
             .col-lyrics { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
@@ -143,8 +138,11 @@
 
         /* Panel & Modal */
         .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
+        
         .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
+        
         .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; }
+        
         .btn-big { padding: 10px 20px; border: none; border-radius: 5px; color: white; font-family: 'Cairo', sans-serif; cursor: pointer; font-weight: bold; text-align: center; margin-bottom: 5px; }
         .btn-add { background: #27ae60; width: 100%; margin-bottom: 15px; }
         .btn-export { background: #8e44ad; width: 48%; float: right; }
@@ -153,21 +151,22 @@
 
         .backup-section { overflow: hidden; margin-bottom: 15px; }
         .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
+        
         .filter-row { display: -webkit-flex; display: flex; gap: 5px; margin-bottom: 10px; }
         .filter-row select { -webkit-flex: 1; flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 1rem; background: white; font-weight: bold; }
-        
+
         .manage-list { list-style: none; padding: 0; margin: 0; }
-        .manage-item { background: white; padding: 15px; border-bottom: 1px solid #ddd; overflow: hidden; }
+        .manage-item { background: white; padding: 15px; border-bottom: 1px solid #ddd; overflow: hidden; color: #000; }
         .manage-info-box { float: right; }
         .manage-btns { float: left; }
-        .manage-key { background: #eee; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; }
+        .manage-key { background: #eee; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 5px; color: #000; }
         .manage-btns button { margin-left: 5px; padding: 5px 10px; border: none; border-radius: 3px; color: white; cursor: pointer; }
         .btn-edit { background: #f39c12; }
         .btn-delete { background: #c0392b; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
-        .modal input, .modal textarea, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; color: #000; }
+        .modal input, .modal textarea, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; color: #000; background: #fff;}
         .modal textarea { height: 100px; }
         .modal-buttons { text-align: left; }
         .btn-save { background: #2c3e50; color: white; border: none; padding: 8px 15px; border-radius: 4px; }
@@ -328,7 +327,7 @@
     // Pagination Variables
     var currentFilteredList = [];
     var currentRenderIndex = 0;
-    var BATCH_SIZE = 50;
+    var BATCH_SIZE = 100; // تم التعديل إلى 100 بناء على طلبك
 
     var panelFilteredList = [];
     var panelRenderIndex = 0;
@@ -548,7 +547,6 @@
         }
         filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
         
-        // Prepare list for display with pagination
         currentFilteredList = filtered;
         currentRenderIndex = 0;
         titlesList.innerHTML = "";
@@ -594,9 +592,7 @@
         renderNextBatch();
     }
 
-    // --- Load More Logic (Main View) ---
     function renderNextBatch() {
-        // Remove existing "Load More" button if any
         var oldBtn = document.getElementById('btnLoadMoreMain');
         if(oldBtn) oldBtn.parentNode.removeChild(oldBtn);
 
@@ -622,12 +618,11 @@
         
         currentRenderIndex = end;
 
-        // If more items exist, add button
         if(currentRenderIndex < currentFilteredList.length) {
             var btn = document.createElement('button');
             btn.id = 'btnLoadMoreMain';
             btn.className = 'load-more-btn';
-            btn.innerText = '⬇️ عرض 50 ترنيمة أخرى';
+            btn.innerText = '⬇️ عرض 100 ترنيمة أخرى';
             btn.onclick = function() { renderNextBatch(); };
             titlesList.appendChild(btn);
         }
@@ -637,7 +632,6 @@
         controlPanel.style.display = 'flex';
         if(controlPanel.style.display !== 'flex') controlPanel.style.display = '-webkit-flex';
         panelSearchInput.value = '';
-        // Init panel list
         panelFilteredList = songs.slice().sort(function(a,b){return a.title.localeCompare(b.title);});
         panelRenderIndex = 0;
         manageList.innerHTML = "";
@@ -690,7 +684,6 @@
         }
     }
 
-    // --- Load More Logic (Panel) ---
     function renderNextPanelBatch() {
         var oldBtn = document.getElementById('btnLoadMorePanel');
         if(oldBtn) oldBtn.parentNode.removeChild(oldBtn);
@@ -702,7 +695,8 @@
             (function(song) {
                 var li = document.createElement('li');
                 li.className = 'manage-item';
-                var html = '<div class="manage-info-box"><span class="manage-info">' + song.title + '</span> <span class="manage-key">' + (song.key || "No Scale") + '</span></div>';
+                li.id = 'panel-item-' + song.id;
+                var html = '<div class="manage-info-box"><span class="manage-info" id="title-'+song.id+'">' + song.title + '</span> <span class="manage-key" id="key-'+song.id+'">' + (song.key || "No Scale") + '</span></div>';
                 html += '<div class="manage-btns">';
                 html += '<button class="btn-edit" id="btn-edit-'+song.id+'">تعديل</button>';
                 html += '<button class="btn-delete" id="btn-del-'+song.id+'">حذف</button>';
@@ -761,19 +755,31 @@
         var lyrics = document.getElementById('editSongLyrics').value;
         var key = document.getElementById('editSongKey').value;
         if(!title || !lyrics) { alert("أكمل البيانات"); return; }
+        
         if(id) {
+            // Edit existing
             for(var i=0; i<songs.length; i++) {
                 if(songs[i].id == id) {
                     songs[i] = { id: Number(id), title: title, lyrics: lyrics, key: key };
                     break;
                 }
             }
+            // Update Visuals in Panel (Without Resetting List)
+            var li = document.getElementById('panel-item-' + id);
+            if(li) {
+                var titleSpan = document.getElementById('title-' + id);
+                var keySpan = document.getElementById('key-' + id);
+                if(titleSpan) titleSpan.innerText = title;
+                if(keySpan) keySpan.innerText = (key || "No Scale");
+            }
         } else {
+            // Add new
             songs.push({ id: new Date().getTime(), title: title, lyrics: lyrics, key: key });
+            searchPanelSongs(); // Reset list only on add
         }
+        
         localStorage.setItem('mySongs', JSON.stringify(songs));
         closeEditModal();
-        searchPanelSongs();
         updateTotalCount();
         renderKeys();
     }
@@ -786,7 +792,11 @@
             }
             songs = newSongs;
             localStorage.setItem('mySongs', JSON.stringify(songs));
-            searchPanelSongs();
+            
+            // Remove from DOM immediately
+            var li = document.getElementById('panel-item-' + id);
+            if(li) li.parentNode.removeChild(li);
+            
             updateTotalCount();
             renderKeys();
         }
