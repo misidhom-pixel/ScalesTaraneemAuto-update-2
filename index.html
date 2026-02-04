@@ -327,7 +327,7 @@
     // Pagination Variables
     var currentFilteredList = [];
     var currentRenderIndex = 0;
-    var BATCH_SIZE = 100; // تم التعديل إلى 100 بناء على طلبك
+    var BATCH_SIZE = 100;
 
     var panelFilteredList = [];
     var panelRenderIndex = 0;
@@ -485,8 +485,8 @@
             (function(k) {
                 var count = 0;
                 for(var j=0; j<songs.length; j++) {
-                    if(songs[j].key === k) count++;
-                    if(k === "No Scale" && (!songs[j].key || songs[j].key === "No Scale")) count++;
+                    var sKey = songs[j].key || "No Scale";
+                    if (sKey === k) count++;
                 }
                 var btn = document.createElement('button');
                 var className = 'key-btn' + (k === currentKey ? ' active' : '');
@@ -561,12 +561,8 @@
     function renderTitles(key) {
         var filtered = [];
         for(var i=0; i<songs.length; i++) {
-            var keyMatch = false;
-            if(key === "No Scale") {
-                if(!songs[i].key || songs[i].key === "No Scale") keyMatch = true;
-            } else {
-                if(songs[i].key === key) keyMatch = true;
-            }
+            var songKey = songs[i].key || "No Scale";
+            var keyMatch = (songKey === key);
 
             var letterMatch = true;
             if(currentLetter !== "") {
@@ -692,10 +688,12 @@
         if(end > panelFilteredList.length) end = panelFilteredList.length;
 
         for(var i=panelRenderIndex; i<end; i++) {
-            (function(song) {
+            (function(song, idx) {
                 var li = document.createElement('li');
                 li.className = 'manage-item';
-                li.id = 'panel-item-' + song.id;
+                // ID فريد للعنصر لسهولة الوصول إليه عند الحذف
+                li.id = 'panel-row-' + song.id; 
+                
                 var html = '<div class="manage-info-box"><span class="manage-info" id="title-'+song.id+'">' + song.title + '</span> <span class="manage-key" id="key-'+song.id+'">' + (song.key || "No Scale") + '</span></div>';
                 html += '<div class="manage-btns">';
                 html += '<button class="btn-edit" id="btn-edit-'+song.id+'">تعديل</button>';
@@ -703,9 +701,11 @@
                 html += '</div>';
                 li.innerHTML = html;
                 manageList.appendChild(li);
+                
+                // ربط الأحداث
                 document.getElementById('btn-edit-'+song.id).onclick = function() { openEditModal(song.id); };
                 document.getElementById('btn-del-'+song.id).onclick = function() { deleteSong(song.id); };
-            })(panelFilteredList[i]);
+            })(panelFilteredList[i], i);
         }
         
         panelRenderIndex = end;
@@ -757,25 +757,24 @@
         if(!title || !lyrics) { alert("أكمل البيانات"); return; }
         
         if(id) {
-            // Edit existing
+            // تحديث في المصفوفة الأصلية
             for(var i=0; i<songs.length; i++) {
                 if(songs[i].id == id) {
                     songs[i] = { id: Number(id), title: title, lyrics: lyrics, key: key };
                     break;
                 }
             }
-            // Update Visuals in Panel (Without Resetting List)
-            var li = document.getElementById('panel-item-' + id);
-            if(li) {
-                var titleSpan = document.getElementById('title-' + id);
-                var keySpan = document.getElementById('key-' + id);
-                if(titleSpan) titleSpan.innerText = title;
-                if(keySpan) keySpan.innerText = (key || "No Scale");
-            }
+            // تحديث العنصر في القائمة دون إعادة تحميل
+            var titleEl = document.getElementById('title-' + id);
+            var keyEl = document.getElementById('key-' + id);
+            if(titleEl) titleEl.innerText = title;
+            if(keyEl) keyEl.innerText = (key || "No Scale");
         } else {
-            // Add new
-            songs.push({ id: new Date().getTime(), title: title, lyrics: lyrics, key: key });
-            searchPanelSongs(); // Reset list only on add
+            // إضافة جديد
+            var newSong = { id: new Date().getTime(), title: title, lyrics: lyrics, key: key };
+            songs.push(newSong);
+            // هنا نعيد التحميل لأن الترتيب سيتغير
+            searchPanelSongs();
         }
         
         localStorage.setItem('mySongs', JSON.stringify(songs));
@@ -786,6 +785,7 @@
 
     function deleteSong(id) {
         if(confirm("هل أنت متأكد من الحذف؟")) {
+            // الحذف من المصفوفة الأصلية
             var newSongs = [];
             for(var i=0; i<songs.length; i++) {
                 if(songs[i].id !== id) newSongs.push(songs[i]);
@@ -793,10 +793,19 @@
             songs = newSongs;
             localStorage.setItem('mySongs', JSON.stringify(songs));
             
-            // Remove from DOM immediately
-            var li = document.getElementById('panel-item-' + id);
-            if(li) li.parentNode.removeChild(li);
+            // الحذف من واجهة المستخدم فوراً (DOM)
+            var el = document.getElementById('panel-item-' + id);
+            if(el) {
+                el.parentNode.removeChild(el);
+            }
             
+            // تحديث المصفوفة المفلترة أيضاً حتى لا يظهر مرة أخرى عند التمرير
+            var newPanelList = [];
+            for(var j=0; j<panelFilteredList.length; j++) {
+                if(panelFilteredList[j].id !== id) newPanelList.push(panelFilteredList[j]);
+            }
+            panelFilteredList = newPanelList;
+
             updateTotalCount();
             renderKeys();
         }
