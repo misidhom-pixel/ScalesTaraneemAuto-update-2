@@ -55,11 +55,14 @@
             padding: 0 10px;
             display: -webkit-flex; display: flex;
             -webkit-justify-content: center; justify-content: center;
+            position: relative; /* مهم للقائمة المنسدلة */
         }
         
+        /* حاوية البحث */
+        .search-wrapper { width: 100%; max-width: 400px; position: relative; }
+
         #mainSearchInput {
             width: 100%;
-            max-width: 400px;
             padding: 8px 15px;
             border-radius: 20px;
             border: none;
@@ -70,6 +73,32 @@
             color: #333;
             font-weight: bold;
         }
+
+        /* قائمة الهستوري */
+        .history-list {
+            position: absolute;
+            top: 40px; left: 0; right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .history-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: -webkit-flex; display: flex;
+            -webkit-justify-content: space-between; justify-content: space-between;
+            color: #333;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        .history-item:hover { background-color: #f0f0f0; }
+        .history-text { -webkit-flex: 1; flex: 1; text-align: right; }
+        .history-delete { color: red; font-weight: bold; padding: 0 10px; }
 
         .header-left { display: -webkit-flex; display: flex; }
         
@@ -97,7 +126,6 @@
             flex-direction: row-reverse;
         }
 
-        /* الأعمدة */
         .col-keys { width: 100px; min-width: 60px; background: #e0e0e0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         .col-alpha { width: 60px; min-width: 40px; background: #d6dbdf; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; border-right: 1px solid #ccc; }
         .col-titles { width: 200px; min-width: 100px; background: #fff; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
@@ -164,25 +192,46 @@
         .btn-edit { background: #f39c12; }
         .btn-delete { background: #c0392b; }
 
+        /* --- Modal Styles (Responsive) --- */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; color: #000; }
-        .modal input, .modal textarea, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; color: #000; background: #fff;}
-        .modal textarea { height: 100px; }
+        
+        .modal-content { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            width: 90%; 
+            max-width: 400px; /* للموبايل */
+            display: -webkit-flex; display: flex; 
+            -webkit-flex-direction: column; flex-direction: column; 
+            color: #000; 
+            height: auto;
+            max-height: 90vh; /* حتى لا تخرج عن الشاشة */
+        }
+
+        .modal input, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; color: #000; background: #fff;}
+        
+        .modal textarea { 
+            height: 150px; 
+            padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; color: #000; background: #fff; resize: none;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1rem;
+        }
+
         .modal-buttons { text-align: left; }
         .btn-save { background: #2c3e50; color: white; border: none; padding: 8px 15px; border-radius: 4px; }
         .btn-cancel { background: #ccc; border: none; padding: 8px 15px; border-radius: 4px; }
 
-        @media (max-width: 600px) {
-            .container { -webkit-flex-direction: column; flex-direction: column; }
-            .resizer { display: none; }
-            .col-keys { width: 100% !important; height: 60px; -webkit-flex-direction: row; flex-direction: row; }
-            .col-alpha { width: 100% !important; height: 50px; -webkit-flex-direction: row; flex-direction: row; border-right: none; border-bottom: 1px solid #aaa; }
-            .key-btn { width: auto; min-width: 60px; padding: 5px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; -webkit-justify-content: center; justify-content: center; }
-            .alpha-btn { width: auto; min-width: 40px; padding: 5px; border-bottom: none; border-left: 1px solid #ccc; display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center; -webkit-justify-content: center; justify-content: center;}
-            .col-header { display: none; }
-            .col-titles { width: 100% !important; height: 35%; }
-            .col-lyrics { width: 100%; height: 65%; font-size: 1.6rem; padding: 5px; }
-            .scroll-list { height: 100%; }
+        /* تحسينات التابلت (Tablet Responsive) */
+        @media (min-width: 768px) {
+            .modal-content {
+                width: 80%; /* عريض للتابلت */
+                max-width: 900px; /* حد أقصى أكبر */
+                height: 85vh; /* ارتفاع كبير */
+            }
+            .modal textarea {
+                -webkit-flex: 1; flex: 1; /* يأخذ كل المساحة المتبقية */
+                font-size: 1.5rem; /* خط أكبر للكتابة */
+            }
         }
 
         /* --- Dark Mode Styles --- */
@@ -217,6 +266,10 @@
         body.dark-mode .btn-cancel { background-color: #555; color: #fff; }
         
         body.dark-mode .load-more-btn { background-color: #d35400; color: #fff; border-bottom-color: #555; }
+        
+        body.dark-mode .history-list { background: #333; border-color: #555; }
+        body.dark-mode .history-item { border-bottom-color: #444; color: #eee; }
+        body.dark-mode .history-item:hover { background-color: #444; }
     </style>
 </head>
 <body>
@@ -227,7 +280,10 @@
         <span class="total-badge" id="totalCountDisplay">الإجمالي: 0</span>
     </div>
     <div class="header-center">
-        <input type="text" id="mainSearchInput" placeholder="بحث (كلمات أو عناوين)...">
+        <div class="search-wrapper">
+            <input type="text" id="mainSearchInput" placeholder="بحث (كلمات أو عناوين)...">
+            <div class="history-list" id="mainHistoryList"></div>
+        </div>
     </div>
     <div class="header-left">
         <button class="header-btn" onclick="tryFullScreen()">FullScreen</button>
@@ -286,7 +342,11 @@
             </select>
         </div>
 
-        <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة..." onkeyup="searchPanelSongs()">
+        <div class="search-wrapper">
+            <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة...">
+            <div class="history-list" id="panelHistoryList"></div>
+        </div>
+
         <div style="border-top:1px solid #ddd; margin: 15px 0;"></div>
         <ul class="manage-list" id="manageList"></ul>
     </div>
@@ -324,7 +384,6 @@
     var currentLetter = "";
     var searchTimeout;
     
-    // Pagination Variables
     var currentFilteredList = [];
     var currentRenderIndex = 0;
     var BATCH_SIZE = 100;
@@ -346,6 +405,10 @@
     var panelSearchInput = document.getElementById('panelSearchInput');
     var panelFilterLetter = document.getElementById('panelFilterLetter');
     var panelFilterKey = document.getElementById('panelFilterKey');
+    
+    // History Elements
+    var mainHistoryList = document.getElementById('mainHistoryList');
+    var panelHistoryList = document.getElementById('panelHistoryList');
 
     // Resizers
     var resizer1 = document.getElementById('resizer1');
@@ -359,11 +422,102 @@
     setupResizer(resizer2, colAlpha);
     setupResizer(resizer3, colTitles);
 
-    mainSearchInput.onkeyup = function() {
+    // --- Search Logic & History ---
+    
+    mainSearchInput.onkeyup = function(e) {
+        if(e.key === 'Enter') {
+            saveSearchTerm(mainSearchInput.value, 'main');
+            mainHistoryList.style.display = 'none';
+        }
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(mainSearch, 300);
     };
 
+    mainSearchInput.onfocus = function() { renderHistory('main'); };
+    // تأخير الإخفاء للسماح بالضغط على العنصر
+    mainSearchInput.onblur = function() { setTimeout(function(){ mainHistoryList.style.display = 'none'; }, 200); };
+
+    panelSearchInput.onkeyup = function(e) {
+        if(e.key === 'Enter') {
+            saveSearchTerm(panelSearchInput.value, 'panel');
+            panelHistoryList.style.display = 'none';
+        }
+        searchPanelSongs();
+    };
+    
+    panelSearchInput.onfocus = function() { renderHistory('panel'); };
+    panelSearchInput.onblur = function() { setTimeout(function(){ panelHistoryList.style.display = 'none'; }, 200); };
+
+    function saveSearchTerm(term, type) {
+        if(!term || term.trim() === "") return;
+        term = term.trim();
+        var storageKey = type === 'main' ? 'mainSearchHistory' : 'panelSearchHistory';
+        var history = JSON.parse(localStorage.getItem(storageKey)) || [];
+        
+        // إزالة التكرار ووضع الجديد في الأول
+        var index = history.indexOf(term);
+        if(index > -1) history.splice(index, 1);
+        history.unshift(term);
+        
+        // الاحتفاظ بآخر 10 فقط
+        if(history.length > 10) history = history.slice(0, 10);
+        
+        localStorage.setItem(storageKey, JSON.stringify(history));
+    }
+
+    function renderHistory(type) {
+        var storageKey = type === 'main' ? 'mainSearchHistory' : 'panelSearchHistory';
+        var listElement = type === 'main' ? mainHistoryList : panelHistoryList;
+        var inputElement = type === 'main' ? mainSearchInput : panelSearchInput;
+        var history = JSON.parse(localStorage.getItem(storageKey)) || [];
+
+        if(history.length === 0) {
+            listElement.style.display = 'none';
+            return;
+        }
+
+        listElement.innerHTML = "";
+        for(var i=0; i<history.length; i++) {
+            (function(item, idx) {
+                var div = document.createElement('div');
+                div.className = 'history-item';
+                
+                var textSpan = document.createElement('span');
+                textSpan.className = 'history-text';
+                textSpan.innerText = item;
+                textSpan.onclick = function() {
+                    inputElement.value = item;
+                    if(type === 'main') mainSearch(); else searchPanelSongs();
+                    listElement.style.display = 'none';
+                };
+
+                var delSpan = document.createElement('span');
+                delSpan.className = 'history-delete';
+                delSpan.innerText = '✕';
+                delSpan.onclick = function(e) {
+                    e.stopPropagation();
+                    deleteHistoryItem(idx, type);
+                    // إعادة التركيز لإبقاء القائمة مفتوحة
+                    inputElement.focus();
+                };
+
+                div.appendChild(textSpan);
+                div.appendChild(delSpan);
+                listElement.appendChild(div);
+            })(history[i], i);
+        }
+        listElement.style.display = 'block';
+    }
+
+    function deleteHistoryItem(index, type) {
+        var storageKey = type === 'main' ? 'mainSearchHistory' : 'panelSearchHistory';
+        var history = JSON.parse(localStorage.getItem(storageKey)) || [];
+        history.splice(index, 1);
+        localStorage.setItem(storageKey, JSON.stringify(history));
+        renderHistory(type);
+    }
+
+    // --- Resizer Logic ---
     function setupResizer(resizer, column) {
         if(!resizer) return;
         var startX, startWidth;
@@ -485,8 +639,8 @@
             (function(k) {
                 var count = 0;
                 for(var j=0; j<songs.length; j++) {
-                    var sKey = songs[j].key || "No Scale";
-                    if (sKey === k) count++;
+                    if(songs[j].key === k) count++;
+                    if(k === "No Scale" && (!songs[j].key || songs[j].key === "No Scale")) count++;
                 }
                 var btn = document.createElement('button');
                 var className = 'key-btn' + (k === currentKey ? ' active' : '');
@@ -561,8 +715,12 @@
     function renderTitles(key) {
         var filtered = [];
         for(var i=0; i<songs.length; i++) {
-            var songKey = songs[i].key || "No Scale";
-            var keyMatch = (songKey === key);
+            var keyMatch = false;
+            if(key === "No Scale") {
+                if(!songs[i].key || songs[i].key === "No Scale") keyMatch = true;
+            } else {
+                if(songs[i].key === key) keyMatch = true;
+            }
 
             var letterMatch = true;
             if(currentLetter !== "") {
@@ -691,9 +849,7 @@
             (function(song, idx) {
                 var li = document.createElement('li');
                 li.className = 'manage-item';
-                // ID فريد للعنصر لسهولة الوصول إليه عند الحذف
                 li.id = 'panel-row-' + song.id; 
-                
                 var html = '<div class="manage-info-box"><span class="manage-info" id="title-'+song.id+'">' + song.title + '</span> <span class="manage-key" id="key-'+song.id+'">' + (song.key || "No Scale") + '</span></div>';
                 html += '<div class="manage-btns">';
                 html += '<button class="btn-edit" id="btn-edit-'+song.id+'">تعديل</button>';
@@ -701,8 +857,6 @@
                 html += '</div>';
                 li.innerHTML = html;
                 manageList.appendChild(li);
-                
-                // ربط الأحداث
                 document.getElementById('btn-edit-'+song.id).onclick = function() { openEditModal(song.id); };
                 document.getElementById('btn-del-'+song.id).onclick = function() { deleteSong(song.id); };
             })(panelFilteredList[i], i);
@@ -757,23 +911,19 @@
         if(!title || !lyrics) { alert("أكمل البيانات"); return; }
         
         if(id) {
-            // تحديث في المصفوفة الأصلية
             for(var i=0; i<songs.length; i++) {
                 if(songs[i].id == id) {
                     songs[i] = { id: Number(id), title: title, lyrics: lyrics, key: key };
                     break;
                 }
             }
-            // تحديث العنصر في القائمة دون إعادة تحميل
             var titleEl = document.getElementById('title-' + id);
             var keyEl = document.getElementById('key-' + id);
             if(titleEl) titleEl.innerText = title;
             if(keyEl) keyEl.innerText = (key || "No Scale");
         } else {
-            // إضافة جديد
             var newSong = { id: new Date().getTime(), title: title, lyrics: lyrics, key: key };
             songs.push(newSong);
-            // هنا نعيد التحميل لأن الترتيب سيتغير
             searchPanelSongs();
         }
         
@@ -785,7 +935,6 @@
 
     function deleteSong(id) {
         if(confirm("هل أنت متأكد من الحذف؟")) {
-            // الحذف من المصفوفة الأصلية
             var newSongs = [];
             for(var i=0; i<songs.length; i++) {
                 if(songs[i].id !== id) newSongs.push(songs[i]);
@@ -793,13 +942,9 @@
             songs = newSongs;
             localStorage.setItem('mySongs', JSON.stringify(songs));
             
-            // الحذف من واجهة المستخدم فوراً (DOM)
-            var el = document.getElementById('panel-item-' + id);
-            if(el) {
-                el.parentNode.removeChild(el);
-            }
+            var el = document.getElementById('panel-row-' + id);
+            if(el) el.parentNode.removeChild(el);
             
-            // تحديث المصفوفة المفلترة أيضاً حتى لا يظهر مرة أخرى عند التمرير
             var newPanelList = [];
             for(var j=0; j<panelFilteredList.length; j++) {
                 if(panelFilteredList[j].id !== id) newPanelList.push(panelFilteredList[j]);
