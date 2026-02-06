@@ -55,10 +55,9 @@
             padding: 0 10px;
             display: -webkit-flex; display: flex;
             -webkit-justify-content: center; justify-content: center;
-            position: relative; /* مهم للقائمة المنسدلة */
+            position: relative;
         }
         
-        /* حاوية البحث */
         .search-wrapper { width: 100%; max-width: 400px; position: relative; }
 
         #mainSearchInput {
@@ -133,10 +132,8 @@
 
         .col-header { background: #dcdde1; padding: 10px 2px; text-align: center; font-weight: bold; font-size: 1rem; border-bottom: 2px solid #aaa; -webkit-flex-shrink: 0; flex-shrink: 0; height: 45px; white-space: nowrap; overflow: hidden; }
         .scroll-list { -webkit-flex: 1; flex: 1; overflow-y: auto; border-bottom: 1px solid #ccc; }
-        
         .resizer { width: 8px; background-color: #bdc3c7; cursor: col-resize; -webkit-flex-shrink: 0; flex-shrink: 0; border-left: 1px solid #95a5a6; border-right: 1px solid #95a5a6; z-index: 10; touch-action: none; }
 
-        /* Buttons */
         .key-btn { padding: 12px 2px; text-align: center; background: none; border: none; border-bottom: 1px solid #ccc; font-weight: bold; font-size: 1rem; width: 100%; cursor: pointer; font-family: sans-serif; display: block; color: #000; }
         .key-btn span { display: block; }
         .key-btn .key-count { font-size: 0.7rem; color: #555; background: rgba(255,255,255,0.6); padding: 1px 4px; border-radius: 10px; margin-top: 3px; display: inline-block; }
@@ -153,10 +150,9 @@
         .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; color: #000; }
         .song-item:hover { background-color: #f1f1f1; }
         .song-item.active { background-color: #fadbd8; color: #c0392b; }
-        
-        .load-more-btn { display: block; width: 100%; padding: 15px; background: #e67e22; color: white; font-weight: bold; border: none; cursor: pointer; text-align: center; font-family: 'Cairo', sans-serif; border-bottom: 1px solid #ddd; }
-        .limit-msg { padding: 10px; text-align: center; color: #e67e22; font-weight: bold; font-size: 0.9rem; background: #fff8e1; border-top: 1px dashed #e67e22; }
 
+        .load-more-btn { display: block; width: 100%; padding: 15px; background: #e67e22; color: white; font-weight: bold; border: none; cursor: pointer; text-align: center; font-family: 'Cairo', sans-serif; border-bottom: 1px solid #ddd; }
+        
         @media (min-width: 768px) {
             .col-lyrics { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
             header h1 { font-size: 1.5rem; }
@@ -166,9 +162,7 @@
 
         /* Panel & Modal */
         .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
-        
         .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
-        
         .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; }
         
         .btn-big { padding: 10px 20px; border: none; border-radius: 5px; color: white; font-family: 'Cairo', sans-serif; cursor: pointer; font-weight: bold; text-align: center; margin-bottom: 5px; }
@@ -192,49 +186,48 @@
         .btn-edit { background: #f39c12; }
         .btn-delete { background: #c0392b; }
 
-        /* --- Modal Styles (Responsive) --- */
+        /* --- Modal Styles (Responsive Update) --- */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center; }
         
         .modal-content { 
             background: white; 
             padding: 20px; 
             border-radius: 8px; 
-            width: 90%; 
-            max-width: 400px; /* للموبايل */
+            width: 95%; /* للموبايل */
+            max-width: 400px; /* حد أقصى للموبايل */
             display: -webkit-flex; display: flex; 
             -webkit-flex-direction: column; flex-direction: column; 
             color: #000; 
             height: auto;
-            max-height: 90vh; /* حتى لا تخرج عن الشاشة */
+            max-height: 95vh;
         }
 
         .modal input, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; color: #000; background: #fff;}
-        
         .modal textarea { 
             height: 150px; 
             padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; color: #000; background: #fff; resize: none;
-            font-family: 'Cairo', sans-serif;
-            font-size: 1.1rem;
+            font-family: 'Cairo', sans-serif; font-size: 1.1rem;
         }
 
         .modal-buttons { text-align: left; }
         .btn-save { background: #2c3e50; color: white; border: none; padding: 8px 15px; border-radius: 4px; }
         .btn-cancel { background: #ccc; border: none; padding: 8px 15px; border-radius: 4px; }
 
-        /* تحسينات التابلت (Tablet Responsive) */
+        /* تحسينات التابلت والشاشات الكبيرة */
         @media (min-width: 768px) {
             .modal-content {
-                width: 80%; /* عريض للتابلت */
-                max-width: 900px; /* حد أقصى أكبر */
-                height: 85vh; /* ارتفاع كبير */
+                width: 80%; /* توسيع العرض */
+                max-width: 800px; /* حد أقصى أكبر */
+                height: 80vh; /* ارتفاع كبير */
             }
             .modal textarea {
-                -webkit-flex: 1; flex: 1; /* يأخذ كل المساحة المتبقية */
-                font-size: 1.5rem; /* خط أكبر للكتابة */
+                -webkit-flex: 1; flex: 1; /* التمدد لملء الفراغ */
+                height: auto; /* إلغاء الارتفاع الثابت */
+                font-size: 1.4rem; /* تكبير الخط */
             }
         }
 
-        /* --- Dark Mode Styles --- */
+        /* --- Dark Mode --- */
         body.dark-mode { background-color: #121212; color: #e0e0e0; }
         body.dark-mode .col-keys { background-color: #1e1e1e; }
         body.dark-mode .col-alpha { background-color: #252525; border-right-color: #333; }
@@ -264,9 +257,7 @@
         }
         body.dark-mode .modal-content { background-color: #222; color: #fff; }
         body.dark-mode .btn-cancel { background-color: #555; color: #fff; }
-        
         body.dark-mode .load-more-btn { background-color: #d35400; color: #fff; border-bottom-color: #555; }
-        
         body.dark-mode .history-list { background: #333; border-color: #555; }
         body.dark-mode .history-item { border-bottom-color: #444; color: #eee; }
         body.dark-mode .history-item:hover { background-color: #444; }
@@ -281,7 +272,7 @@
     </div>
     <div class="header-center">
         <div class="search-wrapper">
-            <input type="text" id="mainSearchInput" placeholder="بحث (كلمات أو عناوين)...">
+            <input type="text" id="mainSearchInput" placeholder="بحث ذكي (اكتب وانطلق)...">
             <div class="history-list" id="mainHistoryList"></div>
         </div>
     </div>
@@ -406,7 +397,7 @@
     var panelFilterLetter = document.getElementById('panelFilterLetter');
     var panelFilterKey = document.getElementById('panelFilterKey');
     
-    // History Elements
+    // History
     var mainHistoryList = document.getElementById('mainHistoryList');
     var panelHistoryList = document.getElementById('panelHistoryList');
 
@@ -422,8 +413,7 @@
     setupResizer(resizer2, colAlpha);
     setupResizer(resizer3, colTitles);
 
-    // --- Search Logic & History ---
-    
+    // --- Smart Search Logic ---
     mainSearchInput.onkeyup = function(e) {
         if(e.key === 'Enter') {
             saveSearchTerm(mainSearchInput.value, 'main');
@@ -434,7 +424,6 @@
     };
 
     mainSearchInput.onfocus = function() { renderHistory('main'); };
-    // تأخير الإخفاء للسماح بالضغط على العنصر
     mainSearchInput.onblur = function() { setTimeout(function(){ mainHistoryList.style.display = 'none'; }, 200); };
 
     panelSearchInput.onkeyup = function(e) {
@@ -448,20 +437,54 @@
     panelSearchInput.onfocus = function() { renderHistory('panel'); };
     panelSearchInput.onblur = function() { setTimeout(function(){ panelHistoryList.style.display = 'none'; }, 200); };
 
+    function normalizeArabic(text) {
+        if (!text) return "";
+        text = text.toLowerCase();
+        // توحيد الألف
+        text = text.replace(/[أإآ]/g, 'ا');
+        // توحيد الياء
+        text = text.replace(/[ى]/g, 'ي');
+        // توحيد التاء المربوطة
+        text = text.replace(/[ة]/g, 'ه');
+        // إزالة التشكيل
+        text = text.replace(/[\u064B-\u065F]/g, '');
+        return text;
+    }
+
+    function calculateSearchScore(song, queryTokens) {
+        var score = 0;
+        var titleNorm = normalizeArabic(song.title);
+        var lyricsNorm = normalizeArabic(song.lyrics);
+        
+        // البحث عن كل كلمة من كلمات البحث
+        for(var i=0; i<queryTokens.length; i++) {
+            var token = queryTokens[i];
+            if(token.length === 0) continue;
+            
+            // Regex ذكي للحروف الناقصة: ن ا د و -> ن.*ا.*د.*و
+            var fuzzyRegexStr = token.split('').join('.*?');
+            var regex = new RegExp(fuzzyRegexStr);
+
+            // نقاط العنوان أعلى
+            if (titleNorm.indexOf(token) !== -1) score += 20; // تطابق تام
+            else if (regex.test(titleNorm)) score += 10;      // تطابق ذكي
+
+            // نقاط الكلمات أقل
+            if (lyricsNorm.indexOf(token) !== -1) score += 5;
+            else if (regex.test(lyricsNorm)) score += 2;
+        }
+        return score;
+    }
+
     function saveSearchTerm(term, type) {
         if(!term || term.trim() === "") return;
         term = term.trim();
         var storageKey = type === 'main' ? 'mainSearchHistory' : 'panelSearchHistory';
         var history = JSON.parse(localStorage.getItem(storageKey)) || [];
-        
-        // إزالة التكرار ووضع الجديد في الأول
         var index = history.indexOf(term);
         if(index > -1) history.splice(index, 1);
         history.unshift(term);
-        
-        // الاحتفاظ بآخر 10 فقط
         if(history.length > 10) history = history.slice(0, 10);
-        
         localStorage.setItem(storageKey, JSON.stringify(history));
     }
 
@@ -471,17 +494,13 @@
         var inputElement = type === 'main' ? mainSearchInput : panelSearchInput;
         var history = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-        if(history.length === 0) {
-            listElement.style.display = 'none';
-            return;
-        }
-
+        if(history.length === 0) { listElement.style.display = 'none'; return; }
         listElement.innerHTML = "";
+        
         for(var i=0; i<history.length; i++) {
             (function(item, idx) {
                 var div = document.createElement('div');
                 div.className = 'history-item';
-                
                 var textSpan = document.createElement('span');
                 textSpan.className = 'history-text';
                 textSpan.innerText = item;
@@ -490,17 +509,14 @@
                     if(type === 'main') mainSearch(); else searchPanelSongs();
                     listElement.style.display = 'none';
                 };
-
                 var delSpan = document.createElement('span');
                 delSpan.className = 'history-delete';
                 delSpan.innerText = '✕';
                 delSpan.onclick = function(e) {
                     e.stopPropagation();
                     deleteHistoryItem(idx, type);
-                    // إعادة التركيز لإبقاء القائمة مفتوحة
                     inputElement.focus();
                 };
-
                 div.appendChild(textSpan);
                 div.appendChild(delSpan);
                 listElement.appendChild(div);
@@ -517,7 +533,6 @@
         renderHistory(type);
     }
 
-    // --- Resizer Logic ---
     function setupResizer(resizer, column) {
         if(!resizer) return;
         var startX, startWidth;
@@ -574,7 +589,6 @@
     function loadSongsFromJSON(forceUpdate) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
-        
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
@@ -689,17 +703,28 @@
     }
 
     function mainSearch() {
-        var query = mainSearchInput.value.toLowerCase();
-        if(query.length === 0) { renderTitles(currentKey); return; }
+        var query = mainSearchInput.value;
+        if(!query || query.trim() === "") { renderTitles(currentKey); return; }
         
-        var filtered = [];
+        var queryTokens = normalizeArabic(query).split(' ');
+        var scoredList = [];
+
+        // حساب النقاط لكل ترنيمة
         for(var i=0; i<songs.length; i++) {
-            if(songs[i].title.toLowerCase().indexOf(query) !== -1 || 
-               songs[i].lyrics.toLowerCase().indexOf(query) !== -1) {
-                filtered.push(songs[i]);
+            var score = calculateSearchScore(songs[i], queryTokens);
+            if(score > 0) {
+                scoredList.push({ song: songs[i], score: score });
             }
         }
-        filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
+
+        // الترتيب حسب النقاط (الأقرب فالأقرب)
+        scoredList.sort(function(a, b) { return b.score - a.score; });
+        
+        // استخراج الترانيم فقط
+        var filtered = [];
+        for(var k=0; k<scoredList.length; k++) {
+            filtered.push(scoredList[k].song);
+        }
         
         currentFilteredList = filtered;
         currentRenderIndex = 0;
@@ -731,8 +756,10 @@
                     letterMatch = (firstChar.toUpperCase() === currentLetter.toUpperCase());
                 }
             }
+
             if(keyMatch && letterMatch) filtered.push(songs[i]);
         }
+        
         filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
         
         currentFilteredList = filtered;
@@ -799,20 +826,29 @@
     }
 
     function searchPanelSongs() {
-        var query = panelSearchInput.value.toLowerCase();
+        var query = panelSearchInput.value;
         var filterKey = document.getElementById('panelFilterKey').value;
         var filterLetter = document.getElementById('panelFilterLetter').value;
+        
+        // استخدام نفس منطق البحث الذكي هنا أيضاً
+        var queryTokens = normalizeArabic(query).split(' ');
 
         var filtered = [];
         for(var i=0; i<songs.length; i++) {
             var s = songs[i];
+            
             var matchesSearch = true;
-            if (query !== "") matchesSearch = (s.title.toLowerCase().indexOf(query) !== -1);
+            if (query && query.trim() !== "") {
+                // استخدام النقاط للفلترة فقط (أي درجة أكبر من صفر)
+                matchesSearch = (calculateSearchScore(s, queryTokens) > 0);
+            }
+            
             var matchesKey = true;
             if(filterKey !== "") {
                 var sKey = s.key || "No Scale";
                 matchesKey = (sKey === filterKey);
             }
+
             var matchesLetter = true;
             if(filterLetter !== "") {
                 var firstChar = s.title.charAt(0);
@@ -822,7 +858,10 @@
                     matchesLetter = (firstChar.toUpperCase() === filterLetter.toUpperCase());
                 }
             }
-            if(matchesSearch && matchesKey && matchesLetter) filtered.push(s);
+
+            if(matchesSearch && matchesKey && matchesLetter) {
+                filtered.push(s);
+            }
         }
         
         filtered.sort(function(a, b) { return a.title.localeCompare(b.title); });
