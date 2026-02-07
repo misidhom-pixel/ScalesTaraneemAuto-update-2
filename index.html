@@ -14,50 +14,86 @@
         
         body {
             font-family: 'Cairo', sans-serif, Arial;
-            margin: 0; padding: 0; background-color: #f4f7f6; height: 100vh;
-            display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; overflow: hidden;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            height: 100vh;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         /* --- Header --- */
         header {
-            background-color: #2c3e50; color: white; height: 60px;
-            display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center;
-            padding: 0 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100;
+            background-color: #2c3e50;
+            color: white;
+            height: 60px;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-align-items: center;
+            align-items: center;
+            padding: 0 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 100;
             -webkit-flex-shrink: 0; flex-shrink: 0;
         }
 
         .header-right {
-            display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column;
-            -webkit-justify-content: center; justify-content: center; min-width: 80px;
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
+            -webkit-justify-content: center; justify-content: center;
+            min-width: 80px;
         }
         
         header h1 { font-size: 1.1rem; margin: 0; line-height: 1.2; font-weight: bold; }
         .total-badge { font-size: 0.7rem; color: #bdc3c7; font-weight: normal; }
 
         .header-center {
-            -webkit-flex: 1; flex: 1; padding: 0 10px;
-            display: -webkit-flex; display: flex; -webkit-justify-content: center; justify-content: center;
+            -webkit-flex: 1; flex: 1;
+            padding: 0 10px;
+            display: -webkit-flex; display: flex;
+            -webkit-justify-content: center; justify-content: center;
             position: relative;
         }
         
         .search-wrapper { width: 100%; max-width: 400px; position: relative; }
 
         #mainSearchInput {
-            width: 100%; padding: 8px 15px; border-radius: 20px; border: none; outline: none;
-            font-family: 'Cairo', sans-serif; font-size: 1rem; background-color: rgba(255,255,255,0.95);
-            color: #333; font-weight: bold;
+            width: 100%;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            outline: none;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            background-color: rgba(255,255,255,0.95);
+            color: #333;
+            font-weight: bold;
         }
 
         /* History List */
         .history-list {
-            position: absolute; top: 40px; left: 0; right: 0; background: white;
-            border: 1px solid #ccc; border-radius: 5px; max-height: 200px; overflow-y: auto;
-            z-index: 1000; display: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: absolute;
+            top: 40px; left: 0; right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .history-item {
-            padding: 10px; border-bottom: 1px solid #eee;
-            display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between;
-            color: #333; font-size: 0.9rem; cursor: pointer;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: -webkit-flex; display: flex;
+            -webkit-justify-content: space-between; justify-content: space-between;
+            color: #333;
+            font-size: 0.9rem;
+            cursor: pointer;
         }
         .history-item:hover { background-color: #f0f0f0; }
         .history-text { -webkit-flex: 1; flex: 1; text-align: right; }
@@ -66,35 +102,79 @@
         .header-left { display: -webkit-flex; display: flex; }
         
         .header-btn {
-            background-color: #34495e; border: 1px solid #5d6d7e; color: white;
-            padding: 5px 10px; margin-left: 5px; border-radius: 5px;
-            font-family: 'Cairo', sans-serif; cursor: pointer; font-size: 0.8rem; height: 35px; font-weight: bold;
+            background-color: #34495e;
+            border: 1px solid #5d6d7e;
+            color: white;
+            padding: 5px 10px;
+            margin-left: 5px;
+            border-radius: 5px;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            font-size: 0.8rem;
+            height: 35px;
+            font-weight: bold;
         }
 
         /* --- Container --- */
         .container {
-            display: -webkit-flex; display: flex; height: calc(100vh - 60px); overflow: hidden;
-            -webkit-flex-direction: row-reverse; flex-direction: row-reverse;
+            display: -webkit-flex;
+            display: flex;
+            height: calc(100vh - 60px);
+            overflow: hidden;
+            -webkit-flex-direction: row-reverse;
+            flex-direction: row-reverse;
         }
 
         .col-keys { width: 100px; min-width: 60px; background: #e0e0e0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         .col-alpha { width: 60px; min-width: 40px; background: #d6dbdf; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; border-right: 1px solid #ccc; }
         .col-titles { width: 200px; min-width: 100px; background: #fff; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         
-        /* تنسيق الكلمات (كبير وعريض) */
+        /* === تعديل عمود الكلمات لإضافة السلم العائم === */
         .col-lyrics { 
-            -webkit-flex: 1; flex: 1; background: #fdf6e3; overflow-y: auto;
-            padding: 10px 5px; text-align: center;
-            font-size: 1.8rem; font-weight: 900; line-height: 1.3;
-            white-space: pre-wrap; color: #000; min-width: 150px;
+            -webkit-flex: 1; flex: 1; 
+            background: #fdf6e3; 
+            position: relative; /* مهم جداً لتثبيت السلم */
+            overflow: hidden; /* منع العمود نفسه من السكرول */
+            min-width: 150px; 
+        }
+
+        /* منطقة النص القابلة للسكرول */
+        .lyrics-scroll-area {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px 10px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            line-height: 1.3;
+            white-space: pre-wrap; 
+            color: #000;
+        }
+
+        /* تنسيق السلم العائم */
+        .floating-key {
+            position: absolute;
+            top: 10px;
+            left: 20px; /* يسار الشاشة */
+            background-color: rgba(253, 246, 227, 0.8); /* نفس لون الخلفية شفاف قليلاً */
+            color: #c0392b;
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-family: sans-serif;
+            font-weight: bold;
+            font-size: 3rem; /* خط كبير جداً */
+            z-index: 20; /* ليكون فوق الكلام */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 2px solid #e74c3c;
+            display: none; /* مخفي افتراضياً */
+            pointer-events: none; /* يسمح باللمس من خلاله */
         }
 
         .col-header { background: #dcdde1; padding: 10px 2px; text-align: center; font-weight: bold; font-size: 1rem; border-bottom: 2px solid #aaa; -webkit-flex-shrink: 0; flex-shrink: 0; height: 45px; white-space: nowrap; overflow: hidden; }
         .scroll-list { -webkit-flex: 1; flex: 1; overflow-y: auto; border-bottom: 1px solid #ccc; }
-        
         .resizer { width: 8px; background-color: #bdc3c7; cursor: col-resize; -webkit-flex-shrink: 0; flex-shrink: 0; border-left: 1px solid #95a5a6; border-right: 1px solid #95a5a6; z-index: 10; touch-action: none; }
 
-        /* Buttons */
         .key-btn { padding: 12px 2px; text-align: center; background: none; border: none; border-bottom: 1px solid #ccc; font-weight: bold; font-size: 1rem; width: 100%; cursor: pointer; font-family: sans-serif; display: block; color: #000; }
         .key-btn span { display: block; }
         .key-btn .key-count { font-size: 0.7rem; color: #555; background: rgba(255,255,255,0.6); padding: 1px 4px; border-radius: 10px; margin-top: 3px; display: inline-block; }
@@ -116,10 +196,11 @@
         .limit-msg { padding: 10px; text-align: center; color: #e67e22; font-weight: bold; font-size: 0.9rem; background: #fff8e1; border-top: 1px dashed #e67e22; }
 
         @media (min-width: 768px) {
-            .col-lyrics { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
+            .lyrics-scroll-area { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
             header h1 { font-size: 1.5rem; }
             #mainSearchInput { font-size: 1.2rem; }
             .col-header { font-size: 1.2rem; height: 55px; padding: 12px; }
+            .floating-key { font-size: 4rem; top: 15px; left: 30px; }
         }
 
         /* Panel & Modal */
@@ -167,28 +248,45 @@
         body.dark-mode .col-keys { background-color: #1e1e1e; }
         body.dark-mode .col-alpha { background-color: #252525; border-right-color: #333; }
         body.dark-mode .col-titles { background-color: #121212; }
-        body.dark-mode .col-lyrics { background-color: #000000; color: #e6e6e6; }
+        
+        body.dark-mode .col-lyrics { background-color: #000000; }
+        body.dark-mode .lyrics-scroll-area { color: #e6e6e6; }
+        
         body.dark-mode .col-header { background-color: #333; color: #fff; border-bottom-color: #555; }
+        
         body.dark-mode .key-btn { border-bottom-color: #444; color: #ccc; }
         body.dark-mode .key-btn.active { background-color: #c0392b; color: white; }
         body.dark-mode .key-btn .key-count { background: #444; color: #ccc; }
         body.dark-mode .key-btn.active .key-count { background: #fff; color: #c0392b; }
+
         body.dark-mode .alpha-btn { border-bottom-color: #444; border-left-color: #444; color: #ccc; }
         body.dark-mode .alpha-btn:hover { background-color: #333; }
         body.dark-mode .alpha-btn.active { background-color: #2980b9; color: white; }
+
         body.dark-mode .song-item { border-bottom-color: #333; color: #ddd; }
         body.dark-mode .song-item:hover { background-color: #222; }
         body.dark-mode .song-item.active { background-color: #5a2e2e; color: #fff; }
+
         body.dark-mode .panel-overlay { background-color: #1a1a1a; color: #fff; }
         body.dark-mode .manage-item { background-color: #222; border-bottom-color: #444; color: #ddd; }
         body.dark-mode .manage-key { background-color: #444; color: #fff; }
-        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background-color: #333; color: #fff; border-color: #555; }
+        
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background-color: #333; color: #fff; border-color: #555;
+        }
         body.dark-mode .modal-content { background-color: #222; color: #fff; }
         body.dark-mode .btn-cancel { background-color: #555; color: #fff; }
         body.dark-mode .load-more-btn { background-color: #d35400; color: #fff; border-bottom-color: #555; }
         body.dark-mode .history-list { background: #333; border-color: #555; }
         body.dark-mode .history-item { border-bottom-color: #444; color: #eee; }
         body.dark-mode .history-item:hover { background-color: #444; }
+
+        /* Dark Mode for Floating Key */
+        body.dark-mode .floating-key {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #e74c3c;
+            border-color: #c0392b;
+        }
     </style>
 </head>
 <body>
@@ -226,8 +324,15 @@
         <div class="scroll-list" id="titles-list"></div>
     </div>
     <div class="resizer" id="resizer3"></div>
-    <div class="col-lyrics" id="lyrics-view">
-        <div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر السلم > الحرف > الترنيمة</div>
+    
+    <!-- عمود الكلمات المعدل -->
+    <div class="col-lyrics">
+        <!-- السلم العائم الثابت -->
+        <div id="floatingKey" class="floating-key"></div>
+        <!-- منطقة الكلمات المتحركة -->
+        <div id="lyrics-view" class="lyrics-scroll-area">
+            <div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر السلم > الحرف > الترنيمة</div>
+        </div>
     </div>
 </div>
 
@@ -315,6 +420,7 @@
     var alphaList = document.getElementById('alpha-list');
     var titlesList = document.getElementById('titles-list');
     var lyricsView = document.getElementById('lyrics-view');
+    var floatingKey = document.getElementById('floatingKey');
     var totalCountDisplay = document.getElementById('totalCountDisplay');
     var controlPanel = document.getElementById('controlPanel');
     var manageList = document.getElementById('manageList');
@@ -339,7 +445,7 @@
     setupResizer(resizer2, colAlpha);
     setupResizer(resizer3, colTitles);
 
-    // --- Search Logic & History ---
+    // --- Search Logic ---
     mainSearchInput.onkeyup = function(e) {
         if(e.key === 'Enter') {
             saveSearchTerm(mainSearchInput.value, 'main');
@@ -368,7 +474,6 @@
         return text;
     }
 
-    // --- محرك البحث الذكي بنظام النقاط ---
     function calculateSearchScore(song, rawQuery) {
         var score = 0;
         var normQuery = normalizeArabic(rawQuery).trim();
@@ -377,20 +482,17 @@
 
         if (normQuery === "") return 0;
 
-        // 1. التطابق التام للجملة (أعلى أولوية)
-        // إذا وجد الجملة كاملة في العنوان
+        // 1. التطابق التام للجملة
         if (normTitle.indexOf(normQuery) !== -1) return 10000;
-        // إذا وجد الجملة كاملة في الكلمات
         if (normLyrics.indexOf(normQuery) !== -1) return 5000;
 
-        // 2. البحث بالكلمات المتفرقة (Tokens)
+        // 2. البحث بالكلمات
         var tokens = normQuery.split(' ');
         var validTokens = [];
         for(var k=0; k<tokens.length; k++) if(tokens[k]) validTokens.push(tokens[k]);
 
         if (validTokens.length === 0) return 0;
 
-        // التحقق من وجود الكلمات (سواء متجاورة أو لا)
         var allTokensInTitle = true;
         var allTokensInLyrics = true;
 
@@ -399,17 +501,15 @@
             if (normLyrics.indexOf(validTokens[i]) === -1) allTokensInLyrics = false;
         }
 
-        if (allTokensInTitle) return 2000; // كل الكلمات موجودة في العنوان
-        if (allTokensInLyrics) return 1000; // كل الكلمات موجودة في الكلمات
+        if (allTokensInTitle) return 2000;
+        if (allTokensInLyrics) return 1000;
 
-        // 3. البحث الذكي (حروف ناقصة - Fuzzy)
-        // هذا المستوى الأخير والأبطأ، نستخدمه لو لم نجد تطابقاً كاملاً
+        // 3. Fuzzy
         var fuzzyScore = 0;
         for (var j = 0; j < validTokens.length; j++) {
             var token = validTokens[j];
             var regexStr = token.split('').join('.*?');
             var regex = new RegExp(regexStr);
-
             if (regex.test(normTitle)) fuzzyScore += 20;
             else if (regex.test(normLyrics)) fuzzyScore += 5;
         }
@@ -654,8 +754,7 @@
                 scoredList.push({ song: songs[i], score: score });
             }
         }
-
-        // الترتيب حسب النقاط (الأقرب فالأقرب)
+        
         scoredList.sort(function(a, b) { return b.score - a.score; });
         
         var filtered = [];
@@ -693,7 +792,6 @@
                     letterMatch = (firstChar.toUpperCase() === currentLetter.toUpperCase());
                 }
             }
-
             if(keyMatch && letterMatch) filtered.push(songs[i]);
         }
         
@@ -727,8 +825,13 @@
                     var items = document.querySelectorAll('.song-item');
                     for(var x=0; x<items.length; x++) items[x].classList.remove('active');
                     div.classList.add('active');
+                    
                     var cleanLyrics = song.lyrics.replace(/\n\s*\n\s*\n/g, '\n\n');
                     lyricsView.innerText = cleanLyrics;
+                    
+                    // Show Floating Key
+                    floatingKey.style.display = 'block';
+                    floatingKey.innerText = song.key || "";
                 };
                 titlesList.appendChild(div);
             })(currentFilteredList[i]);
@@ -793,13 +896,11 @@
             }
 
             if(matchesSearch && matchesKey && matchesLetter) {
-                // إضافة نقاط للترتيب في اللوحة أيضاً
                 s.tempScore = calculateSearchScore(s, query || "");
                 filtered.push(s);
             }
         }
         
-        // الترتيب: بالنقاط إذا كان هناك بحث، وإلا أبجدياً
         if(query && query.trim() !== "") {
              filtered.sort(function(a, b) { return b.tempScore - a.tempScore; });
         } else {
