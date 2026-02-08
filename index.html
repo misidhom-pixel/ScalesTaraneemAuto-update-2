@@ -81,47 +81,56 @@
         .col-alpha { width: 60px; min-width: 40px; background: #d6dbdf; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; border-right: 1px solid #ccc; }
         .col-titles { width: 200px; min-width: 100px; background: #fff; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         
-        /* === إصلاح السكرول للتابلت (Absolute Positioning) === */
+        /* === عمود الكلمات === */
         .col-lyrics { 
             -webkit-flex: 1; flex: 1; 
             background: #fdf6e3; 
-            position: relative; /* ضروري لتثبيت العناصر بداخله */
             min-width: 150px; 
+            display: -webkit-flex; display: flex;
+            -webkit-flex-direction: column; flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- رأس الترنيمة --- */
+        .song-display-header {
+            height: 90px; 
+            min-height: 50px;
+            padding: 0 15px; 
+            text-align: center;
+            background-color: rgba(255,255,255,0.6);
+            border-bottom: 4px double #2c3e50; 
+            -webkit-flex-shrink: 0; flex-shrink: 0;
+            display: -webkit-flex; display: flex;
+            -webkit-align-items: center; align-items: center;
+            -webkit-justify-content: center; justify-content: center;
             overflow: hidden;
         }
-
-        .lyrics-scroll-area {
-            position: absolute; /* يجبر المتصفح على احترام الحدود */
-            top: 0; left: 0; right: 0; bottom: 0;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch; /* لتنعيم السكرول في أجهزة أبل وبعض الأندرويد */
-            padding: 20px 10px;
-            text-align: center;
-            font-size: 1.8rem;
-            font-weight: 900;
+        
+        .header-text-container {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
             line-height: 1.3;
-            white-space: pre-wrap; 
-            color: #000;
-            z-index: 10;
+            width: 100%;
         }
 
-        /* تنسيق السلم العائم */
-        .floating-key {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            background-color: rgba(253, 246, 227, 0.9);
-            color: #c0392b;
-            padding: 5px 15px;
-            border-radius: 10px;
-            font-family: sans-serif;
-            font-weight: bold;
-            font-size: 3rem;
-            z-index: 20; /* فوق الكلام */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border: 2px solid #e74c3c;
-            display: none;
-            pointer-events: none;
+        .song-display-title {
+            font-weight: 900; color: #2c3e50; display: inline; transition: font-size 0.05s linear;
+        }
+        .song-display-key {
+            font-weight: bold; color: #c0392b; display: inline; font-family: sans-serif; margin-right: 8px; transition: font-size 0.05s linear; white-space: nowrap;
+        }
+
+        .resizer-horizontal {
+            height: 12px; background-color: #bdc3c7; cursor: row-resize; -webkit-flex-shrink: 0; flex-shrink: 0; border-top: 1px solid #95a5a6; border-bottom: 1px solid #95a5a6; z-index: 20; touch-action: none; width: 100%;
+            background-image: linear-gradient(to right, transparent 45%, #7f8c8d 45%, #7f8c8d 55%, transparent 55%); background-size: 20px 100%;
+        }
+        
+        .lyrics-scroll-area {
+            -webkit-flex: 1; flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 10px; text-align: center; font-size: 1.8rem; font-weight: 900; line-height: 1.3; white-space: pre-wrap; color: #000;
         }
 
         .col-header { background: #dcdde1; padding: 10px 2px; text-align: center; font-weight: bold; font-size: 1rem; border-bottom: 2px solid #aaa; -webkit-flex-shrink: 0; flex-shrink: 0; height: 45px; white-space: nowrap; overflow: hidden; }
@@ -153,7 +162,7 @@
             header h1 { font-size: 1.5rem; }
             #mainSearchInput { font-size: 1.2rem; }
             .col-header { font-size: 1.2rem; height: 55px; padding: 12px; }
-            .floating-key { font-size: 4rem; top: 15px; left: 30px; }
+            .song-display-header { min-height: 70px; }
         }
 
         /* Panel & Modal */
@@ -234,12 +243,14 @@
         body.dark-mode .history-item { border-bottom-color: #444; color: #eee; }
         body.dark-mode .history-item:hover { background-color: #444; }
 
-        /* Dark Mode for Floating Key */
-        body.dark-mode .floating-key {
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #e74c3c;
-            border-color: #c0392b;
+        /* Dark Mode for Header Display */
+        body.dark-mode .song-display-header { 
+            background-color: rgba(50,50,50,0.8); 
+            border-bottom-color: #888; 
         }
+        body.dark-mode .song-display-title { color: #fff; }
+        body.dark-mode .song-display-key { color: #e74c3c; }
+        body.dark-mode .resizer-horizontal { background-color: #555; border-color: #777; }
     </style>
 </head>
 <body>
@@ -278,8 +289,19 @@
     </div>
     <div class="resizer" id="resizer3"></div>
     
-    <div class="col-lyrics">
-        <div id="floatingKey" class="floating-key"></div>
+    <div class="col-lyrics" id="colLyrics">
+        <!-- الرأس الثابت للترنيمة (معدل) -->
+        <div id="songDisplayHeader" class="song-display-header" style="display:none;">
+            <div class="header-text-container">
+                <span id="displayTitle" class="song-display-title"></span>
+                <span id="displayKey" class="song-display-key"></span>
+            </div>
+        </div>
+        
+        <!-- فاصل أفقي للسحب -->
+        <div class="resizer-horizontal" id="resizerV"></div>
+
+        <!-- الكلمات القابلة للسكرول -->
         <div id="lyrics-view" class="lyrics-scroll-area">
             <div style="color:#999; margin-top:50px; font-size:1rem; font-weight:normal">اختر السلم > الحرف > الترنيمة</div>
         </div>
@@ -370,7 +392,6 @@
     var alphaList = document.getElementById('alpha-list');
     var titlesList = document.getElementById('titles-list');
     var lyricsView = document.getElementById('lyrics-view');
-    var floatingKey = document.getElementById('floatingKey');
     var totalCountDisplay = document.getElementById('totalCountDisplay');
     var controlPanel = document.getElementById('controlPanel');
     var manageList = document.getElementById('manageList');
@@ -384,6 +405,16 @@
     var mainHistoryList = document.getElementById('mainHistoryList');
     var panelHistoryList = document.getElementById('panelHistoryList');
 
+    // Header Display Elements
+    var songDisplayHeader = document.getElementById('songDisplayHeader');
+    var displayTitle = document.getElementById('displayTitle');
+    var displayKey = document.getElementById('displayKey');
+
+    // Horizontal Resizer (Vertical Resize)
+    var resizerV = document.getElementById('resizerV');
+    var colLyrics = document.getElementById('colLyrics');
+
+    // Vertical Resizers
     var resizer1 = document.getElementById('resizer1');
     var resizer2 = document.getElementById('resizer2');
     var resizer3 = document.getElementById('resizer3');
@@ -391,9 +422,11 @@
     var colAlpha = document.getElementById('colAlpha');
     var colTitles = document.getElementById('colTitles');
 
+    // Setup Resizing
     setupResizer(resizer1, colKeys);
     setupResizer(resizer2, colAlpha);
     setupResizer(resizer3, colTitles);
+    setupVerticalResizer(resizerV, songDisplayHeader);
 
     // --- Search Logic ---
     mainSearchInput.onkeyup = function(e) {
@@ -431,21 +464,15 @@
         var normLyrics = normalizeArabic(song.lyrics || "");
 
         if (normQuery === "") return 0;
-
-        // 1. التطابق التام للجملة (أعلى أولوية)
-        // إذا وجد الجملة كاملة في العنوان
         if (normTitle.indexOf(normQuery) !== -1) return 10000;
-        // إذا وجد الجملة كاملة في الكلمات
         if (normLyrics.indexOf(normQuery) !== -1) return 5000;
 
-        // 2. البحث بالكلمات المتفرقة (Tokens)
         var tokens = normQuery.split(' ');
         var validTokens = [];
         for(var k=0; k<tokens.length; k++) if(tokens[k]) validTokens.push(tokens[k]);
 
         if (validTokens.length === 0) return 0;
 
-        // التحقق من وجود الكلمات (سواء متجاورة أو لا)
         var allTokensInTitle = true;
         var allTokensInLyrics = true;
 
@@ -454,16 +481,14 @@
             if (normLyrics.indexOf(validTokens[i]) === -1) allTokensInLyrics = false;
         }
 
-        if (allTokensInTitle) return 2000; // كل الكلمات موجودة في العنوان
-        if (allTokensInLyrics) return 1000; // كل الكلمات موجودة في الكلمات
+        if (allTokensInTitle) return 2000;
+        if (allTokensInLyrics) return 1000;
 
-        // 3. البحث الذكي (حروف ناقصة - Fuzzy)
         var fuzzyScore = 0;
         for (var j = 0; j < validTokens.length; j++) {
             var token = validTokens[j];
             var regexStr = token.split('').join('.*?');
             var regex = new RegExp(regexStr);
-
             if (regex.test(normTitle)) fuzzyScore += 20;
             else if (regex.test(normLyrics)) fuzzyScore += 5;
         }
@@ -528,6 +553,67 @@
         renderHistory(type);
     }
 
+    // --- Vertical Resizer Logic (For Header) ---
+    function setupVerticalResizer(resizer, headerElement) {
+        var startY, startHeight;
+        var lyricsCol = document.querySelector('.col-lyrics');
+
+        function onTouchStart(e) {
+            var touch = e.touches ? e.touches[0] : e;
+            startY = touch.clientY;
+            startHeight = headerElement.offsetHeight;
+            document.body.style.userSelect = 'none';
+            document.body.style.webkitUserSelect = 'none';
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+            document.addEventListener('mousemove', onTouchMove);
+            document.addEventListener('mouseup', onTouchEnd);
+        }
+
+        function onTouchMove(e) {
+            var touch = e.touches ? e.touches[0] : e;
+            // الفرق في الحركة (للأسفل يزيد، للأعلى ينقص)
+            var dy = touch.clientY - startY;
+            var newHeight = startHeight + dy;
+            
+            // حدود
+            if (newHeight < 50) newHeight = 50; 
+            if (newHeight > (lyricsCol.offsetHeight - 100)) newHeight = lyricsCol.offsetHeight - 100;
+
+            headerElement.style.height = newHeight + 'px';
+            
+            // معادلة تصغير الخط (60% من الحجم السابق)
+            updateHeaderStyles(newHeight);
+        }
+
+        function onTouchEnd() {
+            document.body.style.userSelect = 'auto';
+            document.body.style.webkitUserSelect = 'auto';
+            document.removeEventListener('touchmove', onTouchMove);
+            document.removeEventListener('touchend', onTouchEnd);
+            document.removeEventListener('mousemove', onTouchMove);
+            document.removeEventListener('mouseup', onTouchEnd);
+        }
+
+        resizer.addEventListener('mousedown', onTouchStart);
+        resizer.addEventListener('touchstart', onTouchStart);
+    }
+    
+    // دالة تكبير وتصغير الخط المعدلة
+    function updateHeaderStyles(height) {
+        // معادلة جديدة: أهدأ وأصغر
+        var titleSize = Math.max(1, height / 50); // كانت 30، الآن 50 ليكون أصغر
+        var keySize = Math.max(0.8, height / 60);  // كانت 40
+        
+        // حدود قصوى معقولة
+        if(titleSize > 2.1) titleSize = 2.1;
+        if(keySize > 1.5) keySize = 1.5;
+
+        document.getElementById('displayTitle').style.fontSize = titleSize + 'rem';
+        document.getElementById('displayKey').style.fontSize = keySize + 'rem';
+    }
+
+    // --- Horizontal Resizer Logic ---
     function setupResizer(resizer, column) {
         if(!resizer) return;
         var startX, startWidth;
@@ -633,6 +719,9 @@
         if(localStorage.getItem('nightMode') === 'on') { document.body.classList.add('dark-mode'); }
         loadSongsFromJSON(false);
         refreshUI();
+        
+        // ضبط الخط المبدئي (تصغيره)
+        updateHeaderStyles(90);
     }
 
     function refreshUI() {
@@ -648,8 +737,13 @@
             (function(k) {
                 var count = 0;
                 for(var j=0; j<songs.length; j++) {
-                    if(songs[j].key === k) count++;
-                    if(k === "No Scale" && (!songs[j].key || songs[j].key === "No Scale")) count++;
+                    if (k === "No Scale") {
+                        // If the button is "No Scale", count if song key is missing OR explicitly "No Scale"
+                        if (!songs[j].key || songs[j].key === "No Scale") count++;
+                    } else {
+                        // For other buttons (C, Dm, etc.), count only exact matches
+                        if (songs[j].key === k) count++;
+                    }
                 }
                 var btn = document.createElement('button');
                 var className = 'key-btn' + (k === currentKey ? ' active' : '');
@@ -784,8 +878,13 @@
                     var cleanLyrics = song.lyrics.replace(/\n\s*\n\s*\n/g, '\n\n');
                     lyricsView.innerText = cleanLyrics;
                     
-                    floatingKey.style.display = 'block';
-                    floatingKey.innerText = song.key || "";
+                    // إظهار العنوان في الأعلى
+                    songDisplayHeader.style.display = 'flex';
+                    displayTitle.innerText = song.title;
+                    displayKey.innerText = "(" + (song.key || "No Scale") + ")";
+                    
+                    // إعادة ضبط السكرول للأعلى
+                    document.getElementById('lyrics-view').scrollTop = 0;
                 };
                 titlesList.appendChild(div);
             })(currentFilteredList[i]);
@@ -824,8 +923,6 @@
         var filterKey = document.getElementById('panelFilterKey').value;
         var filterLetter = document.getElementById('panelFilterLetter').value;
         
-        var queryTokens = normalizeArabic(query).split(' ');
-
         var filtered = [];
         for(var i=0; i<songs.length; i++) {
             var s = songs[i];
