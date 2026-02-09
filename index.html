@@ -94,10 +94,7 @@
 
         /* رأس الترنيمة */
         .song-display-header {
-            height: 90px; 
-            min-height: 50px;
-            padding: 0 15px; 
-            text-align: center;
+            height: 90px; min-height: 50px; padding: 0 15px; text-align: center;
             background-color: rgba(255,255,255,0.6);
             border-bottom: 4px double #2c3e50; 
             -webkit-flex-shrink: 0; flex-shrink: 0;
@@ -220,8 +217,11 @@
         .btn-delete { background: #c0392b; }
 
         /* Modal Responsive */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: center; align-items: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 95%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; color: #000; height: auto; max-height: 95vh; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 300; -webkit-justify-content: center; justify-content: center; -webkit-align-items: flex-start; align-items: flex-start; padding-top: 20px; overflow-y: auto; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 95%; max-width: 400px; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; color: #000; height: auto; margin-bottom: 50px; }
+        
+        @media (max-height: 500px) { .modal { padding-top: 10px; } .modal-content { margin-bottom: 20px; } }
+        
         .modal input, .modal select { padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; color: #000; background: #fff;}
         .modal textarea { height: 150px; padding: 10px; border: 1px solid #ddd; margin-bottom: 10px; width: 100%; color: #000; background: #fff; resize: none; font-family: 'Cairo', sans-serif; font-size: 1.1rem; }
         .modal-buttons { text-align: left; }
@@ -229,7 +229,7 @@
         .btn-cancel { background: #ccc; border: none; padding: 8px 15px; border-radius: 4px; }
 
         @media (min-width: 768px) {
-            .modal-content { width: 80%; max-width: 900px; height: 80vh; }
+            .modal-content { width: 80%; max-width: 900px; height: 80vh; margin-bottom: 0; }
             .modal textarea { -webkit-flex: 1; flex: 1; height: auto; font-size: 1.4rem; }
         }
 
@@ -355,7 +355,7 @@
         <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من السيرفر (songs.json)</button>
         
         <br><br>
-        
+
         <div class="search-wrapper">
             <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة...">
             <div class="history-list" id="panelHistoryList"></div>
@@ -386,6 +386,12 @@
 </div>
 
 <script>
+    // ==========================================
+    // ⚙️ ضع رابط التحديث المباشر هنا (Raw Link)
+    // ==========================================
+    var ONLINE_SONGS_URL = "https://raw.githubusercontent.com/misidhom-pixel/ScalesTaraneemAuto-update-2/main/songs.json"; 
+    // ==========================================
+
     var keys = ["C", "Cm", "C#m", "D", "Dm", "Db", "Dbm", "E", "Em", "Eb", "F", "Fm", "F#m", "G", "Gm", "G#m", "A", "Am", "Ab", "Abm", "B", "Bm", "Bb", "Bbm", "No Scale"];
     var arChars = ['أ','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
     var enChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -422,16 +428,13 @@
     var mainHistoryList = document.getElementById('mainHistoryList');
     var panelHistoryList = document.getElementById('panelHistoryList');
 
-    // Header Display Elements
     var songDisplayHeader = document.getElementById('songDisplayHeader');
     var displayTitle = document.getElementById('displayTitle');
     var displayKey = document.getElementById('displayKey');
 
-    // Horizontal Resizer (Vertical Resize)
     var resizerV = document.getElementById('resizerV');
     var colLyrics = document.getElementById('colLyrics');
 
-    // Vertical Resizers
     var resizer1 = document.getElementById('resizer1');
     var resizer2 = document.getElementById('resizer2');
     var resizer3 = document.getElementById('resizer3');
@@ -569,7 +572,7 @@
         renderHistory(type);
     }
 
-    // --- Vertical Resizer Logic (For Header) ---
+    // --- Vertical Resizer Logic ---
     function setupVerticalResizer(resizer, headerElement) {
         var startY, startHeight;
         var lyricsCol = document.querySelector('.col-lyrics');
@@ -590,10 +593,8 @@
             var touch = e.touches ? e.touches[0] : e;
             var dy = touch.clientY - startY;
             var newHeight = startHeight + dy;
-            
             if (newHeight < 50) newHeight = 50; 
             if (newHeight > (lyricsCol.offsetHeight - 100)) newHeight = lyricsCol.offsetHeight - 100;
-
             headerElement.style.height = newHeight + 'px';
             updateHeaderStyles(newHeight);
         }
@@ -612,13 +613,10 @@
     }
     
     function updateHeaderStyles(height) {
-        // معادلة جديدة: أهدأ وأصغر (60% من السابق)
-        var titleSize = Math.max(1, height / 50); 
+        var titleSize = Math.max(1, height / 50);
         var keySize = Math.max(0.8, height / 60);
-        
-        if(titleSize > 2.5) titleSize = 2.5;
-        if(keySize > 2) keySize = 2;
-
+        if(titleSize > 2.1) titleSize = 2.1;
+        if(keySize > 1.5) keySize = 1.5;
         document.getElementById('displayTitle').style.fontSize = titleSize + 'rem';
         document.getElementById('displayKey').style.fontSize = keySize + 'rem';
     }
@@ -679,7 +677,10 @@
 
     function loadSongsFromJSON(forceUpdate) {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
+        // استخدام الرابط الأونلاين عند الضغط على الزر، وإلا استخدام الملف المحلي
+        var urlToFetch = (forceUpdate && typeof ONLINE_SONGS_URL !== 'undefined' && ONLINE_SONGS_URL.indexOf("http") === 0) ? ONLINE_SONGS_URL : 'songs.json';
+        
+        xhr.open('GET', urlToFetch + '?v=' + new Date().getTime(), true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
@@ -695,14 +696,31 @@
                         }
                     } catch(e) { console.log("Error parsing JSON"); }
                 } else {
-                    if(forceUpdate) alert("لم يتم العثور على ملف songs.json");
+                    if(forceUpdate) alert("فشل الاتصال بالسيرفر. تأكد من الإنترنت.");
                 }
             }
         };
         xhr.send();
     }
     
-    window.addEventListener('online', function() { loadSongsFromJSON(false); });
+    window.addEventListener('online', function() { 
+        // لا نستخدم الرابط الأونلاين تلقائياً لتوفير البيانات، فقط المحلي
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                 try {
+                    var jsonSongs = JSON.parse(xhr.responseText);
+                    if(Array.isArray(jsonSongs) && jsonSongs.length !== songs.length) {
+                        songs = jsonSongs;
+                        localStorage.setItem('mySongs', JSON.stringify(songs));
+                        refreshUI();
+                    }
+                 } catch(e) {}
+            }
+        };
+        xhr.send();
+    });
 
     function init() {
         keySelect.innerHTML = "";
@@ -714,6 +732,7 @@
         }
         
         if(localStorage.getItem('nightMode') === 'on') { document.body.classList.add('dark-mode'); }
+        
         loadSongsFromJSON(false);
         refreshUI();
         updateHeaderStyles(90);
@@ -871,7 +890,7 @@
                     var cleanLyrics = song.lyrics.replace(/\n\s*\n\s*\n/g, '\n\n');
                     lyricsView.innerText = cleanLyrics;
                     
-                    // إظهار العنوان في الأعلى
+                    // Show Header
                     songDisplayHeader.style.display = 'flex';
                     displayTitle.innerText = song.title;
                     displayKey.innerText = "(" + (song.key || "No Scale") + ")";
