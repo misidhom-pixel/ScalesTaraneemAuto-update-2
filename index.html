@@ -94,7 +94,10 @@
 
         /* رأس الترنيمة */
         .song-display-header {
-            height: 90px; min-height: 50px; padding: 0 15px; text-align: center;
+            height: 90px; 
+            min-height: 50px;
+            padding: 0 15px; 
+            text-align: center;
             background-color: rgba(255,255,255,0.6);
             border-bottom: 4px double #2c3e50; 
             -webkit-flex-shrink: 0; flex-shrink: 0;
@@ -102,7 +105,6 @@
             -webkit-align-items: center; align-items: center;
             -webkit-justify-content: center; justify-content: center;
             overflow: hidden;
-            /* مخفي حتى يتم اختيار ترنيمة */
             display: none; 
         }
         
@@ -121,6 +123,7 @@
             color: #2c3e50;
             display: inline;
             transition: font-size 0.05s linear;
+            unicode-bidi: embed; /* تحسين العرض */
         }
         
         .song-display-key {
@@ -133,7 +136,7 @@
             white-space: nowrap;
         }
 
-        /* الفاصل الأفقي القابل للسحب */
+        /* الفاصل الأفقي */
         .resizer-horizontal {
             height: 12px;
             background-color: #bdc3c7;
@@ -321,7 +324,8 @@
         <!-- الرأس الثابت للترنيمة -->
         <div id="songDisplayHeader" class="song-display-header" style="display:none;">
             <div class="header-text-container">
-                <span id="displayTitle" class="song-display-title"></span>
+                <!-- استخدام bdi لحماية الترتيب -->
+                <span id="displayTitle" class="song-display-title"><bdi></bdi></span>
                 <span id="displayKey" class="song-display-key"></span>
             </div>
         </div>
@@ -355,7 +359,7 @@
         <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من السيرفر (songs.json)</button>
         
         <br><br>
-
+        
         <div class="search-wrapper">
             <input type="text" id="panelSearchInput" class="search-input" placeholder="🔍 بحث في القائمة...">
             <div class="history-list" id="panelHistoryList"></div>
@@ -428,13 +432,16 @@
     var mainHistoryList = document.getElementById('mainHistoryList');
     var panelHistoryList = document.getElementById('panelHistoryList');
 
+    // Header Display Elements
     var songDisplayHeader = document.getElementById('songDisplayHeader');
     var displayTitle = document.getElementById('displayTitle');
     var displayKey = document.getElementById('displayKey');
 
+    // Horizontal Resizer (Vertical Resize)
     var resizerV = document.getElementById('resizerV');
     var colLyrics = document.getElementById('colLyrics');
 
+    // Vertical Resizers
     var resizer1 = document.getElementById('resizer1');
     var resizer2 = document.getElementById('resizer2');
     var resizer3 = document.getElementById('resizer3');
@@ -511,7 +518,6 @@
             if (regex.test(normTitle)) fuzzyScore += 20;
             else if (regex.test(normLyrics)) fuzzyScore += 5;
         }
-
         return fuzzyScore;
     }
 
@@ -572,7 +578,7 @@
         renderHistory(type);
     }
 
-    // --- Vertical Resizer Logic ---
+    // --- Vertical Resizer Logic (For Header) ---
     function setupVerticalResizer(resizer, headerElement) {
         var startY, startHeight;
         var lyricsCol = document.querySelector('.col-lyrics');
@@ -687,6 +693,7 @@
                     try {
                         var jsonSongs = JSON.parse(xhr.responseText);
                         if(Array.isArray(jsonSongs)) {
+                            // مقارنة العدد فقط
                             if (jsonSongs.length !== songs.length || forceUpdate) {
                                 songs = jsonSongs;
                                 localStorage.setItem('mySongs', JSON.stringify(songs));
@@ -703,8 +710,8 @@
         xhr.send();
     }
     
+    // محاولة التحديث التلقائي من الملف المحلي
     window.addEventListener('online', function() { 
-        // لا نستخدم الرابط الأونلاين تلقائياً لتوفير البيانات، فقط المحلي
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
         xhr.onreadystatechange = function() {
@@ -880,8 +887,10 @@
             (function(song) {
                 var div = document.createElement('div');
                 div.className = 'song-item';
+                // استخدام <bdi> في قائمة العناوين أيضاً
                 var keyHint = (song.key && song.key !== "No Scale") ? ' <span style="font-size:0.7em; color:#888;">(' + song.key + ')</span>' : '';
-                div.innerHTML = song.title + keyHint;
+                div.innerHTML = '<bdi>' + song.title + '</bdi>' + keyHint;
+                
                 div.onclick = function() {
                     var items = document.querySelectorAll('.song-item');
                     for(var x=0; x<items.length; x++) items[x].classList.remove('active');
@@ -890,9 +899,10 @@
                     var cleanLyrics = song.lyrics.replace(/\n\s*\n\s*\n/g, '\n\n');
                     lyricsView.innerText = cleanLyrics;
                     
-                    // Show Header
+                    // إظهار العنوان في الأعلى مع العزل
                     songDisplayHeader.style.display = 'flex';
-                    displayTitle.innerText = song.title;
+                    // استخدام <bdi> داخل العنوان الرئيسي
+                    displayTitle.innerHTML = '<bdi>' + song.title + '</bdi>';
                     displayKey.innerText = "(" + (song.key || "No Scale") + ")";
                     
                     document.getElementById('lyrics-view').scrollTop = 0;
@@ -970,7 +980,8 @@
                 var li = document.createElement('li');
                 li.className = 'manage-item';
                 li.id = 'panel-row-' + song.id; 
-                var html = '<div class="manage-info-box"><span class="manage-info" id="title-'+song.id+'">' + song.title + '</span> <span class="manage-key" id="key-'+song.id+'">' + (song.key || "No Scale") + '</span></div>';
+                // استخدام <bdi> في قائمة لوحة التحكم
+                var html = '<div class="manage-info-box"><span class="manage-info" id="title-'+song.id+'"><bdi>' + song.title + '</bdi></span> <span class="manage-key" id="key-'+song.id+'">' + (song.key || "No Scale") + '</span></div>';
                 html += '<div class="manage-btns">';
                 // تم حذف زر التعديل من هنا
                 html += '<button class="btn-delete" id="btn-del-'+song.id+'">حذف</button>';
@@ -1076,3 +1087,4 @@
 </script>
 </body>
 </html>
+```
