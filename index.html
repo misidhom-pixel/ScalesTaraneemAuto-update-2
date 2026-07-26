@@ -320,7 +320,6 @@
                 white-space: nowrap;
             }
 
-            /* ضغط عمودي الاختيار لزيادة مساحة القراءة */
             .col-keys { width: 50px !important; min-width: 45px !important; }
             .col-alpha { width: 42px !important; min-width: 38px !important; }
             .col-titles { width: 135px !important; min-width: 110px !important; }
@@ -519,8 +518,18 @@
             <button class="header-btn header-btn-lg" onclick="closeControlPanel()">Back</button>
         </div>
     </div>
-    <div class="panel-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; gap: 20px;">
-        <button class="btn-big btn-reload" style="max-width: 320px; font-size: 1.5rem; padding: 18px 25px;" onclick="loadSongsFromJSON(true)">Update</button>
+    <div class="panel-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; gap: 15px;">
+        <!-- زرارين جنب بعض Save Backup & Import Backup للتحضيرات -->
+        <div style="display: flex; gap: 10px; width: 100%; max-width: 320px;">
+            <button class="btn-big" style="flex: 1; background: #8e44ad; font-size: 1.1rem; padding: 14px 10px;" onclick="exportPrepsData()">Save Backup</button>
+            <button class="btn-big" style="flex: 1; background: #2980b9; font-size: 1.1rem; padding: 14px 10px;" onclick="document.getElementById('fileInputPreps').click()">Import Backup</button>
+        </div>
+        <input type="file" id="fileInputPreps" style="display:none" onchange="importPrepsData(this)">
+
+        <!-- زرار التحديث بالدمج الذكي من السيرفر -->
+        <button class="btn-big btn-reload" style="max-width: 320px; font-size: 1.4rem; padding: 16px 20px;" onclick="loadSongsFromJSON(true)">Update</button>
+        
+        <!-- زرار تثبيت التطبيق -->
         <button class="btn-big" id="installAppBtn" style="max-width: 320px; font-size: 1.3rem; padding: 16px 20px; background:#16a085; cursor: pointer;" onclick="installApp()">Install App</button>
     </div>
 </div>
@@ -1091,7 +1100,7 @@
     }
 
     // ============================================================
-    // 🔄 دالة التحديث للنسخة الخاصة بالمستخدم (تحديث الترانيم فقط)
+    // 🔄 دالة التحديث للنسخة الخاصة بالمستخدم (الدمج الذكي للترانيم)
     // ============================================================
     function loadSongsFromJSON(forceUpdate) {
         var xhr = new XMLHttpRequest();
@@ -1101,38 +1110,41 @@
 
         xhr.open('GET', urlToFetch + '?v=' + new Date().getTime(), true);
         xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    try {
-                        var importedData = JSON.parse(xhr.responseText);
-                        var dataChanged = false;
-                        var newSongsList = null;
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                try {
+                    var importedData = JSON.parse(xhr.responseText);
+                    var serverSongs = null;
 
-                        if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
-                            if (importedData.songs && Array.isArray(importedData.songs)) {
-                                newSongsList = importedData.songs;
-                            }
-                        } else if (Array.isArray(importedData)) {
-                            newSongsList = importedData;
-                        }
-
-                        if (newSongsList && Array.isArray(newSongsList)) {
-                            if (newSongsList.length !== songs.length || forceUpdate) {
-                                songs = newSongsList;
-                                localStorage.setItem('mySongs', JSON.stringify(songs));
-                                dataChanged = true;
-                            }
-                        }
-
-                        if (dataChanged || forceUpdate) {
-                            refreshUI();
-                            if (forceUpdate) alert("تم تحديث الترانيم من السيرفر بنجاح!");
-                        }
-                    } catch(e) { 
-                        if(forceUpdate) alert("خطأ في قراءة ملف السيرفر.");
+                    if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
+                        if (importedData.songs && Array.isArray(importedData.songs)) { serverSongs = importedData.songs; }
+                    } else if (Array.isArray(importedData)) {
+                        serverSongs = importedData;
                     }
-                } else {
-                    if(forceUpdate) alert("فشل الاتصال بالسيرفر. تأكد من الإنترنت.");
+
+                    if (serverSongs && Array.isArray(serverSongs)) {
+                        // الدمج الذكي للترانيم: إضافة الترانيم الجديدة دون مسح أي ترنيمة مضافة محلياً
+                        var mergedSongs = songs.slice();
+
+                        for (var i = 0; i < serverSongs.length; i++) {
+                            var sSong = serverSongs[i];
+                            var existingIndex = -1;
+                            for (var j = 0; j < mergedSongs.length; j++) {
+                                if (Number(mergedSongs[j].id) === Number(sSong.id)) { existingIndex = j; break; }
+                            }
+                            if (existingIndex > -1) {
+                                mergedSongs[existingIndex] = sSong; // تحديث بيانات الترنيمة
+                            } else {
+                                mergedSongs.push(sSong); // إضافة الترنيمة الجديدة
+                            }
+                        }
+
+                        songs = mergedSongs;
+                        localStorage.setItem('mySongs', JSON.stringify(songs));
+                        refreshUI();
+                        if (forceUpdate) alert("تم دمج وتحديث قائمة الترانيم من السيرفر بنجاح!");
+                    }
+                } catch(e) { 
+                    if(forceUpdate) alert("خطأ في قراءة ملف السيرفر.");
                 }
             }
         };
@@ -1142,6 +1154,88 @@
     window.addEventListener('online', function() { 
         loadSongsFromJSON(false);
     });
+
+    // ============================================================
+    // 💾 دوال Save Backup & Import Backup للتحضيرات مع الدمج الذكي
+    // ============================================================
+    function exportPrepsData() {
+        try {
+            var dataStr = JSON.stringify(preparations);
+            var file = new File([dataStr], "preparations_backup.json", {type: "application/json"});
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: 'نسخة احتياطية للتحضيرات',
+                    text: 'ملف التحضيرات لتطبيق Scales'
+                }).catch(function() {
+                    fallbackDownload(dataStr, "preparations_backup.json");
+                });
+            } else {
+                fallbackDownload(dataStr, "preparations_backup.json");
+            }
+        } catch(e) { 
+            alert("عذراً، حدث خطأ أثناء تصدير نسخة التحضيرات."); 
+        }
+    }
+
+    function fallbackDownload(dataStr, fileName) {
+        var blob = new Blob([dataStr], {type: "application/json"});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function importPrepsData(input) {
+        var file = input.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                var importedData = JSON.parse(e.target.result);
+                var newPreps = null;
+
+                if (importedData && typeof importedData === 'object' && !Array.isArray(importedData) && importedData.preparations) {
+                    newPreps = importedData.preparations;
+                } else if (Array.isArray(importedData)) {
+                    newPreps = importedData;
+                }
+
+                if (newPreps && Array.isArray(newPreps)) {
+                    if (confirm("هل تريد دمج وإضافة التحضيرات المستوردة إلى قائمة تحضيراتك الحالية؟ (لن يتم مسح أي تحضير موجود لديك)")) {
+                        // الدمج الذكي للتحضيرات المستوردة
+                        var mergedPreps = preparations.slice();
+                        for (var i = 0; i < newPreps.length; i++) {
+                            var pItem = newPreps[i];
+                            var existingIndex = -1;
+                            for (var j = 0; j < mergedPreps.length; j++) {
+                                if (Number(mergedPreps[j].id) === Number(pItem.id)) { existingIndex = j; break; }
+                            }
+                            if (existingIndex > -1) {
+                                mergedPreps[existingIndex] = pItem;
+                            } else {
+                                mergedPreps.push(pItem);
+                            }
+                        }
+
+                        preparations = mergedPreps;
+                        localStorage.setItem('myPreparations', JSON.stringify(preparations));
+                        alert("تم دمج وإضافة التحضيرات بنجاح!");
+                        location.reload();
+                    }
+                } else {
+                    alert("محتوى الملف غير صالح كنسخة تحضيرات.");
+                }
+            } catch (err) { 
+                alert("خطأ في قراءة وتحليل الملف"); 
+            }
+        };
+        reader.readAsText(file);
+    }
 
     function init() {
         if(localStorage.getItem('nightMode') === 'on') { document.body.classList.add('dark-mode'); }
