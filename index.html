@@ -581,6 +581,25 @@
     var ONLINE_SONGS_URL = "https://raw.githubusercontent.com/misidhom-pixel/ScalesTaraneemAuto-update-2/main/songs.json"; 
     // ==========================================
 
+    // ============================================================
+    // 📱 كود ضبط العرض المباشر (Meta Viewport Scaling) للموبايل
+    // ============================================================
+    function autoFitScreen() {
+        var viewportMeta = document.querySelector('meta[name="viewport"]');
+        if (!viewportMeta) return;
+
+        var screenWidth = window.screen.width || window.innerWidth;
+        if (screenWidth < 768) {
+            // إجبار المتصفح على الفتح بعرض 768px (عرض التابلت) ليعرض الهيدر كاملاً بدون نقص
+            viewportMeta.setAttribute('content', 'width=768, user-scalable=no');
+        } else {
+            viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        }
+    }
+    autoFitScreen();
+    window.addEventListener('resize', autoFitScreen);
+    window.addEventListener('orientationchange', autoFitScreen);
+
     var keys = ["C", "Cm", "C#m", "D", "Dm", "Db", "Dbm", "E", "Em", "Eb", "F", "Fm", "F#m", "G", "Gm", "G#m", "A", "Am", "Ab", "Abm", "B", "Bm", "Bb", "Bbm", "No Scale"];
     var arChars = ['أ','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
     var enChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -707,26 +726,6 @@
     setupResizer(resizer2, document.getElementById('colAlpha'));
     setupResizer(resizer3, document.getElementById('colTitles'));
     setupVerticalResizer(resizerV, songDisplayHeader);
-
-    // ============================================================
-    // 📐 كود التكيّف الأوتوماتيكي مع أبعاد جميع الشاشات (Auto-Fit)
-    // ============================================================
-    function autoFitScreen() {
-        var targetWidth = 768; // العرض الأساسي المفترض للتابلت
-        var currentWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-
-        if (currentWidth < targetWidth) {
-            var scaleRatio = currentWidth / targetWidth;
-            document.body.style.zoom = scaleRatio;
-        } else {
-            document.body.style.zoom = "1";
-        }
-    }
-
-    window.addEventListener('DOMContentLoaded', autoFitScreen);
-    window.addEventListener('load', autoFitScreen);
-    window.addEventListener('resize', autoFitScreen);
-    window.addEventListener('orientationchange', autoFitScreen);
 
     // --- دوال الستوب واتش الذكي ---
     function toggleTimer() {
@@ -1125,7 +1124,6 @@
         loadSongsFromJSON(false);
         refreshUI();
         updateHeaderStyles(90);
-        autoFitScreen();
     }
 
     function refreshUI() {
