@@ -6,6 +6,9 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#2c3e50">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
     <title>Scales (Admin)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
@@ -20,7 +23,7 @@
 
         /* --- Header --- */
         header {
-            background-color: #2c3e50; color: white; height: 60px;
+            background-color: #2c3e50; color: white; height: 84px;
             display: -webkit-flex; display: flex; -webkit-align-items: center; align-items: center;
             padding: 0 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 100;
             -webkit-flex-shrink: 0; flex-shrink: 0;
@@ -36,11 +39,12 @@
 
         .header-center {
             -webkit-flex: 1; flex: 1; padding: 0 10px;
-            display: -webkit-flex; display: flex; -webkit-justify-content: center; justify-content: center;
+            display: -webkit-flex; display: flex; 
+            -webkit-justify-content: flex-start; justify-content: flex-start;
             position: relative;
         }
         
-        .search-wrapper { width: 100%; max-width: 400px; position: relative; }
+        .search-wrapper { width: 100%; max-width: 400px; position: relative; margin-right: 15px; }
 
         #mainSearchInput {
             width: 100%; padding: 8px 15px; border-radius: 20px; border: none; outline: none;
@@ -62,25 +66,85 @@
         .history-item:hover { background-color: #f0f0f0; }
         .history-text { -webkit-flex: 1; flex: 1; text-align: right; }
         .history-delete { color: red; font-weight: bold; padding: 0 10px; }
+        .prep-song-delete {
+            color: #c0392b; font-weight: 900; font-size: 1.3rem;
+            padding: 6px 12px; cursor: pointer; flex-shrink: 0; line-height: 1;
+        }
+        .prep-song-delete:hover { color: #e74c3c; }
 
-        .header-left { display: -webkit-flex; display: flex; }
+        /* منطقة الأزرار اليسرى وتنسيق الستوب واتش */
+        .header-left { display: -webkit-flex; display: flex; margin-left: auto; align-items: center; gap: 5px; }
         
         .header-btn {
             background-color: #34495e; border: 1px solid #5d6d7e; color: white;
-            padding: 5px 10px; margin-left: 5px; border-radius: 5px;
+            padding: 5px 10px; border-radius: 5px;
             font-family: 'Cairo', sans-serif; cursor: pointer; font-size: 0.8rem; height: 35px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* أزرار كبيرة (فُل سكرين / سيتينج في الهيدر، وباك / نايت مود في لوحة التحكم) - ضعف الحجم تقريباً */
+        .header-btn-lg {
+            padding: 10px 22px !important;
+            height: 70px !important;
+            font-size: 1.5rem !important;
+            border-radius: 8px !important;
+        }
+
+        /* تنسيق العداد الذكي - مندمج داخل شريط الهيدر بدون خلفية زرار */
+        .timer-btn {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            font-family: monospace; /* لمنع اهتزاز الأرقام */
+            font-size: 2rem !important;
+            letter-spacing: 1px;
+            color: #ecf0f1; /* جاهز للبدء - أبيض مندمج مع الشريط */
+            font-weight: 900;
+            min-width: auto;
+            height: auto !important;
+            padding: 0 8px !important;
+            transition: color 0.3s;
+        }
+        .timer-btn.paused {
+            opacity: 0.55; /* مؤشر بصري إنه متوقف مؤقتاً، بدون تغيير لون الإشارة */
+        }
+        .timer-btn.timer-warn-yellow {
+            color: #f1c40f !important; /* اصفر: باقي ١٠ دقايق */
+        }
+        .timer-btn.timer-warn-pulse {
+            color: #f1c40f !important; /* نبض اصفر/احمر: باقي ٥ دقايق */
+            animation: pulse-timer-warn 0.9s infinite;
+        }
+        .timer-btn.timer-warn-red {
+            color: #e74c3c !important; /* احمر: تم الوصول للوقت المحدد */
+        }
+        @keyframes pulse-timer-warn {
+            0% { color: #f1c40f; }
+            50% { color: #e74c3c; }
+            100% { color: #f1c40f; }
         }
 
         /* --- Container --- */
         .container {
-            display: -webkit-flex; display: flex; height: calc(100vh - 60px); overflow: hidden;
+            display: -webkit-flex; display: flex; height: calc(100vh - 84px); overflow: hidden;
             -webkit-flex-direction: row-reverse; flex-direction: row-reverse;
         }
 
         .col-keys { width: 100px; min-width: 60px; background: #e0e0e0; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
         .col-alpha { width: 60px; min-width: 40px; background: #d6dbdf; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; border-right: 1px solid #ccc; }
-        .col-titles { width: 200px; min-width: 100px; background: #fff; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; }
+        .col-titles { width: 200px; min-width: 100px; background: #fff; display: -webkit-flex; display: flex; -webkit-flex-direction: column; flex-direction: column; position: relative;}
         
+        #prepItemToolbar {
+            display: none; 
+            -webkit-flex-direction: row-reverse; flex-direction: row-reverse; 
+            gap: 4px; padding: 6px; background: #bdc3c7; border-bottom: 2px solid #95a5a6;
+        }
+        .prep-item-btn {
+            -webkit-flex: 1; flex: 1; padding: 6px 2px; font-family: 'Cairo', sans-serif; font-size: 0.85rem; font-weight: bold;
+            background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; text-align: center;
+        }
+        .prep-item-btn:hover { background-color: #2c3e50; }
+
         /* === عمود الكلمات === */
         .col-lyrics { 
             -webkit-flex: 1; flex: 1; 
@@ -92,7 +156,6 @@
             position: relative;
         }
 
-        /* تأثير نبض وتوهج خفيف للمبة المساعد الكرتونية (Hint Bulb) */
         @keyframes pulse-lamp {
             0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(241, 196, 15, 0.4)); }
             50% { transform: scale(1.15); filter: drop-shadow(0 0 8px rgba(241, 196, 15, 0.7)); }
@@ -103,7 +166,6 @@
             display: inline-block;
         }
 
-        /* رأس الترنيمة */
         .song-display-header {
             height: 90px; min-height: 50px; padding: 0 15px; text-align: center;
             background-color: rgba(255,255,255,0.6);
@@ -129,26 +191,12 @@
         .song-display-title { font-weight: 900; color: #2c3e50; display: inline; transition: font-size 0.05s linear; unicode-bidi: embed; }
         .song-display-key { font-weight: bold; color: #c0392b; display: inline; font-family: sans-serif; margin-right: 8px; transition: font-size 0.05s linear; white-space: nowrap; }
 
-        /* الفواصل ومقابض السحب البيضاوية والعمودية المضافة حديثاً */
         .resizer { 
             width: 8px; background-color: #bdc3c7; cursor: col-resize; -webkit-flex-shrink: 0; flex-shrink: 0; 
             border-left: 1px solid #95a5a6; border-right: 1px solid #95a5a6; z-index: 10; touch-action: none; 
             position: relative; 
         }
         
-        /* مقبض بيضاوي للسحب العمودي تم وضعه في الأعلى في صف العناوين */
-        .resizer-grip {
-            position: absolute; 
-            top: 5px; /* محاذاة في صف العناوين العلوي */
-            left: 50%; transform: translateX(-50%);
-            width: 22px; height: 36px; background-color: #2c3e50; border: 2px solid #fff;
-            border-radius: 11px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); cursor: col-resize; z-index: 100; touch-action: none;
-        }
-        .resizer-grip::after {
-            content: "⋮"; color: white; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; height: 100%; margin-top: -2px;
-        }
-        .resizer-grip:hover, .resizer:hover .resizer-grip { background-color: #e74c3c; }
-
         .resizer-horizontal {
             height: 12px; background-color: #bdc3c7; cursor: row-resize; -webkit-flex-shrink: 0; flex-shrink: 0;
             border-top: 1px solid #95a5a6; border-bottom: 1px solid #95a5a6; z-index: 20; touch-action: none; width: 100%;
@@ -156,10 +204,9 @@
             position: relative;
         }
 
-        /* مقبض أفقي بيضاوي تم نقله لأقصى اليمين لمنع تداخله مع عنوان الترنيمة */
         .resizer-horizontal-grip {
             position: absolute; 
-            right: 15px; /* محاذاة في أقصى اليمين */
+            right: 15px; 
             left: auto;
             top: 50%; transform: translateY(-50%);
             width: 44px; height: 20px; background-color: #2c3e50; border: 2px solid #fff;
@@ -170,14 +217,13 @@
         }
         .resizer-horizontal-grip:hover, .resizer-horizontal:hover .resizer-horizontal-grip { background-color: #e74c3c; }
         
-        /* شريط الأدوات الملتصق بالفاصل الأفقي والمنسق جنباً إلى جنب لمنع تداخله مع كلمات القراءة */
         #lyricsToolbar {
             position: absolute;
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
             display: flex;
-            gap: 6px;
+            gap: 28px; 
             z-index: 150;
             align-items: center;
         }
@@ -222,7 +268,6 @@
         .key-btn.no-scale { background-color: #7f8c8d; color: #eee; }
         .key-btn.no-scale.active { background-color: #c0392b; color: white; }
 
-        /* تمييز لوني خفيف للسلالم الصغيرة Minor Keys */
         .key-btn.minor-key { background-color: #ebf5fb; }
         .key-btn.minor-key .key-count { background-color: rgba(41, 128, 185, 0.15); color: #2980b9; }
         body.dark-mode .key-btn.minor-key { background-color: #1a2a3a; }
@@ -230,7 +275,6 @@
         .key-btn.minor-key.active { background-color: #c0392b !important; color: white !important; }
         .key-btn.minor-key.active .key-count { background: white !important; color: #c0392b !important; }
 
-        /* تنسيق مخصص لزر التحضيرات الجديد */
         .prep-btn {
             background-color: #2e4053 !important;
             color: #fff !important;
@@ -247,21 +291,20 @@
         .alpha-btn.active { background-color: #2980b9; color: white; }
         .alpha-btn.all-btn { font-size: 1.5rem; line-height: 0.8; color: #555; }
 
-        .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; color: #000; }
+        .song-item { padding: 15px 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 1rem; text-align: right; font-weight: bold; color: #000; user-select: none; -webkit-user-select: none; }
         .song-item:hover { background-color: #f1f1f1; }
         .song-item.active { background-color: #fadbd8; color: #c0392b; }
 
-        /* الترانيم المقترحة المضافة حديثاً في نهاية عرض الكلمات */
         .suggested-song-item {
             background-color: rgba(142, 68, 173, 0.05);
             border: 1px solid rgba(142, 68, 173, 0.15);
             border-radius: 6px;
-            padding: 6px 4px; /* تقليص الهوامش لجعلها مدمجة */
+            padding: 6px 4px; 
             cursor: pointer;
             transition: background 0.2s, transform 0.2s;
             text-align: center;
             font-weight: bold;
-            font-size: 0.95rem; /* تصغير الخط قليلاً لتلائم المساحة */
+            font-size: 0.95rem; 
         }
         .suggested-song-item:hover {
             background-color: rgba(142, 68, 173, 0.12) !important;
@@ -271,24 +314,32 @@
         .load-more-btn { display: block; width: 100%; padding: 15px; background: #e67e22; color: white; font-weight: bold; border: none; cursor: pointer; text-align: center; font-family: 'Cairo', sans-serif; border-bottom: 1px solid #ddd; }
         .limit-msg { padding: 10px; text-align: center; color: #e67e22; font-weight: bold; font-size: 0.9rem; background: #fff8e1; border-top: 1px dashed #e67e22; }
 
+        @media (max-width: 767px) {
+            /* تصغير أزرار الأدوات الصغيرة (A+ / A- / تمرير) فقط، بدون العداد أو زراير الفُل سكرين والسيتينج الكبيرة */
+            .header-btn:not(.header-btn-lg):not(.timer-btn) { font-size: 0.75rem; padding: 5px; }
+            .header-btn-lg { font-size: 1.2rem !important; height: 60px !important; padding: 8px 14px !important; }
+            .timer-btn { font-size: 1.5rem !important; }
+            header { height: 76px !important; }
+            .container { height: calc(100vh - 76px) !important; }
+            header h1 { display: none; /* إخفاء اسم البرنامج في الموبايل لتوفير مساحة للأزرار المهمة */ }
+            .search-wrapper { max-width: 150px; }
+        }
+
         @media (min-width: 768px) {
             .lyrics-scroll-area { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
             header h1 { font-size: 1.5rem; }
             #mainSearchInput { font-size: 1.2rem; }
             .col-header { font-size: 1.2rem; height: 55px; padding: 12px; }
-            
-            /* تعديل تمركز المقابض في الشاشات الكبيرة لتتناسب مع ارتفاع العناوين 55px */
-            .resizer-grip {
-                top: 10px;
-            }
             .song-display-header { min-height: 70px; }
             .song-display-title { font-size: 1.8rem; }
             .song-display-key { font-size: 1.4rem; }
+            .timer-btn { font-size: 2.3rem !important; min-width: auto; }
         }
 
         /* Panel & Modal */
         .panel-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f7f6; z-index: 200; -webkit-flex-direction: column; flex-direction: column; }
-        .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; }
+        .panel-header { background: #2c3e50; color: white; padding: 15px; display: -webkit-flex; display: flex; -webkit-justify-content: space-between; justify-content: space-between; -webkit-align-items: center; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .panel-header > div { display: -webkit-flex; display: flex; align-items: center; gap: 12px; }
         .panel-content { padding: 20px; flex: 1; -webkit-flex: 1; overflow-y: auto; width: 100%; -webkit-overflow-scrolling: touch; }
         
         .btn-big { padding: 10px 20px; border: none; border-radius: 5px; color: white; font-family: 'Cairo', sans-serif; cursor: pointer; font-weight: bold; text-align: center; margin-bottom: 15px; width: 100%; display: block; }
@@ -300,7 +351,6 @@
         .backup-section { overflow: hidden; margin-bottom: 15px; }
         .search-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; font-size: 1rem; }
         
-        /* الفلاتر موجودة في نسخة الأدمن */
         .filter-row { display: -webkit-flex; display: flex; gap: 5px; margin-bottom: 10px; }
         .filter-row select { -webkit-flex: 1; flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-family: 'Cairo', sans-serif; font-size: 1rem; background: white; font-weight: bold; }
 
@@ -348,7 +398,6 @@
         body.dark-mode .key-btn .key-count { background: #444; color: #ccc; }
         body.dark-mode .key-btn.active .key-count { background: #fff; color: #c0392b; }
 
-        /* Dark Mode للتحضيرات */
         body.dark-mode .prep-btn {
             background-color: #1a252f !important;
             border-top-color: #34495e !important;
@@ -356,7 +405,6 @@
         }
         body.dark-mode .prep-btn.active { background-color: #27ae60 !important; }
 
-        /* الترانيم المقترحة بالوضع الليلي */
         body.dark-mode .suggested-song-item {
             background-color: rgba(142, 68, 173, 0.15) !important;
             border-color: rgba(142, 68, 173, 0.3) !important;
@@ -376,6 +424,8 @@
         body.dark-mode .song-item:hover { background-color: #222; }
         body.dark-mode .song-item.active { background-color: #5a2e2e; color: #fff; }
 
+        body.dark-mode #prepItemToolbar { background-color: #333; border-bottom-color: #555; }
+
         body.dark-mode .panel-overlay { background-color: #1a1a1a; color: #fff; }
         body.dark-mode .manage-item { background-color: #222; border-bottom-color: #444; color: #ddd; }
         body.dark-mode .manage-key { background-color: #444; color: #fff; }
@@ -386,13 +436,14 @@
         body.dark-mode .modal-content { background-color: #222; color: #fff; }
         body.dark-mode #chordsModalDesc { color: #ccc !important; }
         body.dark-mode #chordsModal h3 { color: #9b59b6 !important; }
+        body.dark-mode #prepLyricsModal h3 { color: #e67e22 !important; }
+        body.dark-mode #prepLyricsDesc { color: #aaa !important; }
         body.dark-mode .btn-cancel { background-color: #555; color: #fff; }
         body.dark-mode .load-more-btn { background-color: #d35400; color: #fff; border-bottom-color: #555; }
         body.dark-mode .history-list { background: #333; border-color: #555; }
         body.dark-mode .history-item { border-bottom-color: #444; color: #eee; }
         body.dark-mode .history-item:hover { background-color: #444; }
 
-        /* Dark Mode for Header Display */
         body.dark-mode .song-display-header { 
             background-color: rgba(50,50,50,0.8); 
             border-bottom-color: #888; 
@@ -416,8 +467,10 @@
         </div>
     </div>
     <div class="header-left">
-        <button class="header-btn" onclick="tryFullScreen()">FullScreen</button>
-        <button class="header-btn" onclick="openControlPanel()">Settings</button>
+        <!-- العداد الذكي المضاف حديثاً (ستوب واتش الخدمة) -->
+        <button id="serviceTimerBtn" class="header-btn timer-btn" onclick="toggleTimer()" title="ضغطة للتشغيل/الإيقاف، ضغطة مطولة لتحديد وقت جديد">00:00</button>
+        <button class="header-btn header-btn-lg" onclick="tryFullScreen()">FullScreen</button>
+        <button class="header-btn header-btn-lg" onclick="openControlPanel()">Settings</button>
     </div>
 </header>
 
@@ -426,24 +479,23 @@
         <div class="col-header">السلم</div>
         <div class="scroll-list" id="keys-list"></div>
     </div>
-    <div class="resizer" id="resizer1">
-        <!-- مقبض دائري للّمس يسهل سحب الفاصل بالكامل لأندرويد 4 والحديث تم وضعه في الأعلى في صف العناوين -->
-        <div class="resizer-grip"></div>
-    </div>
+    <div class="resizer" id="resizer1"></div>
     <div class="col-alpha" id="colAlpha">
         <div class="col-header">الحرف</div>
         <div class="scroll-list" id="alpha-list"></div>
     </div>
-    <div class="resizer" id="resizer2">
-        <div class="resizer-grip"></div>
-    </div>
+    <div class="resizer" id="resizer2"></div>
     <div class="col-titles" id="colTitles">
         <div class="col-header">العناوين</div>
+        <!-- شريط أدوات تعديل بند التحضير المدمج داخل العمود -->
+        <div id="prepItemToolbar">
+            <button class="prep-item-btn" onclick="editActivePrepTitle()">العنوان</button>
+            <button class="prep-item-btn" onclick="editActivePrepKey()">السلم</button>
+            <button class="prep-item-btn" onclick="editActivePrepLyrics()">كلمات</button>
+        </div>
         <div class="scroll-list" id="titles-list"></div>
     </div>
-    <div class="resizer" id="resizer3">
-        <div class="resizer-grip"></div>
-    </div>
+    <div class="resizer" id="resizer3"></div>
     
     <div class="col-lyrics" id="colLyrics">
         <!-- الرأس الثابت للترنيمة -->
@@ -458,14 +510,14 @@
         
         <!-- فاصل أفقي للسحب -->
         <div class="resizer-horizontal" id="resizerV">
-            <!-- مقبض أفقي جذاب للفصل الأفقي لعرض الكلمات تم نقله لأقصى اليمين -->
+            <!-- مقبض أفقي جذاب للفصل الأفقي لعرض الكلمات -->
             <div class="resizer-horizontal-grip"></div>
 
-            <!-- شريط الأدوات الملتصق بالفاصل الأفقي والمنسق جنباً إلى جنب لمنع تداخله مع كلمات القراءة -->
+            <!-- شريط الأدوات الملتصق بالفاصل الأفقي والمنسق بمسافات أمان واسعة -->
             <div id="lyricsToolbar" style="display:none;">
-                <button class="header-btn" onclick="adjustFontSize(1)" style="margin:0; border-radius:50%; width:32px; height:32px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);" title="تكبير الخط">A+</button>
-                <button class="header-btn" onclick="adjustFontSize(-1)" style="margin:0; border-radius:50%; width:32px; height:32px; font-weight:bold; box-shadow:0 2px 5px rgba(0,0,0,0.2);" title="تصغير الخط">A-</button>
-                <button class="header-btn" id="btnAutoScroll" onclick="toggleAutoScroll()" style="margin:0; border-radius:50%; width:32px; height:32px; font-weight:bold; background-color:#2980b9; border-color:#2980b9; box-shadow:0 2px 5px rgba(0,0,0,0.2); transition: background-color 0.2s;" title="تمرير تلقائي للكلمات">▼</button>
+                <button class="header-btn" onclick="adjustFontSize(1)" title="تكبير الخط">A+</button>
+                <button class="header-btn" onclick="adjustFontSize(-1)" title="تصغير الخط">A-</button>
+                <button class="header-btn" id="btnAutoScroll" onclick="toggleAutoScroll()" style="background-color:#2980b9; border-color:#2980b9; transition: background-color 0.2s;" title="تمرير تلقائي للكلمات">▼</button>
             </div>
         </div>
 
@@ -481,8 +533,8 @@
     <div class="panel-header">
         <h3>Control Panel</h3>
         <div>
-            <button class="header-btn" onclick="toggleDarkMode()">Night Mood</button>
-            <button class="header-btn" onclick="closeControlPanel()">Back</button>
+            <button class="header-btn header-btn-lg" onclick="toggleDarkMode()">Night Mood</button>
+            <button class="header-btn header-btn-lg" onclick="closeControlPanel()">Back</button>
         </div>
     </div>
     <div class="panel-content">
@@ -494,9 +546,10 @@
         
         <button class="btn-big btn-add" onclick="openEditModal(null)">+ إضافة ترنيمة جديدة</button>
         <button class="btn-big btn-reload" onclick="loadSongsFromJSON(true)">🔄 تحديث من السيرفر (songs.json)</button>
+        <button class="btn-big" id="installAppBtn" style="background:#16a085; display:none;" onclick="installApp()">⬇️ تثبيت التطبيق على الجهاز</button>
+        <p id="installAppInstalledMsg" style="display:none; text-align:center; color:#16a085; font-weight:bold;">✅ التطبيق متثبت على الجهاز</p>
         
         <br><br>
-        <!-- فلاتر الأدمن -->
         <div class="filter-row">
             <select id="panelFilterLetter" onchange="searchPanelSongs()">
                 <option value="">كل الحروف</option>
@@ -534,7 +587,7 @@
     </div>
 </div>
 
-<!-- نافذة إنشاء/تعديل اسم التحضير (الخدمة) المضافة حديثاً -->
+<!-- نافذة إنشاء/تعديل اسم التحضير (الخدمة) -->
 <div class="modal" id="prepNameModal">
     <div class="modal-content">
         <h3 id="prepNameModalTitle" style="margin:0 0 10px 0">تحضير جديد</h3>
@@ -548,14 +601,25 @@
     </div>
 </div>
 
-<!-- نافذة البحث وإضافة ترنيمة للتحضير الحالي المضافة حديثاً -->
+<!-- نافذة تحديد الوقت المستهدف للعداد الذكي -->
+<div class="modal" id="timerSetModal">
+    <div class="modal-content" style="max-width: 320px;">
+        <h3 style="margin:0 0 10px 0">تحديد وقت الفقرة</h3>
+        <label>عدد الدقايق المخصصة:</label>
+        <input type="number" id="timerTargetInput" min="1" max="600" placeholder="مثال: 20" inputmode="numeric">
+        <div class="modal-buttons">
+            <button class="btn-cancel" onclick="closeTimerSetModal()">إلغاء</button>
+            <button class="btn-save" onclick="saveTimerTarget()">حفظ</button>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة البحث وإضافة ترنيمة للتحضير الحالي -->
 <div class="modal" id="prepAddSongModal">
     <div class="modal-content" style="max-height: 85vh;">
         <h3 style="margin:0 0 10px 0">إضافة ترنيمة للتحضير</h3>
         <input type="text" id="prepSongSearchInput" placeholder="🔍 ابحث عن ترنيمة بالاسم أو الكلمات...">
-        <div style="flex: 1; min-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px;" id="prepSongsList">
-            <!-- الترانيم تظهر هنا برمجياً -->
-        </div>
+        <div style="flex: 1; min-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px;" id="prepSongsList"></div>
         <div class="modal-buttons" style="margin-top: 15px; text-align: left;">
             <button class="btn-cancel" onclick="closePrepAddSongModal()">إغلاق</button>
         </div>
@@ -578,16 +642,41 @@
     </div>
 </div>
 
-<!-- نافذة عرض الكوردات الأساسية للسلم مع إمكانية التنقل التفاعلي المباشر -->
+<!-- نافذة عرض الكوردات الأساسية للسلم -->
 <div class="modal" id="chordsModal" style="z-index: 400;">
     <div class="modal-content" style="max-width: 330px; text-align: center;">
         <h3 style="margin:0 0 15px 0; color:#8e44ad;">💡 دليل كوردات السلم</h3>
         <div style="font-size: 0.95rem; margin-bottom: 15px; color:#555;" id="chordsModalDesc"></div>
-        <div id="chordsButtonsContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;">
-            <!-- كوردات السلم يتم توليدها برمجياً كأزرار -->
-        </div>
+        <div id="chordsButtonsContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px;"></div>
         <div class="modal-buttons" style="text-align: center;">
             <button class="btn-cancel" onclick="closeChordsModal()" style="width: 100%;">إغلاق</button>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة تعديل كلمات الترنيمة المخصصة للتحضير الحالي -->
+<div class="modal" id="prepLyricsModal">
+    <div class="modal-content" style="max-height: 90vh;">
+        <h3 id="prepLyricsModalTitle" style="margin:0 0 10px 0; color:#e67e22;">📝 تعديل كلمات الترنيمة للخدمة</h3>
+        <p style="margin:0 0 10px 0; font-size:0.9rem; color:#666;" id="prepLyricsDesc">التعديل هنا يؤثر على هذا التحضير فقط، ولن يتغير النص الأصلي للترنيمة.</p>
+        <input type="hidden" id="prepLyricsSongIndex">
+        <textarea id="prepLyricsText" placeholder="قم بتعديل الكلمات، حذف أبيات، أو ترتيبها هنا..." style="flex: 1; min-height: 300px; font-family: 'Cairo', sans-serif; font-size:1.15rem;"></textarea>
+        <div class="modal-buttons" style="margin-top: 10px;">
+            <button class="btn-cancel" onclick="closePrepLyricsModal()">إلغاء</button>
+            <button class="btn-save" onclick="savePrepLyrics()" style="background-color:#e67e22; border-color:#e67e22;">حفظ الكلمات</button>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة صغيرة لتعديل العنوان فقط للمرونة -->
+<div class="modal" id="prepTitleEditModal" style="z-index: 400;">
+    <div class="modal-content" style="max-width: 330px;">
+        <h3 style="margin:0 0 10px 0; color:#2980b9;">تعديل العنوان</h3>
+        <input type="hidden" id="prepTitleEditIndex">
+        <input type="text" id="prepTitleEditText" placeholder="اكتب العنوان المخصص هنا...">
+        <div class="modal-buttons" style="margin-top: 10px;">
+            <button class="btn-cancel" onclick="document.getElementById('prepTitleEditModal').style.display='none'">إلغاء</button>
+            <button class="btn-save" onclick="savePrepTitleEdit()">حفظ</button>
         </div>
     </div>
 </div>
@@ -604,7 +693,6 @@
     var enChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
     var allChars = arChars.concat(enChars);
 
-    // خريطة السلالم المجاورة والتوافقية بناءً على دائرة الخامسة والنظريات الموسيقية
     var relativeKeysMap = {
         "C": ["Am", "G", "F"],
         "Cm": ["Eb", "Fm", "Gm"],
@@ -632,7 +720,6 @@
         "Bbm": ["Db", "Ebm", "Fm"]
     };
 
-    // كوردات السلم المساعد المربوط بزر اللمبة الكرتونية
     var chordsMap = {
         "C": "C - Dm - Em - F - G - Am",
         "Cm": "Cm - Ddim - Eb - Fm - Gm - Ab - Bb",
@@ -664,35 +751,44 @@
     var saved = localStorage.getItem('mySongs');
     var songs = saved ? JSON.parse(saved) : defaultSongs;
     
-    // --- متغيرات ميزة التحضيرات الجديدة ---
     var savedPreps = localStorage.getItem('myPreparations');
     var preparations = savedPreps ? JSON.parse(savedPreps) : [];
     var activePrepId = null;
     var tempPrepSongQuery = "";
     
-    // متغيرات مخصصة لحساب ترتيب وتحريك العناصر يدوياً بسلاسة بالغة (Drag and Drop)
+    var currentActivePrepItemIndex = null;
     var activeDragItem = null;
     var startY = 0;
     var startIndex = -1;
     var listItems = [];
 
-    // متغيرات الخط والتمرير التلقائي ودليل الكوردات والترشيحات المتسلسلة
-    var currentFontSize = 1.8; // الحجم الافتراضي للخط بـ Rem
+    var currentFontSize = 1.8; 
     var autoScrollInterval = null;
-    var scrollSpeed = 1; // سرعات التمرير: 1 بطيء، 2.2 متوسط، 3.5 سريع
+    var scrollSpeed = 1; 
     var currentActiveKeyForHelp = "";
-    var currentMatchedRecsPool = []; // مصفوفة تخزين كافة الترشيحات المتوافقة للترنيمة الحالية
-    var recsOffset = 0; // مؤشر تدوير وتغيير الترشيحات
-    // --------------------------------------
+    var currentMatchedRecsPool = []; 
+    var recsOffset = 0; 
+    var currentActiveLyricsId = null;
+    var customFontSizes = JSON.parse(localStorage.getItem('myCustomFontSizes')) || {};
+
+    // --- متغيرات الستوب واتش ---
+    var timerInterval = null;
+    var timerSeconds = 0;
+    var isTimerRunning = false;
+    var timerPressTimer;
+    var timerDidReset = false;
+    var timerTargetSeconds = null; // الوقت المستهدف بالثواني (null = بدون هدف، عداد عادي)
+    (function loadSavedTimerTarget() {
+        var savedMins = parseInt(localStorage.getItem('timerTargetMinutes'), 10);
+        if (!isNaN(savedMins) && savedMins > 0) { timerTargetSeconds = savedMins * 60; }
+    })();
 
     var currentKey = "C";
     var currentLetter = "";
     var searchTimeout;
-    
     var currentFilteredList = [];
     var currentRenderIndex = 0;
     var BATCH_SIZE = 100;
-
     var panelFilteredList = [];
     var panelRenderIndex = 0;
 
@@ -710,33 +806,153 @@
     var panelSearchInput = document.getElementById('panelSearchInput');
     var panelFilterLetter = document.getElementById('panelFilterLetter');
     var panelFilterKey = document.getElementById('panelFilterKey');
-    
     var mainHistoryList = document.getElementById('mainHistoryList');
     var panelHistoryList = document.getElementById('panelHistoryList');
-
-    // Header Display Elements
+    var prepItemToolbar = document.getElementById('prepItemToolbar');
     var songDisplayHeader = document.getElementById('songDisplayHeader');
     var displayTitle = document.getElementById('displayTitle');
     var displayKey = document.getElementById('displayKey');
 
-    // Horizontal Resizer (Vertical Resize)
     var resizerV = document.getElementById('resizerV');
     var colLyrics = document.getElementById('colLyrics');
-
-    // Vertical Resizers
     var resizer1 = document.getElementById('resizer1');
     var resizer2 = document.getElementById('resizer2');
     var resizer3 = document.getElementById('resizer3');
-    var colKeys = document.getElementById('colKeys');
-    var colAlpha = document.getElementById('colAlpha');
-    var colTitles = document.getElementById('colTitles');
 
-    setupResizer(resizer1, colKeys);
-    setupResizer(resizer2, colAlpha);
-    setupResizer(resizer3, colTitles);
+    setupResizer(resizer1, document.getElementById('colKeys'));
+    setupResizer(resizer2, document.getElementById('colAlpha'));
+    setupResizer(resizer3, document.getElementById('colTitles'));
     setupVerticalResizer(resizerV, songDisplayHeader);
 
-    // --- Search Logic (الواجهة الرئيسية والأدمن) ---
+    // --- دوال الستوب واتش الذكي ---
+    function toggleTimer() {
+        if (timerDidReset) return; // تجاهل الضغطة إذا كانت نتيجة لضغطة مطولة للتصفير
+        
+        var btn = document.getElementById('serviceTimerBtn');
+        if (isTimerRunning) {
+            // إيقاف مؤقت (Pause)
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            btn.classList.remove('running');
+            btn.classList.add('paused');
+        } else {
+            // تشغيل (Start)
+            isTimerRunning = true;
+            btn.classList.remove('paused');
+            btn.classList.add('running');
+            
+            timerInterval = setInterval(function() {
+                timerSeconds++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+    }
+
+    function updateTimerDisplay() {
+        var btn = document.getElementById('serviceTimerBtn');
+        var hrs = Math.floor(timerSeconds / 3600);
+        var mins = Math.floor((timerSeconds % 3600) / 60);
+        var secs = timerSeconds % 60;
+        
+        var display = (hrs < 10 ? "0" + hrs : hrs) + ":" + (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
+        btn.textContent = display;
+
+        // إشارات بصرية بناءً على قرب الوصول للوقت المستهدف
+        btn.classList.remove('timer-warn-yellow', 'timer-warn-pulse', 'timer-warn-red');
+        if (timerTargetSeconds) {
+            if (timerSeconds >= timerTargetSeconds) {
+                btn.classList.add('timer-warn-red');
+            } else if (timerSeconds >= timerTargetSeconds - 300) {
+                btn.classList.add('timer-warn-pulse');
+            } else if (timerSeconds >= timerTargetSeconds - 600) {
+                btn.classList.add('timer-warn-yellow');
+            }
+        }
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        timerSeconds = 0;
+        var btn = document.getElementById('serviceTimerBtn');
+        btn.classList.remove('running');
+        btn.classList.remove('paused');
+        updateTimerDisplay();
+        openTimerSetModal();
+    }
+
+    function openTimerSetModal() {
+        var input = document.getElementById('timerTargetInput');
+        input.value = timerTargetSeconds ? Math.round(timerTargetSeconds / 60) : '';
+        document.getElementById('timerSetModal').style.display = 'flex';
+        setTimeout(function() { input.focus(); }, 200);
+    }
+
+    function closeTimerSetModal() {
+        document.getElementById('timerSetModal').style.display = 'none';
+    }
+
+    function saveTimerTarget() {
+        var input = document.getElementById('timerTargetInput');
+        var mins = parseInt(input.value, 10);
+        if (isNaN(mins) || mins <= 0) {
+            alert('من فضلك اكتب عدد دقايق صحيح أكبر من صفر.');
+            return;
+        }
+        timerTargetSeconds = mins * 60;
+        localStorage.setItem('timerTargetMinutes', mins);
+        closeTimerSetModal();
+
+        // حفظ الوقت المستهدف فقط، بدون تشغيل العداد تلقائياً
+        clearInterval(timerInterval);
+        timerSeconds = 0;
+        isTimerRunning = false;
+        var btn = document.getElementById('serviceTimerBtn');
+        btn.classList.remove('running', 'paused', 'timer-warn-yellow', 'timer-warn-pulse', 'timer-warn-red');
+        updateTimerDisplay();
+    }
+
+    function bindTimerLongPress() {
+        var btn = document.getElementById('serviceTimerBtn');
+        if(!btn) return;
+        
+        btn.addEventListener('touchstart', function(e) {
+            timerDidReset = false;
+            timerPressTimer = setTimeout(function() {
+                timerDidReset = true;
+                if (navigator.vibrate) navigator.vibrate(40);
+                resetTimer();
+            }, 1000); 
+        }, {passive: true});
+        
+        btn.addEventListener('touchend', function(e) {
+            clearTimeout(timerPressTimer);
+            if (timerDidReset) {
+                e.preventDefault(); 
+            }
+        });
+        
+        btn.addEventListener('touchmove', function(e) {
+            clearTimeout(timerPressTimer);
+        }, {passive: true});
+        
+        // دعم الماوس للأجهزة العادية
+        btn.addEventListener('mousedown', function(e) {
+            if (e.button !== 0) return;
+            timerDidReset = false;
+            timerPressTimer = setTimeout(function() {
+                timerDidReset = true;
+                resetTimer();
+            }, 1000);
+        });
+        btn.addEventListener('mouseup', function(e) {
+            clearTimeout(timerPressTimer);
+        });
+        btn.addEventListener('mouseleave', function(e) {
+            clearTimeout(timerPressTimer);
+        });
+    }
+
     mainSearchInput.onkeyup = function(e) {
         if(e.key === 'Enter') {
             saveSearchTerm(mainSearchInput.value, 'main');
@@ -758,7 +974,6 @@
     panelSearchInput.onfocus = function() { renderHistory('panel'); };
     panelSearchInput.onblur = function() { setTimeout(function(){ panelHistoryList.style.display = 'none'; }, 200); };
 
-    // --- الدوال الأساسية للبحث التي سقطت أثناء التقسيم ---
     function normalizeArabic(text) {
         if (!text) return "";
         text = text.toLowerCase();
@@ -803,7 +1018,6 @@
                 else if (regex.test(normLyrics)) fuzzyScore += 5;
             } catch(e) {}
         }
-
         return fuzzyScore;
     }
 
@@ -864,33 +1078,29 @@
         renderHistory(type);
     }
 
-    // --- Vertical Resizer Logic (For Header) ---
     function setupVerticalResizer(resizer, headerElement) {
         var startY, startHeight;
-        var lyricsCol = document.querySelector('.col-lyrics');
-
         function onTouchStart(e) {
             var touch = e.touches ? e.touches[0] : e;
             startY = touch.clientY;
             startHeight = headerElement.offsetHeight;
             document.body.style.userSelect = 'none';
             document.body.style.webkitUserSelect = 'none';
-            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchmove', onTouchMove, {passive: false});
             document.addEventListener('touchend', onTouchEnd);
             document.addEventListener('mousemove', onTouchMove);
             document.addEventListener('mouseup', onTouchEnd);
         }
-
         function onTouchMove(e) {
             var touch = e.touches ? e.touches[0] : e;
             var dy = touch.clientY - startY;
             var newHeight = startHeight + dy;
             if (newHeight < 50) newHeight = 50; 
-            if (newHeight > (lyricsCol.offsetHeight - 100)) newHeight = lyricsCol.offsetHeight - 100;
+            if (newHeight > (colLyrics.offsetHeight - 100)) newHeight = colLyrics.offsetHeight - 100;
             headerElement.style.height = newHeight + 'px';
             updateHeaderStyles(newHeight);
+            e.preventDefault();
         }
-
         function onTouchEnd() {
             document.body.style.userSelect = 'auto';
             document.body.style.webkitUserSelect = 'auto';
@@ -899,9 +1109,8 @@
             document.removeEventListener('mousemove', onTouchMove);
             document.removeEventListener('mouseup', onTouchEnd);
         }
-
         resizer.addEventListener('mousedown', onTouchStart);
-        resizer.addEventListener('touchstart', onTouchStart);
+        resizer.addEventListener('touchstart', onTouchStart, {passive: false});
     }
     
     function updateHeaderStyles(height) {
@@ -913,7 +1122,6 @@
         document.getElementById('displayKey').style.fontSize = keySize + 'rem';
     }
 
-    // --- Horizontal Resizer Logic ---
     function setupResizer(resizer, column) {
         if(!resizer) return;
         var startX, startWidth;
@@ -923,7 +1131,7 @@
             startWidth = parseInt(window.getComputedStyle(column).width, 10);
             document.body.style.userSelect = 'none';
             document.body.style.webkitUserSelect = 'none';
-            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchmove', onTouchMove, {passive: false});
             document.addEventListener('touchend', onTouchEnd);
             document.addEventListener('mousemove', onTouchMove);
             document.addEventListener('mouseup', onTouchEnd);
@@ -932,6 +1140,7 @@
             var touch = e.touches ? e.touches[0] : e;
             var dx = touch.clientX - startX;
             column.style.width = (startWidth + dx) + 'px';
+            e.preventDefault();
         }
         function onTouchEnd() {
             document.body.style.userSelect = 'auto';
@@ -942,7 +1151,7 @@
             document.removeEventListener('mouseup', onTouchEnd);
         }
         resizer.addEventListener('mousedown', onTouchStart);
-        resizer.addEventListener('touchstart', onTouchStart);
+        resizer.addEventListener('touchstart', onTouchStart, {passive: false});
     }
 
     function tryFullScreen() {
@@ -969,25 +1178,47 @@
 
     function loadSongsFromJSON(forceUpdate) {
         var xhr = new XMLHttpRequest();
-        // استخدام الرابط الأونلاين عند الضغط على الزر، وإلا استخدام الملف المحلي
         var urlToFetch = (forceUpdate && typeof ONLINE_SONGS_URL !== 'undefined' && ONLINE_SONGS_URL.indexOf("http") === 0) ? ONLINE_SONGS_URL : 'songs.json';
-        
         xhr.open('GET', urlToFetch + '?v=' + new Date().getTime(), true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     try {
-                        var jsonSongs = JSON.parse(xhr.responseText);
-                        if(Array.isArray(jsonSongs)) {
-                            // مقارنة العدد فقط
-                            if (jsonSongs.length !== songs.length || forceUpdate) {
-                                songs = jsonSongs;
+                        var importedData = JSON.parse(xhr.responseText);
+                        var dataChanged = false;
+                        if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
+                            if (importedData.songs && Array.isArray(importedData.songs)) {
+                                if (importedData.songs.length !== songs.length || forceUpdate) {
+                                    songs = importedData.songs;
+                                    localStorage.setItem('mySongs', JSON.stringify(songs));
+                                    dataChanged = true;
+                                }
+                            }
+                            if (importedData.preparations && Array.isArray(importedData.preparations)) {
+                                preparations = importedData.preparations;
+                                localStorage.setItem('myPreparations', JSON.stringify(preparations));
+                                dataChanged = true;
+                            }
+                            if (importedData.customFontSizes && typeof importedData.customFontSizes === 'object') {
+                                customFontSizes = importedData.customFontSizes;
+                                localStorage.setItem('myCustomFontSizes', JSON.stringify(customFontSizes));
+                                dataChanged = true;
+                            }
+                            if (dataChanged || forceUpdate) {
+                                refreshUI();
+                                if(forceUpdate) alert("تم التحديث من السيرفر بنجاح! (شمل الترانيم والتحضيرات)");
+                            }
+                        } else if(Array.isArray(importedData)) {
+                            if (importedData.length !== songs.length || forceUpdate) {
+                                songs = importedData;
                                 localStorage.setItem('mySongs', JSON.stringify(songs));
                                 refreshUI();
-                                if(forceUpdate) alert("تم التحديث بنجاح! (" + songs.length + " ترنيمة)");
+                                if(forceUpdate) alert("تم تحديث الترانيم من السيرفر بنجاح!");
                             }
                         }
-                    } catch(e) { console.log("Error parsing JSON"); }
+                    } catch(e) { 
+                        if(forceUpdate) alert("خطأ في قراءة ملف السيرفر.");
+                    }
                 } else {
                     if(forceUpdate) alert("فشل الاتصال بالسيرفر. تأكد من الإنترنت.");
                 }
@@ -996,17 +1227,28 @@
         xhr.send();
     }
     
-    // محاولة التحديث التلقائي من الملف المحلي
     window.addEventListener('online', function() { 
-        // لا نستخدم الرابط الأونلاين تلقائياً لتوفير البيانات، فقط المحلي
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'songs.json?v=' + new Date().getTime(), true);
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4 && xhr.status === 200) {
                  try {
-                    var jsonSongs = JSON.parse(xhr.responseText);
-                    if(Array.isArray(jsonSongs) && jsonSongs.length !== songs.length) {
-                        songs = jsonSongs;
+                    var importedData = JSON.parse(xhr.responseText);
+                    var dataChanged = false;
+                    if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
+                        if (importedData.songs && Array.isArray(importedData.songs) && importedData.songs.length !== songs.length) {
+                            songs = importedData.songs;
+                            localStorage.setItem('mySongs', JSON.stringify(songs));
+                            dataChanged = true;
+                        }
+                        if (importedData.preparations && Array.isArray(importedData.preparations)) {
+                            preparations = importedData.preparations;
+                            localStorage.setItem('myPreparations', JSON.stringify(preparations));
+                            dataChanged = true;
+                        }
+                        if (dataChanged) refreshUI();
+                    } else if(Array.isArray(importedData) && importedData.length !== songs.length) {
+                        songs = importedData;
                         localStorage.setItem('mySongs', JSON.stringify(songs));
                         refreshUI();
                     }
@@ -1041,21 +1283,25 @@
         
         if(localStorage.getItem('nightMode') === 'on') { document.body.classList.add('dark-mode'); }
         
+        bindTimerLongPress(); // تفعيل ضغطة الستوب واتش
         loadSongsFromJSON(false);
         refreshUI();
         updateHeaderStyles(90);
     }
 
     function refreshUI() {
+        currentActivePrepItemIndex = null; 
         renderKeys();
         if (currentKey === "Preparations") {
             renderAlphabetForPreps();
+            prepItemToolbar.style.display = (activePrepId !== null) ? 'flex' : 'none';
             if (activePrepId !== null) {
                 renderPreparationDetail(activePrepId);
             } else {
                 renderPreparationsList();
             }
         } else {
+            prepItemToolbar.style.display = 'none';
             renderAlphabet();
             renderTitles(currentKey);
         }
@@ -1075,14 +1321,10 @@
                     }
                 }
                 var btn = document.createElement('button');
-                
-                // التحقق هل السلم يعتبر حزيناً (Minor Key) أم لا لتمييزه لونيّاً
                 var isMinor = (k.charAt(k.length - 1) === 'm' && k !== "No Scale");
-                
                 var className = 'key-btn' + (k === currentKey ? ' active' : '');
                 if(k === "No Scale") className += ' no-scale';
                 if(isMinor) className += ' minor-key';
-                
                 btn.className = className;
                 btn.innerHTML = '<span class="key-name">' + k + '</span><span class="key-count">' + count + '</span>';
                 btn.onclick = function() { selectKey(k); };
@@ -1090,7 +1332,6 @@
             })(keys[i]);
         }
 
-        // --- إضافة زر التحضيرات في نهاية قائمة السلالم ---
         var prepCount = preparations.length;
         var prepBtn = document.createElement('button');
         var isPrepActive = (currentKey === "Preparations");
@@ -1119,7 +1360,6 @@
         }
     }
 
-    // --- تابع خاص بعمود الحروف لتنسيق المظهر عند فتح ميزة التحضيرات ---
     function renderAlphabetForPreps() {
         alphaList.innerHTML = "";
         var btn = document.createElement('button');
@@ -1130,17 +1370,22 @@
 
     function updateTotalCount() { totalCountDisplay.innerText = 'الإجمالي: ' + songs.length; }
 
+    function saveCustomFontSize(id, size) {
+        if (!id) return;
+        customFontSizes[id] = size;
+        localStorage.setItem('myCustomFontSizes', JSON.stringify(customFontSizes));
+    }
+
+    function loadCustomFontSize(id) {
+        if (!id) return null;
+        return customFontSizes[id] || null;
+    }
+
     function selectKey(key) {
         currentKey = key;
         mainSearchInput.value = ''; 
-        renderKeys(); 
-        if (key === "Preparations") {
-            renderAlphabetForPreps();
-            renderPreparationsList();
-        } else {
-            renderAlphabet();
-            renderTitles(key);
-        }
+        currentActivePrepItemIndex = null;
+        refreshUI();
     }
 
     function selectLetter(letter) {
@@ -1153,21 +1398,11 @@
     function mainSearch() {
         var query = mainSearchInput.value;
         if(!query || query.trim() === "") { 
-            if (currentKey === "Preparations") {
-                if (activePrepId !== null) {
-                    renderPreparationDetail(activePrepId);
-                } else {
-                    renderPreparationsList();
-                }
-            } else {
-                renderTitles(currentKey); 
-            }
+            refreshUI(); 
             return; 
         }
         
         var scoredList = [];
-        
-        // 1. فحص الترانيم العادية كالمعتاد
         var songsList = songs || [];
         for(var i=0; i<songsList.length; i++) {
             var s = songsList[i];
@@ -1178,7 +1413,6 @@
             }
         }
         
-        // 2. فحص التحضيرات (الخدمات) بصورة ذكية وعميقة شاملة العناوين والأغاني والتعليقات بالداخل
         var prepsList = preparations || [];
         var normQuery = normalizeArabic(query).trim();
         if (normQuery !== "") {
@@ -1186,22 +1420,18 @@
                 var prep = prepsList[p];
                 if (!prep) continue;
                 var prepScore = 0;
-                
                 var normPrepTitle = normalizeArabic(prep.title || "");
                 
-                // مطابقة لعنوان التحضير نفسه
                 if (normPrepTitle.indexOf(normQuery) !== -1) {
-                    prepScore = 9000 - normPrepTitle.indexOf(normQuery); // أولوية قصوى لمطابقة عنوان التحضير
+                    prepScore = 9000 - normPrepTitle.indexOf(normQuery); 
                 }
                 
-                // مطابقة لمحتويات هذا التحضير (ترانيم أو تعليقات)
                 var songIds = prep.songIds || [];
                 for (var s = 0; s < songIds.length; s++) {
                     var item = songIds[s];
                     if (!item) continue;
                     
                     if (typeof item === 'object' && item.isComment === true) {
-                        // فحص عنوان أو نص التعليق والتأمل الداخلي للخدمة
                         var normCommentTitle = normalizeArabic(item.title || "");
                         var normCommentText = normalizeArabic(item.text || "");
                         if (normCommentTitle.indexOf(normQuery) !== -1) {
@@ -1210,7 +1440,6 @@
                             prepScore = Math.max(prepScore, 2000);
                         }
                     } else {
-                        // فحص الترانيم المدرجة في التحضير
                         var songId = (typeof item === 'object') ? item.id : item;
                         var matchedSong = null;
                         for (var x = 0; x < songsList.length; x++) {
@@ -1219,7 +1448,7 @@
                         if (matchedSong) {
                             var normSongTitle = normalizeArabic(matchedSong.title || "");
                             if (normSongTitle.indexOf(normQuery) !== -1) {
-                                prepScore = Math.max(prepScore, 3000); // مطابقة لعنوان ترنيمة داخل هذا التحضير
+                                prepScore = Math.max(prepScore, 3000); 
                             }
                         }
                     }
@@ -1231,9 +1460,7 @@
             }
         }
         
-        // ترتيب النتائج بحسب سكور المطابقة الأقوى
         scoredList.sort(function(a, b) { return b.score - a.score; });
-        
         currentFilteredList = scoredList;
         currentRenderIndex = 0;
         titlesList.innerHTML = "";
@@ -1266,7 +1493,6 @@
             }
 
             if(keyMatch && letterMatch) {
-                // نضع البيانات في هيكل موحد للتوافق مع دالة renderNextBatch
                 filtered.push({ type: 'song', song: songs[i] });
             }
         }
@@ -1296,7 +1522,6 @@
             if (!item) continue;
 
             if (item.type === 'song') {
-                // --- رسم ترنيمة عادية في النتائج ---
                 (function(song) {
                     var div = document.createElement('div');
                     div.className = 'song-item';
@@ -1306,33 +1531,22 @@
                         var items = document.querySelectorAll('.song-item');
                         for(var x=0; x<items.length; x++) items[x].classList.remove('active');
                         div.classList.add('active');
-                        
-                        showLyricsWithTransition(song.lyrics, song.title, song.key, song);
+                        showLyricsWithTransition(song.lyrics, song.title, song.key, song, song.id);
                     };
                     titlesList.appendChild(div);
                 })(item.song);
 
             } else if (item.type === 'prep') {
-                // --- رسم تحضير/خدمة مطابقة في نتائج البحث ---
                 (function(prep) {
                     var div = document.createElement('div');
                     div.className = 'song-item';
-                    div.style.borderRight = '4px solid #27ae60'; // تمييز مرئي للخدمات باللون الأخضر في عمود الوسط
+                    div.style.borderRight = '4px solid #27ae60'; 
                     div.innerHTML = '📌 <span style="color: #27ae60; font-weight: bold;">تحضير:</span> <bdi>' + prep.title + '</bdi> <span style="font-size:0.75em; color:#888;">(' + (prep.songIds ? prep.songIds.length : 0) + ' بنود)</span>';
                     
                     div.onclick = function() {
-                        // تفعيل خيار التحضيرات في عمود السلالم الخارجي
                         currentKey = "Preparations";
-                        renderKeys();
-                        renderAlphabetForPreps();
-                        
-                        // فتح وعرض تفاصيل الخدمة المطابقة تلقائياً وبدقة
+                        refreshUI(); 
                         renderPreparationDetail(prep.id);
-                        
-                        // تمييز العنصر النشط
-                        var items = document.querySelectorAll('.song-item');
-                        for(var x=0; x<items.length; x++) items[x].classList.remove('active');
-                        div.classList.add('active');
                     };
                     titlesList.appendChild(div);
                 })(item.prep);
@@ -1351,7 +1565,6 @@
         }
     }
 
-    // دالة بناء محتوى الترشيحات الذكية الـ 8 للترنيمة التالية
     function buildRecommendationsHTML() {
         if (currentMatchedRecsPool.length === 0) return "";
         
@@ -1362,17 +1575,14 @@
         }
 
         var html = '<div id="lyricsRecommendationsContainer" style="margin-top: 40px; padding-top: 20px; border-top: 2px dashed rgba(142, 68, 173, 0.3); text-align: right; font-size: 1.15rem; font-weight: normal; color: #555;">';
-        
-        html += '  <div style="font-weight: bold; color: #8e44ad; margin-bottom: 12px; font-size: 1.15rem; display: flex; justify-content: space-between; align-items: center; direction: rtf;">';
+        html += '  <div style="font-weight: bold; color: #8e44ad; margin-bottom: 12px; font-size: 1.15rem; display: flex; justify-content: space-between; align-items: center; direction: rtl;">';
         html += '    <span>💡 اقتراحات ذكية للترنيمة التالية:</span>';
         
-        // زر التدوير يظهر فقط إذا كان هناك أكثر من 8 اقتراحات متوافقة في المجموع الكلي
         if (currentMatchedRecsPool.length > 8) {
             html += '    <button onclick="refreshRecommendations(event)" class="header-btn" style="margin:0; padding:2px 8px; font-size:0.8rem; background-color:#8e44ad; border-color:#8e44ad; display: inline-flex; align-items: center; gap: 3px;" title="عرض اقتراحات أخرى">🔁 تغيير</button>';
         }
         html += '  </div>';
         
-        // شبكة عرض مدمجة لـ 8 ترانيم لتشغل نفس مساحة الـ 4 ترانيم السابقة
         html += '  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap: 5px;">';
         
         for (var i = 0; i < recs.length; i++) {
@@ -1394,46 +1604,38 @@
     function openSuggestedSong(songId) {
         var song = null;
         for (var i = 0; i < songs.length; i++) {
-            // حل مشكلة عدم التطابق للمتصفحات والمزامنات المختلفة (String vs Number) بالكامل
             if (Number(songs[i].id) === Number(songId)) { song = songs[i]; break; }
         }
         if (song) {
-            showLyricsWithTransition(song.lyrics, song.title, song.key, song);
+            showLyricsWithTransition(song.lyrics, song.title, song.key, song, song.id);
         }
     }
 
-    // دالة تدوير وتبديل الاقتراحات الـ 8 التالية بنعومة
     function refreshRecommendations(event) {
-        if (event) event.stopPropagation(); // منع انتقال الضغط لكلمات الترنيمة
-        
+        if (event) event.stopPropagation(); 
         recsOffset += 8;
         if (recsOffset >= currentMatchedRecsPool.length) {
-            recsOffset = 0; // العودة للصفحة الأولى بعد النفاد
+            recsOffset = 0; 
         }
-        
         var container = document.getElementById('lyricsRecommendationsContainer');
         if (container) {
-            container.style.opacity = '0'; // تلاشي مؤقت
+            container.style.opacity = '0'; 
             setTimeout(function() {
                 container.outerHTML = buildRecommendationsHTML();
                 var newContainer = document.getElementById('lyricsRecommendationsContainer');
-                if (newContainer) {
-                    newContainer.style.opacity = '1'; // إظهار ناعم
-                }
+                if (newContainer) newContainer.style.opacity = '1'; 
             }, 100);
         }
     }
 
-    // دالة عرض الكلمات بالتأثير الحركي الناعم والمريح للعين
-    function showLyricsWithTransition(lyricsText, titleText, keyText, songObj) {
-        stopAutoScroll(); // إيقاف التمرير التلقائي القديم فوراً
+    function showLyricsWithTransition(lyricsText, titleText, keyText, songObj, itemId) {
+        stopAutoScroll(); 
         var cleanLyrics = lyricsText.replace(/\n\s*\n\s*\n/g, '\n\n');
         
-        // إخفاء مؤقت ناعم لشاشة القراءة
         lyricsView.classList.add('fade-out');
         
         setTimeout(function() {
-            recsOffset = 0; // تصفير المؤشر عند تصفح ترنيمة جديدة
+            recsOffset = 0; 
             
             if (songObj) {
                 currentMatchedRecsPool = getRecommendationsPool(songObj);
@@ -1443,12 +1645,22 @@
             
             var recommendationsHTML = buildRecommendationsHTML();
             
-            // تحويل وتأمين كلمات الترنيمة لعرضها كـ HTML سليم مع التوصيات
             var escapedLyrics = cleanLyrics.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             var formattedLyricsHTML = '<div style="white-space: pre-wrap;">' + escapedLyrics + '</div>';
             
             lyricsView.innerHTML = formattedLyricsHTML + recommendationsHTML;
-            lyricsView.scrollTop = 0; // إعادة التوجيه للأعلى
+            lyricsView.scrollTop = 0; 
+            
+            var activeId = itemId ? itemId : (songObj ? songObj.id : null);
+            currentActiveLyricsId = activeId;
+            
+            var savedSize = loadCustomFontSize(activeId);
+            if (savedSize) {
+                currentFontSize = parseFloat(savedSize);
+            } else {
+                currentFontSize = (window.innerWidth < 768 ? 1.7 : 2.2);
+            }
+            lyricsView.style.fontSize = currentFontSize + 'rem';
             
             songDisplayHeader.style.display = 'flex';
             displayTitle.innerHTML = '<bdi>' + titleText + '</bdi>';
@@ -1457,7 +1669,6 @@
             displayKey.innerText = "(" + rawKeyName + ")";
             currentActiveKeyForHelp = rawKeyName;
             
-            // إظهار لمبة الكوردات المساعدة إذا كان البند ترنيمة حقيقية ولها سلم
             var helpBtn = document.getElementById('displayKeyHelp');
             if (helpBtn) {
                 if (songObj && rawKeyName !== "No Scale" && rawKeyName !== "(📝 تعليق)" && rawKeyName !== "📝 تعليق") {
@@ -1467,20 +1678,14 @@
                 }
             }
             
-            // تفعيل مظهر شريط الأدوات العائم للتحكم بالخط والتمرير
             document.getElementById('lyricsToolbar').style.display = 'flex';
-            
-            // إعادة الإظهار بنعومة
             lyricsView.classList.remove('fade-out');
         }, 120);
     }
 
-    // --- خوارزمية الترشيحات الذكية للترنيمة التالية (أوفلاين بالكامل) تمنح الأولوية المطلقة للسلم التوافقي ---
     function getRecommendationsPool(currentSong) {
         if (!currentSong) return [];
         var currentKey = (currentSong.key || "No Scale").trim();
-        
-        // استخلص اسم السلم الصافي لمطابقته بدليل التوافق (مثلاً استخلاص C من "C (أعلى طبقة)")
         var cleanCurrentKey = currentKey.split(' ')[0].replace(/[^a-zA-Z#m]/g, '');
         var compatibleKeys = relativeKeysMap[cleanCurrentKey] || [];
         
@@ -1496,7 +1701,6 @@
             var sKey = (s.key || "No Scale").trim();
             var cleanSKey = sKey.split(' ')[0].replace(/[^a-zA-Z#m]/g, '');
 
-            // 1. عامل السلالم التوافقية المجاورة (Relative Keys) - الأولوية القصوى بناءً على طلبك! (+100 نقطة)
             var isCompatible = false;
             for (var k = 0; k < compatibleKeys.length; k++) {
                 if (compatibleKeys[k] === cleanSKey) {
@@ -1505,15 +1709,11 @@
                 }
             }
             if (isCompatible) {
-                score += 100; // الدرجة الأعلى على الإطلاق
-            }
-            
-            // 2. عامل نفس السلم الموسيقي (Same Key) - أولوية متوسطة (+60 نقطة)
-            else if (cleanSKey === cleanCurrentKey && cleanCurrentKey !== "NoScale") {
+                score += 100; 
+            } else if (cleanSKey === cleanCurrentKey && cleanCurrentKey !== "NoScale") {
                 score += 60;
             }
 
-            // 3. عامل تطابق الكلمات والموضوع الروحي (Thematic Match) - (+15 نقطة لكل كلمة مشتركة)
             var sLyricsNorm = normalizeArabic(s.lyrics || "");
             var sWords = extractThematicKeywords(sLyricsNorm);
             
@@ -1527,7 +1727,6 @@
                     }
                 }
             }
-            
             score += (sharedWordsCount * 15);
 
             if (score > 0) {
@@ -1535,19 +1734,15 @@
             }
         }
 
-        // ترتيب الترانيم كليّاً تنازلياً بحسب نقاط التوافق
         list.sort(function(a, b) {
             return b.score - a.score;
         });
 
-        return list; // إرجاع القائمة الكاملة دون اقتطاع للسماح بالتدوير والريفريش
+        return list; 
     }
 
-    // استخراج الكلمات الروحية والموضوعية وتجنب الكلمات العامة لتسريع المعالجة أوفلاين دون استخدام تعابير نمطية عربية معقدة
     function extractThematicKeywords(normText) {
         if (!normText) return [];
-        
-        // استبدال آمن لعلامات الترقيم العربية بمسافات عادية لحماية المتصفحات القديمة والحديثة
         var cleanText = normText.replace(/[،.؟?]/g, ' ');
         var words = cleanText.split(/\s+/);
         
@@ -1556,7 +1751,7 @@
         
         for (var i = 0; i < words.length; i++) {
             var w = words[i];
-            if (!w || w.length < 3) continue; // تجاهل الروابط والكلمات القصيرة
+            if (!w || w.length < 3) continue; 
             
             var isStopword = false;
             for (var s = 0; s < stopwords.length; s++) {
@@ -1570,18 +1765,21 @@
             }
             if (!isExist) {
                 uniqueThematic.push(w);
-                if (uniqueThematic.length >= 12) break; // نكتفي بأول 12 كلمة مفتاحية لضمان سرعة معالج التابلت القديم
+                if (uniqueThematic.length >= 12) break; 
             }
         }
         return uniqueThematic;
     }
 
-    // --- دوال التحكم في حجم الخط والـ Auto-scroll المضافة حديثاً ---
     function adjustFontSize(dir) {
-        currentFontSize += (dir * 0.15); // زيادة أو تصغير تدريجي بـ 0.15
+        currentFontSize += (dir * 0.15); 
         if (currentFontSize < 1.0) currentFontSize = 1.0;
         if (currentFontSize > 4.5) currentFontSize = 4.5;
         lyricsView.style.fontSize = currentFontSize + 'rem';
+        
+        if (currentActiveLyricsId) {
+            saveCustomFontSize(currentActiveLyricsId, currentFontSize);
+        }
     }
 
     function toggleAutoScroll() {
@@ -1589,30 +1787,28 @@
         if (!btn) return;
         
         if (autoScrollInterval) {
-            // التبديل بين السرعات أو الإيقاف الكلي
             if (scrollSpeed === 1) {
                 scrollSpeed = 2.2;
                 btn.innerText = "▼▼";
-                btn.style.backgroundColor = "#e67e22"; // برتقالي للسرعة المتوسطة
+                btn.style.backgroundColor = "#e67e22"; 
                 btn.style.borderColor = "#e67e22";
             } else if (scrollSpeed === 2.2) {
                 scrollSpeed = 3.5;
                 btn.innerText = "▼▼▼";
-                btn.style.backgroundColor = "#c0392b"; // أحمر للسرعة العالية
+                btn.style.backgroundColor = "#c0392b"; 
                 btn.style.borderColor = "#c0392b";
             } else {
                 stopAutoScroll();
             }
         } else {
-            // البدء بالسرعة الهادئة الأولى
             scrollSpeed = 1;
             btn.innerText = "▼";
-            btn.style.backgroundColor = "#27ae60"; // أخضر للسرعة الهادئة النشطة
+            btn.style.backgroundColor = "#27ae60"; 
             btn.style.borderColor = "#27ae60";
             
             autoScrollInterval = setInterval(function() {
                 lyricsView.scrollTop += 1;
-            }, 55 - (scrollSpeed * 10)); // ميكانيزم تمرير ناعم ومريح للغاية
+            }, 55 - (scrollSpeed * 10)); 
         }
     }
 
@@ -1624,12 +1820,11 @@
         var btn = document.getElementById('btnAutoScroll');
         if (btn) {
             btn.innerText = "▼";
-            btn.style.backgroundColor = "#2980b9"; // العودة للون الأزرق الخامل
+            btn.style.backgroundColor = "#2980b9"; 
             btn.style.borderColor = "#2980b9";
         }
     }
 
-    // دالة فتح واجهة الكوردات الأساسية المخصصة والتفاعلية
     function showChordsHelp() {
         if (!currentActiveKeyForHelp || currentActiveKeyForHelp === "No Scale" || currentActiveKeyForHelp === "📝 تعليق") return;
         
@@ -1667,7 +1862,7 @@
                         btn.style.opacity = '0.6';
                         btn.title = "كورد عزف تكميلي";
                         btn.onclick = function() {
-                            alert("الكورد (" + chord + ") هو كورد عزف تكميلي ومساعد داخل هذا السلم، وليس سلماً رئيسياً يحتوي على ترانيم مستقلة.");
+                            alert("الكورد (" + chord + ") هو كورد عزف تكميلي ومساعد داخل هذا السلم، وليس سلماً رئيسياً في الواجهة.");
                         };
                     }
                     container.appendChild(btn);
@@ -1682,8 +1877,116 @@
         document.getElementById('chordsModal').style.display = 'none';
     }
 
-    // ==========================================
-    // ⚙️ دوال ووظائف ميزة التحضيرات (أرشيف الخدمات) متوافقة 100%
+    // --- دوال شريط أدوات التحضير الجديد ---
+    function getActivePrepItem() {
+        if (activePrepId === null || currentActivePrepItemIndex === null) return null;
+        var prep = null;
+        for (var x = 0; x < preparations.length; x++) {
+            if (Number(preparations[x].id) === Number(activePrepId)) { prep = preparations[x]; break; }
+        }
+        if (!prep) return null;
+        return { prep: prep, index: currentActivePrepItemIndex, item: prep.songIds[currentActivePrepItemIndex] };
+    }
+
+    function editActivePrepTitle() {
+        var data = getActivePrepItem();
+        if (!data) return alert("الرجاء اختيار ترنيمة أو تعليق أولاً من القائمة.");
+        
+        var item = data.item;
+        var isComment = (typeof item === 'object' && item !== null && item.isComment);
+        var currentTitle = "";
+
+        if (isComment) {
+            currentTitle = item.title;
+        } else {
+            var songId = (typeof item === 'object' && item !== null) ? item.id : item;
+            var customTitle = (typeof item === 'object' && item !== null) ? item.customTitle : null;
+            if (customTitle) {
+                currentTitle = customTitle;
+            } else {
+                var s = null;
+                for(var i=0; i<songs.length; i++) { if (Number(songs[i].id) === Number(songId)) { s = songs[i]; break; } }
+                currentTitle = s ? s.title : "";
+            }
+        }
+
+        document.getElementById('prepTitleEditIndex').value = data.index;
+        document.getElementById('prepTitleEditText').value = currentTitle;
+        document.getElementById('prepTitleEditModal').style.display = 'flex';
+        document.getElementById('prepTitleEditText').focus();
+    }
+
+    function savePrepTitleEdit() {
+        var data = getActivePrepItem();
+        if (!data) return;
+        var idx = document.getElementById('prepTitleEditIndex').value;
+        var newTitle = document.getElementById('prepTitleEditText').value.trim();
+        if (!newTitle) { alert("العنوان لا يمكن أن يكون فارغاً"); return; }
+
+        var item = data.prep.songIds[idx];
+        if (typeof item === 'object' && item !== null && item.isComment) {
+            item.title = newTitle;
+        } else {
+            if (typeof item !== 'object' || item === null) {
+                item = { id: item };
+            }
+            item.customTitle = newTitle;
+        }
+        data.prep.songIds[idx] = item;
+        
+        savePreparations();
+        document.getElementById('prepTitleEditModal').style.display = 'none';
+        renderPreparationDetail(activePrepId);
+    }
+
+    function editActivePrepKey() {
+        var data = getActivePrepItem();
+        if (!data) return alert("الرجاء اختيار ترنيمة أولاً من القائمة.");
+        
+        var item = data.item;
+        if (typeof item === 'object' && item !== null && item.isComment) {
+            return alert("لا يمكن تغيير السلم الموسيقي للتعليقات والملاحظات.");
+        }
+
+        var songId = (typeof item === 'object' && item !== null) ? item.id : item;
+        var cKey = (typeof item === 'object' && item !== null) ? item.customKey : null;
+        
+        var s = null;
+        for(var i=0; i<songs.length; i++) { if (Number(songs[i].id) === Number(songId)) { s = songs[i]; break; } }
+        if (!s) return;
+
+        var currentKeyVal = cKey ? cKey : (s.key || "No Scale");
+        var newKey = prompt("تغيير السلم الموسيقي لهذه الترنيمة (داخل هذا التحضير فقط):\n\n(اكتب السلم الجديد أو اتركه فارغاً للرجوع للأصلي)", currentKeyVal);
+        
+        if (newKey !== null) {
+            var cleanedKey = newKey.trim();
+            if (typeof item !== 'object' || item === null) {
+                item = { id: item };
+            }
+            if (cleanedKey === "" || cleanedKey === (s.key || "No Scale")) {
+                item.customKey = null; 
+            } else {
+                item.customKey = cleanedKey;
+            }
+            data.prep.songIds[data.index] = item;
+            savePreparations();
+            renderPreparationDetail(activePrepId);
+            renderKeys();
+        }
+    }
+
+    function editActivePrepLyrics() {
+        var data = getActivePrepItem();
+        if (!data) return alert("الرجاء اختيار ترنيمة أو تعليق أولاً من القائمة.");
+        
+        var item = data.item;
+        if (typeof item === 'object' && item !== null && item.isComment) {
+            openPrepCommentModal(data.prep.id, data.index);
+        } else {
+            openPrepLyricsModal(data.prep.id, data.index);
+        }
+    }
+
     // ==========================================
 
     function savePreparations() {
@@ -1758,9 +2061,9 @@
 
     function renderPreparationsList() {
         activePrepId = null;
+        prepItemToolbar.style.display = 'none';
         titlesList.innerHTML = "";
 
-        // زر إضافة تحضير جديد في المقدمة
         var addBtn = document.createElement('button');
         addBtn.className = 'load-more-btn';
         addBtn.style.backgroundColor = '#27ae60';
@@ -1781,7 +2084,7 @@
             return;
         }
 
-        var sortedPreps = preparations; // استخدام الترتيب القياسي من 0 ليعمل السحب البرمجي للتحضيرات بدقة
+        var sortedPreps = preparations; 
 
         for (var i = 0; i < sortedPreps.length; i++) {
             (function(prep, index) {
@@ -1801,23 +2104,10 @@
                 countBadge.style.marginRight = '8px';
                 countBadge.innerText = prep.songIds.length;
 
-                // مقبض سحب وإعادة ترتيب التحضيرات ذاتها (Drag Handle)
-                var dragHandle = document.createElement('span');
-                dragHandle.innerHTML = '☰';
-                dragHandle.style.cursor = 'move';
-                dragHandle.style.padding = '5px 10px';
-                dragHandle.style.color = '#aaa';
-                dragHandle.style.fontWeight = 'bold';
-                dragHandle.style.userSelect = 'none';
-                dragHandle.style.webkitUserSelect = 'none';
-                dragHandle.style.touchAction = 'none';
-
-                // ربط أحداث ترتيب التحضيرات (الخدمات)
-                bindPrepListDragEvents(dragHandle, div, index);
+                bindDragEvents(div, index, null);
 
                 div.appendChild(titleSpan);
                 div.appendChild(countBadge);
-                div.appendChild(dragHandle);
 
                 div.onclick = function() {
                     renderPreparationDetail(prep.id);
@@ -1829,6 +2119,7 @@
 
     function renderPreparationDetail(prepId) {
         activePrepId = prepId;
+        prepItemToolbar.style.display = 'flex';
         titlesList.innerHTML = "";
 
         var prep = null;
@@ -1837,7 +2128,6 @@
         }
         if (!prep) { renderPreparationsList(); return; }
 
-        // لوحة التحكم العلوية للتحضير
         var controlDiv = document.createElement('div');
         controlDiv.style.padding = '8px';
         controlDiv.style.backgroundColor = 'rgba(0,0,0,0.05)';
@@ -1872,7 +2162,7 @@
         renameBtn.style.margin = '0';
         renameBtn.style.backgroundColor = '#f39c12';
         renameBtn.style.borderColor = '#e67e22';
-        renameBtn.innerText = '✏️ الاسم';
+        renameBtn.innerText = 'إعدادات';
         renameBtn.onclick = function() { openPrepNameModal(prep.id); };
 
         var delBtn = document.createElement('button');
@@ -1889,18 +2179,16 @@
         btnRow.appendChild(delBtn);
         controlDiv.appendChild(btnRow);
 
-        // زر مشاركة كامل محتويات الخدمة والتحضيرات عبر الواتساب بنقرة واحدة
         var shareBtn = document.createElement('button');
         shareBtn.className = 'load-more-btn';
         shareBtn.style.padding = '10px';
         shareBtn.style.margin = '5px 0 0 0';
-        shareBtn.style.backgroundColor = '#8e44ad'; // لون بنفسجي غامق جذاب
+        shareBtn.style.backgroundColor = '#8e44ad'; 
         shareBtn.style.borderColor = '#8e44ad';
         shareBtn.innerText = '📋 مشاركة الخدمة واتساب';
         shareBtn.onclick = function() { sharePrepAsText(prep.id); };
         controlDiv.appendChild(shareBtn);
 
-        // صف أزرار الإضافة (إضافة ترنيمة وإضافة تعليق جنباً إلى جنب بشكل أنيق)
         var addActionsRow = document.createElement('div');
         addActionsRow.style.display = 'flex';
         addActionsRow.style.gap = '3px';
@@ -1941,82 +2229,63 @@
             return;
         }
 
-        // عرض قائمة الترانيم والتعليقات المضافة للتحضير بالتوالي مع ربط دوال السحب وإعادة الترتيب التفاعلية
         for (var i = 0; i < prep.songIds.length; i++) {
             var item = prep.songIds[i];
             
-            // الفحص الذكي للنوع: هل البند الحالي عبارة عن تعليق/تأمل مستقل؟
             if (typeof item === 'object' && item !== null && item.isComment === true) {
                 (function(commentItem, pId, index) {
                     var div = document.createElement('div');
                     div.className = 'song-item';
+                    div.id = 'prepItem-' + index;
                     div.style.display = 'flex';
                     div.style.justifyContent = 'space-between';
                     div.style.alignItems = 'center';
                     div.style.padding = '10px';
-                    div.style.borderRight = '4px solid #9b59b6'; // تمييز مرئي بنفسجي للتعليقات في عمود الوسط
+                    div.style.borderRight = '4px solid #9b59b6';
 
                     var titleSpan = document.createElement('span');
                     titleSpan.style.flex = '1';
                     titleSpan.style.textAlign = 'right';
-                    titleSpan.innerHTML = '📝 <bdi>' + commentItem.title + '</bdi> <span class="edit-comment-btn" style="font-size:0.75em; color:#9b59b6; cursor:pointer; text-decoration:underline;" title="تعديل نص التعليق">[تعديل]</span>';
+                    titleSpan.innerHTML = '📝 <bdi>' + commentItem.title + '</bdi>';
 
-                    var editBtn = titleSpan.querySelector('.edit-comment-btn');
-                    editBtn.onclick = function(e) {
-                        e.stopPropagation(); // منع استدعاء فتح العرض الرئيسي للتعليق
-                        openPrepCommentModal(pId, index);
-                    };
-
-                    var removeBtn = document.createElement('span');
-                    removeBtn.style.color = '#e74c3c';
-                    removeBtn.style.cursor = 'pointer';
-                    removeBtn.style.padding = '5px 10px';
-                    removeBtn.style.fontWeight = 'bold';
-                    removeBtn.innerText = '✕';
-                    removeBtn.title = 'حذف التعليق';
-                    removeBtn.onclick = function(e) {
-                        e.stopPropagation();
-                        removeCommentFromPrep(pId, index);
-                    };
-
-                    // مقبض السحب وإعادة الترتيب (Drag Handle)
-                    var dragHandle = document.createElement('span');
-                    dragHandle.innerHTML = '☰';
-                    dragHandle.style.cursor = 'move';
-                    dragHandle.style.padding = '5px 10px';
-                    dragHandle.style.color = '#aaa';
-                    dragHandle.style.fontWeight = 'bold';
-                    dragHandle.style.userSelect = 'none';
-                    dragHandle.style.webkitUserSelect = 'none';
-                    dragHandle.style.touchAction = 'none'; // منع السكرول الافتراضي للشاشة أثناء سحب العنصر
-
-                    // ربط أحداث تحريك العناصر التفاعلية (Touch & Mouse)
-                    bindDragEvents(dragHandle, div, index, pId);
+                    bindDragEvents(div, index, pId);
 
                     div.appendChild(titleSpan);
-                    div.appendChild(dragHandle);
-                    div.appendChild(removeBtn);
+
+                    var delXBtn = document.createElement('span');
+                    delXBtn.className = 'prep-song-delete';
+                    delXBtn.innerText = '✕';
+                    delXBtn.title = 'حذف التعليق من التحضير';
+                    delXBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        deleteSongFromPrep(pId, index);
+                    };
+                    div.appendChild(delXBtn);
 
                     div.onclick = function() {
                         var items = document.querySelectorAll('.song-item');
                         for (var x = 0; x < items.length; x++) items[x].classList.remove('active');
                         div.classList.add('active');
+                        currentActivePrepItemIndex = index;
                         
-                        showLyricsWithTransition(commentItem.text, commentItem.title, "📝 تعليق", null);
+                        showLyricsWithTransition(commentItem.text, commentItem.title, "📝 تعليق", null, commentItem.id);
                     };
 
                     titlesList.appendChild(div);
                 })(item, prep.id, i);
 
             } else {
-                // البند الحالي عبارة عن ترنيمة عادية
-                var songId, customKey;
+                var songId, customKey, customLyrics, customTitle;
                 if (typeof item === 'object' && item !== null) {
                     songId = item.id;
                     customKey = item.customKey;
+                    customLyrics = item.customLyrics;
+                    customTitle = item.customTitle;
                 } else {
                     songId = item;
                     customKey = null;
+                    customLyrics = null;
+                    customTitle = null;
                 }
 
                 var song = null;
@@ -2025,9 +2294,10 @@
                 }
                 if (!song) continue;
 
-                (function(s, pId, index, cKey) {
+                (function(s, pId, index, cKey, cLyrics, cTitle) {
                     var div = document.createElement('div');
                     div.className = 'song-item';
+                    div.id = 'prepItem-' + index;
                     div.style.display = 'flex';
                     div.style.justifyContent = 'space-between';
                     div.style.alignItems = 'center';
@@ -2037,87 +2307,119 @@
                     titleSpan.style.flex = '1';
                     titleSpan.style.textAlign = 'right';
                     
-                    // تحديد النص واللون والخط للسلم الموسيقي للترنيمة
                     var keyToDisplay = cKey ? cKey : (s.key || "No Scale");
                     var keyColor = cKey ? '#3498db' : '#888';
                     var keyWeight = cKey ? 'bold' : 'normal';
+                    
+                    var displayTitle = cTitle ? cTitle : s.title;
+                    var titleStyleAttr = cTitle ? ' style="color:#2980b9;"' : '';
 
-                    titleSpan.innerHTML = '<bdi>' + s.title + '</bdi> <span class="change-key-btn" style="font-size:0.75em; color:' + keyColor + '; font-weight:' + keyWeight + '; cursor:pointer; text-decoration:underline;" title="اضغط لتغيير السلم داخل هذا التحضير فقط">(' + keyToDisplay + ')</span>';
+                    var lyricsBadge = cLyrics ? ' <span style="font-size:0.6em; color:white; background:#e67e22; padding:2px 4px; border-radius:4px; margin-right:4px;">معدلة</span>' : '';
 
-                    // ربط حدث تغيير السلم عند الضغط على بادج السلم نفسه
-                    var keyBtn = titleSpan.querySelector('.change-key-btn');
-                    keyBtn.onclick = function(e) {
-                        e.stopPropagation(); // منع كلمات الترنيمة من الفتح أثناء الرغبة في تعديل السلم
-                        var currentKeyVal = cKey ? cKey : (s.key || "No Scale");
-                        var newKey = prompt("تغيير السلم الموسيقي لهذه الترنيمة (داخل هذا التحضير فقط):\n\nمثال: C, Cm, D, Dm, Eb, F#m...\n(اكتب السلم الجديد أو اتركه فارغاً للرجوع للأصلي)", currentKeyVal);
-                        if (newKey !== null) {
-                            var cleanedKey = newKey.trim();
-                            var targetPrep = null;
-                            for (var x = 0; x < preparations.length; x++) {
-                                if (Number(preparations[x].id) === Number(pId)) { targetPrep = preparations[x]; break; }
-                            }
-                            if (targetPrep) {
-                                if (cleanedKey === "" || cleanedKey === (s.key || "No Scale")) {
-                                    // الرجوع للسلم الأصلي للترنيمة
-                                    targetPrep.songIds[index] = s.id;
-                                } else {
-                                    // حفظ السلم المخصص المربوط بالترنيمة داخل هذا التحضير فحسب
-                                    targetPrep.songIds[index] = { id: s.id, customKey: cleanedKey };
-                                }
-                                savePreparations();
-                                renderPreparationDetail(pId);
-                                renderKeys();
-                            }
-                        }
-                    };
+                    titleSpan.innerHTML = '<bdi' + titleStyleAttr + '>' + displayTitle + '</bdi>' + lyricsBadge + ' <span style="font-size:0.75em; color:' + keyColor + '; font-weight:' + keyWeight + ';">(' + keyToDisplay + ')</span>';
 
-                    var removeBtn = document.createElement('span');
-                    removeBtn.style.color = '#e74c3c';
-                    removeBtn.style.cursor = 'pointer';
-                    removeBtn.style.padding = '5px 10px';
-                    removeBtn.style.fontWeight = 'bold';
-                    removeBtn.innerText = '✕';
-                    removeBtn.title = 'حذف من التحضير';
-                    removeBtn.onclick = function(e) {
-                        e.stopPropagation();
-                        removeSongFromPrep(pId, s.id);
-                    };
-
-                    // مقبض السحب وإعادة الترتيب (Drag Handle)
-                    var dragHandle = document.createElement('span');
-                    dragHandle.innerHTML = '☰';
-                    dragHandle.style.cursor = 'move';
-                    dragHandle.style.padding = '5px 10px';
-                    dragHandle.style.color = '#aaa';
-                    dragHandle.style.fontWeight = 'bold';
-                    dragHandle.style.userSelect = 'none';
-                    dragHandle.style.webkitUserSelect = 'none';
-                    dragHandle.style.touchAction = 'none';
-
-                    // ربط أحداث تحريك العناصر التفاعلية (Touch & Mouse)
-                    bindDragEvents(dragHandle, div, index, pId);
+                    bindDragEvents(div, index, pId);
 
                     div.appendChild(titleSpan);
-                    div.appendChild(dragHandle);
-                    div.appendChild(removeBtn);
+
+                    var delXBtn = document.createElement('span');
+                    delXBtn.className = 'prep-song-delete';
+                    delXBtn.innerText = '✕';
+                    delXBtn.title = 'حذف الترنيمة من التحضير';
+                    delXBtn.onclick = function(e) {
+                        e.stopPropagation();
+                        deleteSongFromPrep(pId, index);
+                    };
+                    div.appendChild(delXBtn);
 
                     div.onclick = function() {
                         var items = document.querySelectorAll('.song-item');
                         for (var x = 0; x < items.length; x++) items[x].classList.remove('active');
                         div.classList.add('active');
+                        currentActivePrepItemIndex = index;
                         
-                        showLyricsWithTransition(s.lyrics, s.title, keyToDisplay, s);
+                        var finalLyrics = cLyrics ? cLyrics : s.lyrics;
+                        showLyricsWithTransition(finalLyrics, displayTitle, keyToDisplay, s, s.id);
                     };
 
                     titlesList.appendChild(div);
-                })(song, prep.id, i, customKey);
+                })(song, prep.id, i, customKey, customLyrics, customTitle);
             }
+        }
+
+        if (currentActivePrepItemIndex !== null) {
+            var activeEl = document.getElementById('prepItem-' + currentActivePrepItemIndex);
+            if (activeEl) activeEl.classList.add('active');
         }
     }
 
-    // --- نظام إعادة الترتيب الفيزيائي التفاعلي فائق الخفة والسرعة للترانيم والتعليقات (لمس + ماوس) ---
-    function bindDragEvents(handleEl, rowEl, index, prepId) {
-        
+    function deleteSongFromPrep(prepId, index) {
+        var prep = null;
+        for (var x = 0; x < preparations.length; x++) {
+            if (Number(preparations[x].id) === Number(prepId)) { prep = preparations[x]; break; }
+        }
+        if (!prep || !prep.songIds || index < 0 || index >= prep.songIds.length) return;
+
+        if (!confirm('هل تريد حذف هذا العنصر من التحضير؟')) return;
+
+        prep.songIds.splice(index, 1);
+        if (currentActivePrepItemIndex === index) {
+            currentActivePrepItemIndex = null;
+        } else if (currentActivePrepItemIndex !== null && currentActivePrepItemIndex > index) {
+            currentActivePrepItemIndex--;
+        }
+        savePreparations();
+        renderPreparationDetail(prepId);
+    }
+
+    function bindDragEvents(rowEl, index, prepId) {
+        var pressTimer = null;
+        var dragReady = false;
+        var hasMovedSignificantly = false;
+
+        function startPress(clientY, idx) {
+            hasMovedSignificantly = false;
+            dragReady = false;
+            
+            pressTimer = setTimeout(function() {
+                if (hasMovedSignificantly) return;
+                
+                dragReady = true;
+                if (navigator.vibrate) { 
+                    navigator.vibrate(40); 
+                }
+                
+                var borderColor = prepId ? '#9b59b6' : '#27ae60';
+                var bgColor = prepId ? 'rgba(155, 89, 182, 0.08)' : 'rgba(39, 174, 96, 0.08)';
+                
+                rowEl.style.border = '2px dashed ' + borderColor;
+                rowEl.style.backgroundColor = bgColor;
+                
+                startDrag(clientY, idx);
+            }, 1000); 
+        }
+
+        function movePress(clientY) {
+            if (!dragReady) {
+                if (Math.abs(clientY - startY) > 10) {
+                    hasMovedSignificantly = true;
+                    clearTimeout(pressTimer);
+                }
+                return;
+            }
+            moveDrag(clientY);
+        }
+
+        function endPress() {
+            clearTimeout(pressTimer);
+            if (dragReady) {
+                rowEl.style.border = '';
+                rowEl.style.backgroundColor = '';
+                endDrag();
+            }
+            dragReady = false;
+        }
+
         function startDrag(clientY, idx) {
             startY = clientY;
             startIndex = idx;
@@ -2125,12 +2427,7 @@
             activeDragItem.style.position = 'relative';
             activeDragItem.style.zIndex = '1000';
             activeDragItem.style.boxShadow = '0 6px 15px rgba(0,0,0,0.15)';
-            activeDragItem.style.backgroundColor = 'rgba(255,255,255,0.98)';
-            if (document.body.classList.contains('dark-mode')) {
-                activeDragItem.style.backgroundColor = 'rgba(40,40,40,0.98)';
-            }
             
-            // حساب وتخزين أبعاد العناصر المجاورة فورياً لتحديد نطاقات التجاوز بدقة
             var siblings = titlesList.querySelectorAll('.song-item');
             listItems = [];
             for (var k = 0; k < siblings.length; k++) {
@@ -2153,16 +2450,15 @@
             activeDragItem.style.transform = 'translateY(' + deltaY + 'px)';
             activeDragItem.style.webkitTransform = 'translateY(' + deltaY + 'px)';
             
-            // الفحص الفوري: هل تعدت حركة اليد منتصف أي عنصر مجاور؟
             for (var k = 0; k < listItems.length; k++) {
                 var item = listItems[k];
                 if (item.index === startIndex) continue;
                 
                 if (startIndex < item.index && clientY > item.midY) {
-                    swapPrepItems(prepId, startIndex, item.index);
+                    swapItems(startIndex, item.index);
                     break;
                 } else if (startIndex > item.index && clientY < item.midY) {
-                    swapPrepItems(prepId, startIndex, item.index);
+                    swapItems(startIndex, item.index);
                     break;
                 }
             }
@@ -2177,57 +2473,36 @@
             activeDragItem.style.transform = '';
             activeDragItem.style.webkitTransform = '';
             activeDragItem = null;
+            currentActivePrepItemIndex = null; 
             
             savePreparations();
-            renderPreparationDetail(prepId);
+            if (prepId) {
+                renderPreparationDetail(prepId);
+            } else {
+                renderPreparationsList();
+                renderKeys();
+            }
         }
 
-        // أحداث اللمس للهواتف والشاشات اللمسية (أندرويد 4 والحديث)
-        handleEl.addEventListener('touchstart', function(e) {
-            startDrag(e.touches[0].clientY, index);
-        });
-        handleEl.addEventListener('touchmove', function(e) {
-            if (!activeDragItem) return;
-            e.preventDefault(); // إيقاف تمرير الصفحة الإجباري لتسهيل السحب والتحريك
-            moveDrag(e.touches[0].clientY);
-        });
-        handleEl.addEventListener('touchend', endDrag);
-
-        // أحداث الماوس لأجهزة اللابتوب والكمبيوتر
-        handleEl.addEventListener('mousedown', function(e) {
-            startDrag(e.clientY, index);
+        function swapItems(fromIndex, toIndex) {
+            if (prepId) {
+                var prep = null;
+                for (var x = 0; x < preparations.length; x++) {
+                    if (Number(preparations[x].id) === Number(prepId)) { prep = preparations[x]; break; }
+                }
+                if (prep) {
+                    var temp = prep.songIds[fromIndex];
+                    prep.songIds[fromIndex] = prep.songIds[toIndex];
+                    prep.songIds[toIndex] = temp;
+                }
+            } else {
+                var temp = preparations[fromIndex];
+                preparations[fromIndex] = preparations[toIndex];
+                preparations[toIndex] = temp;
+            }
             
-            var onMouseMove = function(moveEvent) {
-                moveDrag(moveEvent.clientY);
-            };
-            
-            var onMouseUp = function() {
-                endDrag();
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            };
-            
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-    }
-
-    // دالة تبديل العناصر الحركية والـ DOM والذاكرة للترانيم والتعليقات فورياً دون تجميد المعالج
-    function swapPrepItems(prepId, fromIndex, toIndex) {
-        var prep = null;
-        for (var x = 0; x < preparations.length; x++) {
-            if (Number(preparations[x].id) === Number(prepId)) { prep = preparations[x]; break; }
-        }
-        if (prep) {
-            // 1. تبديل العناصر في مصفوفة البيانات بالذاكرة
-            var temp = prep.songIds[fromIndex];
-            prep.songIds[fromIndex] = prep.songIds[toIndex];
-            prep.songIds[toIndex] = temp;
-            
-            // 2. تحديث مؤشر البداية النشط لمتابعة السحب المستمر بسلاسة
             startIndex = toIndex;
             
-            // 3. إعادة تخزين ورصد الإحداثيات الجديدة للعناصر فور التبديل لتفادي القفزات
             var siblings = titlesList.querySelectorAll('.song-item');
             listItems = [];
             for (var k = 0; k < siblings.length; k++) {
@@ -2243,9 +2518,7 @@
                 });
             }
             
-            // 4. تبديل أماكن عناصر الـ DOM بصرياً بشكل فوري لحفظ أداء متصفحات التابلت القديم
             var container = titlesList;
-            // +1 للإزاحة لأن العنصر الأول بالمستند دائمًا هو لوحة التحكم controlDiv
             var fromNode = container.children[fromIndex + 1]; 
             var toNode = container.children[toIndex + 1];
             if (fromNode && toNode) {
@@ -2256,98 +2529,35 @@
                 }
             }
             
-            // تحديث إحداثيات الارتكاز ليدعم استمرارية السحب المتتالي
             startY = listItems[toIndex].top + listItems[toIndex].height / 2;
             activeDragItem.style.transform = 'translateY(0px)';
             activeDragItem.style.webkitTransform = 'translateY(0px)';
         }
-    }
 
-    // --- نظام إعادة الترتيب للتحضيرات ذاتها (الخدمات والمناسبات والخدمات الكلية) ---
-    function bindPrepListDragEvents(handleEl, rowEl, index) {
-        
-        function startDrag(clientY, idx) {
-            startY = clientY;
-            startIndex = idx;
-            activeDragItem = rowEl;
-            activeDragItem.style.position = 'relative';
-            activeDragItem.style.zIndex = '1000';
-            activeDragItem.style.boxShadow = '0 6px 15px rgba(0,0,0,0.15)';
-            activeDragItem.style.backgroundColor = 'rgba(255,255,255,0.98)';
-            if (document.body.classList.contains('dark-mode')) {
-                activeDragItem.style.backgroundColor = 'rgba(40,40,40,0.98)';
-            }
-            
-            var siblings = titlesList.querySelectorAll('.song-item');
-            listItems = [];
-            for (var k = 0; k < siblings.length; k++) {
-                var sEl = siblings[k];
-                var rect = sEl.getBoundingClientRect();
-                listItems.push({
-                    element: sEl,
-                    index: k,
-                    top: rect.top,
-                    bottom: rect.bottom,
-                    height: rect.height,
-                    midY: rect.top + rect.height / 2
-                });
-            }
-        }
-
-        function moveDrag(clientY) {
-            if (!activeDragItem) return;
-            var deltaY = clientY - startY;
-            activeDragItem.style.transform = 'translateY(' + deltaY + 'px)';
-            activeDragItem.style.webkitTransform = 'translateY(' + deltaY + 'px)';
-            
-            for (var k = 0; k < listItems.length; k++) {
-                var item = listItems[k];
-                if (item.index === startIndex) continue;
-                
-                if (startIndex < item.index && clientY > item.midY) {
-                    swapPreparations(startIndex, item.index);
-                    break;
-                } else if (startIndex > item.index && clientY < item.midY) {
-                    swapPreparations(startIndex, item.index);
-                    break;
-                }
-            }
-        }
-
-        function endDrag() {
-            if (!activeDragItem) return;
-            activeDragItem.style.position = '';
-            activeDragItem.style.zIndex = '';
-            activeDragItem.style.boxShadow = '';
-            activeDragItem.style.backgroundColor = '';
-            activeDragItem.style.transform = '';
-            activeDragItem.style.webkitTransform = '';
-            activeDragItem = null;
-            
-            savePreparations();
-            renderPreparationsList();
-            renderKeys();
-        }
-
-        handleEl.addEventListener('touchstart', function(e) {
-            startDrag(e.touches[0].clientY, index);
+        rowEl.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+            startPress(e.touches[0].clientY, index);
         });
-        handleEl.addEventListener('touchmove', function(e) {
-            if (!activeDragItem) return;
-            e.preventDefault();
-            moveDrag(e.touches[0].clientY);
+        rowEl.addEventListener('touchmove', function(e) {
+            if (dragReady) {
+                e.preventDefault(); 
+            }
+            movePress(e.touches[0].clientY);
         });
-        handleEl.addEventListener('touchend', endDrag);
+        rowEl.addEventListener('touchend', endPress);
+        rowEl.addEventListener('touchcancel', endPress);
 
-        handleEl.addEventListener('mousedown', function(e) {
-            startDrag(e.clientY, index);
+        rowEl.addEventListener('mousedown', function(e) {
+            if (e.button !== 0) return; 
+            startY = e.clientY;
+            startPress(e.clientY, index);
             
             var onMouseMove = function(moveEvent) {
-                moveDrag(moveEvent.clientY);
+                movePress(moveEvent.clientY);
             };
             
             var onMouseUp = function() {
-                endDrag();
+                endPress();
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
             };
@@ -2355,69 +2565,6 @@
             document.addEventListener('mousemove', onMouseMove);
             document.addEventListener('mouseup', onMouseUp);
         });
-    }
-
-    // دالة تبديل التحضيرات (الخدمات) بصرياً وفوق قاعدة البيانات بالذاكرة
-    function swapPreparations(fromIndex, toIndex) {
-        var temp = preparations[fromIndex];
-        preparations[fromIndex] = preparations[toIndex];
-        preparations[toIndex] = temp;
-        
-        startIndex = toIndex;
-        
-        var siblings = titlesList.querySelectorAll('.song-item');
-        listItems = [];
-        for (var k = 0; k < siblings.length; k++) {
-            var sEl = siblings[k];
-            var rect = sEl.getBoundingClientRect();
-            listItems.push({
-                element: sEl,
-                index: k,
-                top: rect.top,
-                bottom: rect.bottom,
-                height: rect.height,
-                midY: rect.top + rect.height / 2
-            });
-        }
-        
-        var container = titlesList;
-        // +1 للإزاحة لأن العنصر الأول هو زر إنشاء تحضير جديد
-        var fromNode = container.children[fromIndex + 1];
-        var toNode = container.children[toIndex + 1];
-        if (fromNode && toNode) {
-            if (fromIndex < toIndex) {
-                container.insertBefore(fromNode, toNode.nextSibling);
-            } else {
-                container.insertBefore(fromNode, toNode);
-            }
-        }
-        
-        startY = listItems[toIndex].top + listItems[toIndex].height / 2;
-        activeDragItem.style.transform = 'translateY(0px)';
-        activeDragItem.style.webkitTransform = 'translateY(0px)';
-    }
-
-    function removeSongFromPrep(prepId, songId) {
-        if (confirm("هل تريد إزالة هذه الترنيمة من التحضير؟")) {
-            var prep = null;
-            for (var x = 0; x < preparations.length; x++) {
-                if (Number(preparations[x].id) === Number(prepId)) { prep = preparations[x]; break; }
-            }
-            if (prep) {
-                var tempIds = [];
-                for (var x = 0; x < prep.songIds.length; x++) {
-                    var item = prep.songIds[x];
-                    var currId = (item && typeof item === 'object') ? item.id : item;
-                    if (Number(currId) !== Number(songId)) {
-                        tempIds.push(item);
-                    }
-                }
-                prep.songIds = tempIds;
-                savePreparations();
-                renderPreparationDetail(prepId);
-                renderKeys();
-            }
-        }
     }
 
     function openPrepAddSongModal() {
@@ -2443,7 +2590,6 @@
         }
     }
 
-    // --- محرك بحث ذكي وفائق السرعة ومزود بـ Debounce وتوافق كامل مع الكيبوردات المحمولة ---
     var prepSearchTimeout;
     var searchInputEl = document.getElementById('prepSongSearchInput');
     if (searchInputEl) {
@@ -2453,7 +2599,7 @@
             prepSearchTimeout = setTimeout(function() {
                 tempPrepSongQuery = self.value;
                 renderPrepAddSongsList();
-            }, 300); // الانتظار لمدة 300 مللي ثانية بعد توقف المستخدم عن الكتابة تماماً
+            }, 300); 
         };
     }
 
@@ -2471,7 +2617,6 @@
         }
         if (!activePrep) return;
         
-        // فحص أمني وقائي لسلامة البيانات
         if (!activePrep.songIds) {
             activePrep.songIds = [];
         }
@@ -2485,7 +2630,6 @@
             var s = songsListToSearch[i];
             if (!s) continue;
             
-            // تحقق يدوي متوافق من عدم تكرار الترانيم
             var isAlreadyAdded = false;
             for (var k = 0; k < activePrep.songIds.length; k++) {
                 var item = activePrep.songIds[k];
@@ -2515,14 +2659,12 @@
             }
         }
 
-        // ترتيب الترانيم المطابقة بحسب معيار دقة المطابقة (العناوين ثم الكلمات بالداخل) دون تعديل كائن الترنيمة الأصلي
         if (query !== "") {
             scoredList.sort(function(a, b) {
                 return b.score - a.score;
             });
         }
 
-        // تحجيم العرض لتسريع الاستجابة الفورية وتجنب بطء الـ DOM
         var displayLimit = 100;
         var end = Math.min(scoredList.length, displayLimit);
 
@@ -2582,7 +2724,6 @@
                 return;
             }
             
-            // تحقق يدوي متوافق من عدم التكرار
             var isExist = false;
             for (var k = 0; k < activePrep.songIds.length; k++) {
                 var item = activePrep.songIds[k];
@@ -2600,7 +2741,86 @@
         }
     }
 
-    // --- دوال التحكم في نوافذ التعليقات المضافة حديثاً ---
+    function openPrepLyricsModal(prepId, songIndex) {
+        document.getElementById('prepLyricsModal').style.display = 'flex';
+        var indexField = document.getElementById('prepLyricsSongIndex');
+        var textField = document.getElementById('prepLyricsText');
+        var modalTitle = document.getElementById('prepLyricsModalTitle');
+        
+        var prep = null;
+        for (var x = 0; x < preparations.length; x++) {
+            if (Number(preparations[x].id) === Number(prepId)) { prep = preparations[x]; break; }
+        }
+        if (prep) {
+            var item = prep.songIds[songIndex];
+            var songId = (item && typeof item === 'object') ? item.id : item;
+            var customLyrics = (item && typeof item === 'object') ? item.customLyrics : null;
+            
+            indexField.value = songIndex;
+            
+            var originalSong = null;
+            for (var x = 0; x < songs.length; x++) {
+                if (Number(songs[x].id) === Number(songId)) { originalSong = songs[x]; break; }
+            }
+            
+            textField.value = customLyrics ? customLyrics : (originalSong ? originalSong.lyrics : "");
+            if (originalSong) {
+                modalTitle.innerHTML = "📝 كلمات مخصصة لـ: <bdi>" + originalSong.title + "</bdi>";
+            } else {
+                modalTitle.innerText = "تعديل كلمات الترنيمة للخدمة";
+            }
+        }
+        textField.focus();
+    }
+
+    function closePrepLyricsModal() {
+        document.getElementById('prepLyricsModal').style.display = 'none';
+    }
+
+    function savePrepLyrics() {
+        var index = document.getElementById('prepLyricsSongIndex').value;
+        var text = document.getElementById('prepLyricsText').value;
+        var idx = parseInt(index, 10);
+        
+        var activePrep = null;
+        for (var x = 0; x < preparations.length; x++) {
+            if (Number(preparations[x].id) === Number(activePrepId)) { activePrep = preparations[x]; break; }
+        }
+        
+        if (activePrep && idx !== undefined && !isNaN(idx)) {
+            var item = activePrep.songIds[idx];
+            var songId = (item && typeof item === 'object') ? item.id : item;
+            var customKey = (item && typeof item === 'object') ? item.customKey : null;
+            var customTitle = (item && typeof item === 'object') ? item.customTitle : null;
+            
+            var originalSong = null;
+            for (var x = 0; x < songs.length; x++) {
+                if (Number(songs[x].id) === Number(songId)) { originalSong = songs[x]; break; }
+            }
+            
+            var cleanOriginal = originalSong ? originalSong.lyrics.trim() : "";
+            var cleanNew = text.trim();
+            
+            if (cleanNew === "" || cleanNew === cleanOriginal) {
+                if (customKey || customTitle) {
+                    activePrep.songIds[idx] = { id: songId, customKey: customKey, customTitle: customTitle };
+                } else {
+                    activePrep.songIds[idx] = songId;
+                }
+            } else {
+                activePrep.songIds[idx] = {
+                    id: songId,
+                    customKey: customKey,
+                    customTitle: customTitle,
+                    customLyrics: text
+                };
+            }
+            savePreparations();
+            closePrepLyricsModal();
+            renderPreparationDetail(activePrepId);
+        }
+    }
+
     function openPrepCommentModal(prepId, commentIndex) {
         document.getElementById('prepCommentModal').style.display = 'flex';
         var titleField = document.getElementById('prepCommentTitle');
@@ -2609,7 +2829,6 @@
         var modalTitle = document.getElementById('prepCommentModalTitle');
         
         if (commentIndex !== undefined && commentIndex !== null) {
-            // وضعية التعديل
             var prep = null;
             for (var x = 0; x < preparations.length; x++) {
                 if (Number(preparations[x].id) === Number(prepId)) { prep = preparations[x]; break; }
@@ -2622,7 +2841,6 @@
                 modalTitle.innerText = "تعديل التعليق / التأمل";
             }
         } else {
-            // وضعية الإضافة الجديدة
             indexField.value = "";
             titleField.value = "";
             textField.value = "";
@@ -2652,7 +2870,6 @@
                 activePrep.songIds = [];
             }
             if (index !== "") {
-                // حفظ التعديل على تعليق موجود بالفعل
                 var idx = parseInt(index, 10);
                 activePrep.songIds[idx] = {
                     isComment: true,
@@ -2661,7 +2878,6 @@
                     text: text
                 };
             } else {
-                // حفظ تعليق جديد متسلسل في التحضير الحالي
                 if (activePrep.songIds.length >= 99) {
                     alert("الحد الأقصى للتحضير الواحد هو 99 بند.");
                     return;
@@ -2680,22 +2896,6 @@
         }
     }
 
-    function removeCommentFromPrep(prepId, commentIndex) {
-        if (confirm("هل تريد حذف هذا التعليق بالكامل من التحضير؟")) {
-            var prep = null;
-            for (var x = 0; x < preparations.length; x++) {
-                if (Number(preparations[x].id) === Number(prepId)) { prep = preparations[x]; break; }
-            }
-            if (prep) {
-                prep.songIds.splice(commentIndex, 1);
-                savePreparations();
-                renderPreparationDetail(prepId);
-                renderKeys();
-            }
-        }
-    }
-
-    // دالة مشاركة الخدمة المنسقة عبر الواتساب مع دعم النسخ الاحتياطي التوافقي للأجهزة القديمة
     function sharePrepAsText(prepId) {
         var prep = null;
         for (var x = 0; x < preparations.length; x++) {
@@ -2711,13 +2911,15 @@
             if (item && typeof item === 'object' && item.isComment) {
                 text += (i + 1) + ". 📝 تعليق: " + item.title + "\n";
             } else {
-                var songId, customKey;
+                var songId, customKey, customTitle;
                 if (typeof item === 'object' && item !== null) {
                     songId = item.id;
                     customKey = item.customKey;
+                    customTitle = item.customTitle;
                 } else {
                     songId = item;
                     customKey = null;
+                    customTitle = null;
                 }
                 var song = null;
                 for (var x = 0; x < songs.length; x++) {
@@ -2725,7 +2927,8 @@
                 }
                 if (song) {
                     var scale = customKey ? customKey : (song.key || "No Scale");
-                    text += (i + 1) + ". 🎹 (سلم " + scale + ") - " + song.title + "\n";
+                    var dispTitle = customTitle ? customTitle : song.title;
+                    text += (i + 1) + ". 🎹 (سلم " + scale + ") - " + dispTitle + "\n";
                 }
             }
         }
@@ -2736,7 +2939,6 @@
     }
 
     function copyToClipboard(text) {
-        // فحص دعم محرك التصفح لـ Clipboard API الحديثة
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(function() {
                 alert("📋 تم نسخ تفاصيل الخدمة بنجاح! يمكنك الآن لصقها في واتساب.");
@@ -2748,7 +2950,6 @@
         }
     }
 
-    // دالة النسخ التوافقية لتابلت سامسونج القديم ومتصفحات الويب القديمة
     function fallbackCopyToClipboard(text) {
         var textArea = document.createElement("textarea");
         textArea.value = text;
@@ -2775,8 +2976,6 @@
 
         document.body.removeChild(textArea);
     }
-
-    // ==========================================
 
     function openControlPanel() {
         controlPanel.style.display = 'flex';
@@ -2945,7 +3144,6 @@
         renderKeys();
     }
 
-    // لتجنب المشاكل البرمجية مع الفانكشن الأصلية في استدعاءاتها الداخلية
     function renderManageList(songsData) {
          if (controlPanel.style.display === 'flex' || controlPanel.style.display === '-webkit-flex') {
               openControlPanel();
@@ -2961,7 +3159,6 @@
             songs = newSongs;
             localStorage.setItem('mySongs', JSON.stringify(songs));
             
-            // تنظيف الترانيم المحذوفة من التحضيرات أيضاً لضمان سلامة الأرشيف
             for (var k = 0; k < preparations.length; k++) {
                 var tempIds = [];
                 for (var x = 0; x < preparations[k].songIds.length; x++) {
@@ -2982,26 +3179,44 @@
         }
     }
 
-    // --- تصدير الترانيم والتحضيرات وترتيب الخدمات ذاتها بملف احتياطي واحد ---
     function exportData() {
         try {
             var backupData = {
                 songs: songs,
-                preparations: preparations
+                preparations: preparations,
+                customFontSizes: customFontSizes
             };
             var dataStr = JSON.stringify(backupData);
-            var blob = new Blob([dataStr], {type: "application/json"});
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = "songs_backup.json";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        } catch(e) { alert("عذراً، هاتفك لا يدعم التصدير."); }
+            
+            var file = new File([dataStr], "songs_backup.json", {type: "application/json"});
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                navigator.share({
+                    files: [file],
+                    title: 'نسخة احتياطية للترانيم',
+                    text: 'ملف المزامنة لتطبيق Scales'
+                }).catch(function(error) {
+                    fallbackDownload(dataStr);
+                });
+            } else {
+                fallbackDownload(dataStr);
+            }
+        } catch(e) { 
+            alert("عذراً، حدث خطأ أثناء التصدير."); 
+        }
     }
 
-    // --- استيراد الترانيم والتحضيرات مع التحقق الكامل لسلامة البيانات في القديم والجديد ---
+    function fallbackDownload(dataStr) {
+        var blob = new Blob([dataStr], {type: "application/json"});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = "songs_backup.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
     function importData(input) {
         var file = input.files[0];
         if (!file) return;
@@ -3010,7 +3225,6 @@
             try {
                 var importedData = JSON.parse(e.target.result);
                 
-                // تحقق هل الملف بالصيغة المحدثة الكلية (كائن يحتوي على مصفوفتين)؟
                 if (importedData && typeof importedData === 'object' && !Array.isArray(importedData)) {
                     if (importedData.songs && Array.isArray(importedData.songs)) {
                         if (confirm("تم اكتشاف ملف تحديث كامل. سيتم استبدال الترانيم والتحضيرات الحالية بالبيانات المستوردة. هل تريد الاستمرار؟")) {
@@ -3022,6 +3236,11 @@
                                 localStorage.setItem('myPreparations', JSON.stringify(preparations));
                             }
                             
+                            if (importedData.customFontSizes && typeof importedData.customFontSizes === 'object') {
+                                customFontSizes = importedData.customFontSizes;
+                                localStorage.setItem('myCustomFontSizes', JSON.stringify(customFontSizes));
+                            }
+                            
                             alert("تم استيراد الترانيم والتحضيرات بنجاح تام!");
                             location.reload();
                         }
@@ -3029,16 +3248,15 @@
                         alert("محتوى الملف غير صالح للاستيراد.");
                     }
                 } 
-                // التحقق هل الملف بالصيغة القديمة (مصفوفة ترانيم مجردة)؟
                 else if (importedData && Array.isArray(importedData)) {
-                    if (confirm("تم اكتشاف ملف قديم يحتوي على ترانيم فقط. هل تريد استيراده واستبدال الترانيم الحالية؟ (لن يتم المساس بتحضيراتك الحالية)")) {
+                    if (confirm("تم اكتشاف ملف احتياطي قديم (ترانيم فقط). هل تريد استيراده واستبدال الترانيم الحالية؟ (لن يتم المساس بتحضيراتك الحالية)")) {
                         songs = importedData;
                         localStorage.setItem('mySongs', JSON.stringify(songs));
                         alert("تم استيراد قائمة الترانيم بنجاح!");
                         location.reload();
                     }
                 } else { 
-                    alert("الملف غير صالح"); 
+                    alert("تنسيق الملف غير مدعوم."); 
                 }
             } catch (err) { 
                 alert("خطأ في قراءة وتحليل الملف"); 
@@ -3048,6 +3266,53 @@
     }
 
     init();
+
+    // --- تسجيل الـ Service Worker لتشغيل التطبيق أوفلاين ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('service-worker.js').catch(function (err) {
+                console.log('Service worker registration failed:', err);
+            });
+        });
+    }
+
+    // --- زرار تثبيت التطبيق (PWA) ---
+    var deferredInstallPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        var btn = document.getElementById('installAppBtn');
+        if (btn) btn.style.display = 'block';
+    });
+
+    function installApp() {
+        var btn = document.getElementById('installAppBtn');
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        deferredInstallPrompt.userChoice.then(function () {
+            deferredInstallPrompt = null;
+            if (btn) btn.style.display = 'none';
+        });
+    }
+
+    window.addEventListener('appinstalled', function () {
+        var btn = document.getElementById('installAppBtn');
+        var msg = document.getElementById('installAppInstalledMsg');
+        if (btn) btn.style.display = 'none';
+        if (msg) msg.style.display = 'block';
+        deferredInstallPrompt = null;
+    });
+
+    // لو التطبيق شغال فعلاً كتطبيق مثبت (standalone)، اعرض رسالة "متثبت" بدل زرار التثبيت
+    (function checkIfAlreadyInstalled() {
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (isStandalone) {
+            var msg = document.getElementById('installAppInstalledMsg');
+            if (msg) msg.style.display = 'block';
+        }
+    })();
+
 </script>
 </body>
 </html>
