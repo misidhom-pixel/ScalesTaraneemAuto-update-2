@@ -103,19 +103,10 @@
             padding: 0 8px !important;
             transition: color 0.3s;
         }
-        .timer-btn.paused {
-            opacity: 0.55;
-        }
-        .timer-btn.timer-warn-yellow {
-            color: #f1c40f !important;
-        }
-        .timer-btn.timer-warn-pulse {
-            color: #f1c40f !important;
-            animation: pulse-timer-warn 0.9s infinite;
-        }
-        .timer-btn.timer-warn-red {
-            color: #e74c3c !important;
-        }
+        .timer-btn.paused { opacity: 0.55; }
+        .timer-btn.timer-warn-yellow { color: #f1c40f !important; }
+        .timer-btn.timer-warn-pulse { color: #f1c40f !important; animation: pulse-timer-warn 0.9s infinite; }
+        .timer-btn.timer-warn-red { color: #e74c3c !important; }
         @keyframes pulse-timer-warn {
             0% { color: #f1c40f; }
             50% { color: #e74c3c; }
@@ -304,16 +295,6 @@
 
         .load-more-btn { display: block; width: 100%; padding: 15px; background: #e67e22; color: white; font-weight: bold; border: none; cursor: pointer; text-align: center; font-family: 'Cairo', sans-serif; border-bottom: 1px solid #ddd; }
 
-        @media (max-width: 767px) {
-            .header-btn:not(.header-btn-lg):not(.timer-btn) { font-size: 0.75rem; padding: 5px; }
-            .header-btn-lg { font-size: 1.2rem !important; height: 60px !important; padding: 8px 14px !important; }
-            .timer-btn { font-size: 1.5rem !important; }
-            header { height: 76px !important; }
-            .container { height: calc(100vh - 76px) !important; }
-            header h1 { display: none; }
-            .search-wrapper { max-width: 150px; }
-        }
-
         @media (min-width: 768px) {
             .lyrics-scroll-area { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
             header h1 { font-size: 1.5rem; }
@@ -495,7 +476,6 @@
     </div>
     <div class="panel-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; gap: 20px;">
         <button class="btn-big btn-reload" style="max-width: 320px; font-size: 1.5rem; padding: 18px 25px;" onclick="loadSongsFromJSON(true)">Update</button>
-        <!-- زرار التثبيت ظاهر دائماً في الشاشة -->
         <button class="btn-big" id="installAppBtn" style="max-width: 320px; font-size: 1.3rem; padding: 16px 20px; background:#16a085; cursor: pointer;" onclick="installApp()">Install App</button>
     </div>
 </div>
@@ -727,6 +707,26 @@
     setupResizer(resizer2, document.getElementById('colAlpha'));
     setupResizer(resizer3, document.getElementById('colTitles'));
     setupVerticalResizer(resizerV, songDisplayHeader);
+
+    // ============================================================
+    // 📐 كود التكيّف الأوتوماتيكي مع أبعاد جميع الشاشات (Auto-Fit)
+    // ============================================================
+    function autoFitScreen() {
+        var targetWidth = 768; // العرض الأساسي المفترض للتابلت
+        var currentWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+        if (currentWidth < targetWidth) {
+            var scaleRatio = currentWidth / targetWidth;
+            document.body.style.zoom = scaleRatio;
+        } else {
+            document.body.style.zoom = "1";
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', autoFitScreen);
+    window.addEventListener('load', autoFitScreen);
+    window.addEventListener('resize', autoFitScreen);
+    window.addEventListener('orientationchange', autoFitScreen);
 
     // --- دوال الستوب واتش الذكي ---
     function toggleTimer() {
@@ -1125,6 +1125,7 @@
         loadSongsFromJSON(false);
         refreshUI();
         updateHeaderStyles(90);
+        autoFitScreen();
     }
 
     function refreshUI() {
