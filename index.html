@@ -295,7 +295,52 @@
 
         .load-more-btn { display: block; width: 100%; padding: 15px; background: #e67e22; color: white; font-weight: bold; border: none; cursor: pointer; text-align: center; font-family: 'Cairo', sans-serif; border-bottom: 1px solid #ddd; }
 
+        /* ============================================================ */
+        /* 📱 التنسيق الذكي والمريح جداً المخصص للشاشات الصغيرة (الموبايل) */
+        /* ============================================================ */
+        @media (max-width: 767px) {
+            header { height: 60px !important; padding: 0 6px !important; }
+            .container { height: calc(100vh - 60px) !important; }
+            header h1 { display: none; }
+            .header-right { min-width: 45px; }
+            .total-badge { font-size: 0.65rem; white-space: nowrap; }
+            
+            .header-center { padding: 0 4px; }
+            .search-wrapper { max-width: 125px; margin-right: 4px; }
+            #mainSearchInput { padding: 5px 10px; font-size: 0.82rem; border-radius: 12px; }
+            
+            .header-left { gap: 3px; margin-left: auto; }
+            .timer-btn { font-size: 1.3rem !important; padding: 0 3px !important; }
+            
+            .header-btn-lg { 
+                height: 38px !important; 
+                padding: 2px 8px !important; 
+                font-size: 0.8rem !important; 
+                border-radius: 6px !important;
+                white-space: nowrap;
+            }
+
+            /* ضغط عمودي الاختيار لزيادة مساحة القراءة */
+            .col-keys { width: 50px !important; min-width: 45px !important; }
+            .col-alpha { width: 42px !important; min-width: 38px !important; }
+            .col-titles { width: 135px !important; min-width: 110px !important; }
+            .resizer { width: 4px !important; }
+
+            .key-btn { padding: 8px 1px !important; font-size: 0.85rem !important; }
+            .key-btn .key-count { font-size: 0.6rem !important; padding: 1px 3px !important; }
+            .alpha-btn { padding: 7px 0 !important; font-size: 0.95rem !important; }
+            .song-item { padding: 10px 6px !important; font-size: 0.88rem !important; line-height: 1.35; }
+            .lyrics-scroll-area { font-size: 1.6rem; padding: 15px 8px; line-height: 1.4; }
+            .song-display-header { min-height: 55px; height: 60px; padding: 0 8px; }
+            .song-display-title { font-size: 1.2rem !important; }
+            .song-display-key { font-size: 0.95rem !important; }
+        }
+
+        /* ============================================================ */
+        /* 💻 التنسيق الضخم المكتمل والمريح للتابلت والكمبيوتر */
+        /* ============================================================ */
         @media (min-width: 768px) {
+            header { height: 84px; }
             .lyrics-scroll-area { font-size: 2.5rem; line-height: 1.4; padding: 20px 10px; }
             header h1 { font-size: 1.5rem; }
             #mainSearchInput { font-size: 1.2rem; }
@@ -580,25 +625,6 @@
     // ==========================================
     var ONLINE_SONGS_URL = "https://raw.githubusercontent.com/misidhom-pixel/ScalesTaraneemAuto-update-2/main/songs.json"; 
     // ==========================================
-
-    // ============================================================
-    // 📱 كود ضبط العرض المباشر (Meta Viewport Scaling) للموبايل
-    // ============================================================
-    function autoFitScreen() {
-        var viewportMeta = document.querySelector('meta[name="viewport"]');
-        if (!viewportMeta) return;
-
-        var screenWidth = window.screen.width || window.innerWidth;
-        if (screenWidth < 768) {
-            // إجبار المتصفح على الفتح بعرض 768px (عرض التابلت) ليعرض الهيدر كاملاً بدون نقص
-            viewportMeta.setAttribute('content', 'width=768, user-scalable=no');
-        } else {
-            viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-        }
-    }
-    autoFitScreen();
-    window.addEventListener('resize', autoFitScreen);
-    window.addEventListener('orientationchange', autoFitScreen);
 
     var keys = ["C", "Cm", "C#m", "D", "Dm", "Db", "Dbm", "E", "Em", "Eb", "F", "Fm", "F#m", "G", "Gm", "G#m", "A", "Am", "Ab", "Abm", "B", "Bm", "Bb", "Bbm", "No Scale"];
     var arChars = ['أ','ب','ت','ث','ج','ح','خ','د','ذ','ر','ز','س','ش','ص','ض','ط','ظ','ع','غ','ف','ق','ك','ل','م','ن','ه','و','ي'];
@@ -1495,7 +1521,7 @@
             if (savedSize) {
                 currentFontSize = parseFloat(savedSize);
             } else {
-                currentFontSize = (window.innerWidth < 768 ? 1.7 : 2.2);
+                currentFontSize = (window.innerWidth < 768 ? 1.6 : 2.5);
             }
             lyricsView.style.fontSize = currentFontSize + 'rem';
             
