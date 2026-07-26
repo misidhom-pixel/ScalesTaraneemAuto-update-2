@@ -493,8 +493,10 @@
             <button class="header-btn header-btn-lg" onclick="closeControlPanel()">Back</button>
         </div>
     </div>
-    <div class="panel-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px;">
+    <div class="panel-content" style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 20px; gap: 20px;">
         <button class="btn-big btn-reload" style="max-width: 320px; font-size: 1.5rem; padding: 18px 25px;" onclick="loadSongsFromJSON(true)">Update</button>
+        <!-- زرار التثبيت ظاهر دائماً في الشاشة -->
+        <button class="btn-big" id="installAppBtn" style="max-width: 320px; font-size: 1.3rem; padding: 16px 20px; background:#16a085; cursor: pointer;" onclick="installApp()">Install App</button>
     </div>
 </div>
 
@@ -1112,7 +1114,6 @@
         xhr.send();
     }
     
-    // عند عودة الاتصال بالإنترنت، استدعِ دالة تحديث الترانيم بدون لمس تحضيرات المستخدم
     window.addEventListener('online', function() { 
         loadSongsFromJSON(false);
     });
@@ -2842,6 +2843,66 @@
             });
         });
     }
+
+    // --- زرار تثبيت التطبيق (PWA Install App) ---
+    var deferredInstallPrompt = null;
+
+    function markAppAsInstalled() {
+        var btn = document.getElementById('installAppBtn');
+        if (btn) {
+            btn.innerText = 'App Installed Successfully';
+            btn.style.background = '#27ae60';
+            btn.disabled = true;
+            btn.style.cursor = 'default';
+        }
+    }
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        var btn = document.getElementById('installAppBtn');
+        if (btn && btn.innerText !== 'App Installed Successfully') {
+            btn.innerText = 'Install App';
+            btn.disabled = false;
+            btn.style.background = '#16a085';
+            btn.style.cursor = 'pointer';
+        }
+    });
+
+    function installApp() {
+        var btn = document.getElementById('installAppBtn');
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        
+        if (isStandalone || (btn && btn.innerText === 'App Installed Successfully')) {
+            alert('التطبيق متثبت بالفعل على جهازك!');
+            markAppAsInstalled();
+            return;
+        }
+
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt.userChoice.then(function (choiceResult) {
+                if (choiceResult && choiceResult.outcome === 'accepted') {
+                    markAppAsInstalled();
+                }
+                deferredInstallPrompt = null;
+            });
+        } else {
+            alert('لتثبيت التطبيق مباشرة على جهازك:\n- على أندرويد/كروم: اضغط خيارات المتصفح (⋮) في الأعلى واختر "التثبيت" أو "إضافة إلى الشاشة الرئيسية".\n- على آيفون (Safari): اضغط زر المشاركة (Share) ثم اختر "إضافة إلى الشاشة الرئيسية".');
+        }
+    }
+
+    window.addEventListener('appinstalled', function () {
+        markAppAsInstalled();
+        deferredInstallPrompt = null;
+    });
+
+    (function checkIfAlreadyInstalled() {
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (isStandalone) {
+            markAppAsInstalled();
+        }
+    })();
 </script>
 </body>
 </html>
