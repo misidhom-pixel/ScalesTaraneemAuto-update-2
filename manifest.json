@@ -1,6 +1,6 @@
 {
-  "name": "Scales - إدارة الترانيم",
-  "short_name": "Scales",
+  "name": "Scales -  الترانيم بالسلالم الموسيقية و تحضيرات الخدمات",
+  "short_name": "ScalesPre",
   "description": "تطبيق إدارة الترانيم والتسبيحات مع السلالم الموسيقية - يعمل بدون إنترنت",
   "start_url": "./index.html",
   "scope": "./",
