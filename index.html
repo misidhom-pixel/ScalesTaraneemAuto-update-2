@@ -2954,6 +2954,25 @@
 
     init();
 
+    // --- منع الشاشة من الإطفاء التلقائي طول ما التطبيق مفتوح (Wake Lock) ---
+    var wakeLockRef = null;
+    function requestWakeLock() {
+        if ('wakeLock' in navigator) {
+            navigator.wakeLock.request('screen').then(function (lock) {
+                wakeLockRef = lock;
+            }).catch(function () {
+                // المتصفح رفض الطلب أو مش مدعوم - نتجاهل بهدوء من غير ما نزعج المستخدم
+            });
+        }
+    }
+    requestWakeLock();
+    document.addEventListener('visibilitychange', function () {
+        // الـ Wake Lock بيتلغي تلقائي لما التطبيق يروح للخلفية، فلازم نطلبه تاني لما يرجع يظهر
+        if (document.visibilityState === 'visible') {
+            requestWakeLock();
+        }
+    });
+
     // --- تسجيل الـ Service Worker لتشغيل التطبيق أوفلاين ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {
