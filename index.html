@@ -1102,8 +1102,17 @@
     // ============================================================
     // 🌐 دالة الفحص الذكي الخفيف في الخلفية للبصمة الرقمية (ETag)
     // ============================================================
-    function checkSongsUpdateSmart() {
+    function checkSongsUpdateSmart(forceCheck) {
         if (!navigator.onLine) return; // لو الأوفلاين شغال، متعملش محاولة فحص
+
+        var ONE_DAY_MS = 24 * 60 * 60 * 1000;
+        var lastCheck = parseInt(localStorage.getItem('lastSongsCheckTime'), 10) || 0;
+        var now = new Date().getTime();
+
+        if (!forceCheck && (now - lastCheck) < ONE_DAY_MS) {
+            return; // فحص اتعمل قبل كده خلال آخر 24 ساعة، متعملش تاني
+        }
+        localStorage.setItem('lastSongsCheckTime', now);
 
         var xhr = new XMLHttpRequest();
         var urlToFetch = (typeof ONLINE_SONGS_URL !== 'undefined' && ONLINE_SONGS_URL.indexOf("http") === 0) 

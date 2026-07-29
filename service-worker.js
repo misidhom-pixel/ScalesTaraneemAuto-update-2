@@ -1,5 +1,5 @@
 // Service Worker لتطبيق Scales - يعمل التطبيق أوفلاين بالكامل
-const CACHE_VERSION = 'scales-cache-v5';
+const CACHE_VERSION = 'scales-cache-v7';
 
 // الملفات الأساسية التي يجب تخزينها لفتح التطبيق أوفلاين
 const CORE_ASSETS = [
