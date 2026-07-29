@@ -1,6 +1,6 @@
 // Service Worker لتطبيق Scales - يشتغل التطبيق أوفلاين بالكامل
 // لو عدّلت في التطبيق، غيّر رقم الإصدار ده عشان الكاش يتحدث عند المستخدمين
-const CACHE_VERSION = 'scales-cache-v2';
+const CACHE_VERSION = 'scales-cache-v3';
 
 // الملفات الأساسية اللي لازم تتخزن عشان التطبيق يفتح أوفلاين
 const CORE_ASSETS = [
@@ -57,21 +57,8 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // songs.json: نحاول النت الأول (عشان نجيب أحدث نسخة)، ولو مفيش نت نرجع للكاش
-  if (url.pathname.endsWith('songs.json')) {
-    event.respondWith(
-      fetch(req).then(function (res) {
-        var resClone = res.clone();
-        caches.open(CACHE_VERSION).then(function (cache) { cache.put(req, resClone); });
-        return res;
-      }).catch(function () {
-        return caches.match(req);
-      })
-    );
-    return;
-  }
-
-  // باقي ملفات التطبيق (index.html, manifest, icons): كاش أول، ولو مش موجود نجيب من النت ونخزنه
+  // باقي ملفات التطبيق (index.html, manifest, icons, songs.json): كاش أول لسرعة الفتح، ولو مش موجود نجيب من النت ونخزنه
+  // ملاحظة: تحديث الترانيم الفعلي بيحصل بس لما تدوس زرار "تحديث من السيرفر" (بيروح مباشرة لرابط GitHub بره الكاش ده)
   event.respondWith(
     caches.match(req).then(function (cached) {
       if (cached) return cached;
