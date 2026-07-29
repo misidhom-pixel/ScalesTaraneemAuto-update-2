@@ -1100,9 +1100,37 @@
     }
 
     // ============================================================
-    // 🔄 دالة التحديث للنسخة الخاصة بالمستخدم (الدمج الذكي للترانيم)
+    // 🌐 دالة الفحص الذكي الخفيف في الخلفية للبصمة الرقمية (ETag)
     // ============================================================
-    function loadSongsFromJSON(forceUpdate) {
+    function checkSongsUpdateSmart() {
+        if (!navigator.onLine) return; // لو الأوفلاين شغال، متعملش محاولة فحص
+
+        var xhr = new XMLHttpRequest();
+        var urlToFetch = (typeof ONLINE_SONGS_URL !== 'undefined' && ONLINE_SONGS_URL.indexOf("http") === 0) 
+            ? ONLINE_SONGS_URL 
+            : 'songs.json';
+
+        // طلب خفيف جداً HEAD بحجم أقل من 1KB في الخلفية لمعرفة البصمة الرقمية
+        xhr.open('HEAD', urlToFetch + '?v=' + new Date().getTime(), true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var serverEtag = xhr.getResponseHeader('ETag') || xhr.getResponseHeader('Last-Modified') || xhr.getResponseHeader('Content-Length');
+                var localEtag = localStorage.getItem('songsEtag');
+
+                // لو البصمة تغيرت على جيت هب فقط، نسحب الملف المحدث
+                if (serverEtag && serverEtag !== localEtag) {
+                    loadSongsFromJSON(false, serverEtag);
+                }
+            }
+        };
+        xhr.onerror = function() {};
+        xhr.send();
+    }
+
+    // ============================================================
+    // 🔄 دالة الدمج الذكي لسحب الترانيم وتخزين البصمة
+    // ============================================================
+    function loadSongsFromJSON(forceUpdate, newEtag) {
         var xhr = new XMLHttpRequest();
         var urlToFetch = (typeof ONLINE_SONGS_URL !== 'undefined' && ONLINE_SONGS_URL.indexOf("http") === 0) 
             ? ONLINE_SONGS_URL 
@@ -1122,24 +1150,34 @@
                     }
 
                     if (serverSongs && Array.isArray(serverSongs)) {
-                        // الدمج الذكي للترانيم: إضافة الترانيم الجديدة دون مسح أي ترنيمة مضافة محلياً
-                        var mergedSongs = songs.slice();
+                        // خريطة سريعة O(1) للدمج الذكي
+                        var songMap = {};
+                        var mergedSongs = [];
+
+                        for (var j = 0; j < songs.length; j++) {
+                            if (songs[j] && songs[j].id) {
+                                songMap[songs[j].id] = songs[j];
+                                mergedSongs.push(songs[j]);
+                            }
+                        }
 
                         for (var i = 0; i < serverSongs.length; i++) {
                             var sSong = serverSongs[i];
-                            var existingIndex = -1;
-                            for (var j = 0; j < mergedSongs.length; j++) {
-                                if (Number(mergedSongs[j].id) === Number(sSong.id)) { existingIndex = j; break; }
-                            }
-                            if (existingIndex > -1) {
-                                mergedSongs[existingIndex] = sSong; // تحديث بيانات الترنيمة
+                            if (!sSong || !sSong.id) continue;
+
+                            if (songMap[sSong.id]) {
+                                for(var key in sSong) songMap[sSong.id][key] = sSong[key];
                             } else {
-                                mergedSongs.push(sSong); // إضافة الترنيمة الجديدة
+                                songMap[sSong.id] = sSong;
+                                mergedSongs.push(sSong);
                             }
                         }
 
                         songs = mergedSongs;
                         localStorage.setItem('mySongs', JSON.stringify(songs));
+                        if (newEtag) {
+                            localStorage.setItem('songsEtag', newEtag);
+                        }
                         refreshUI();
                         if (forceUpdate) alert("تم دمج وتحديث قائمة الترانيم من السيرفر بنجاح!");
                     }
@@ -1150,10 +1188,6 @@
         };
         xhr.send();
     }
-    
-    window.addEventListener('online', function() { 
-        loadSongsFromJSON(false);
-    });
 
     // ============================================================
     // 💾 دوال Save Backup & Import Backup للتحضيرات مع الدمج الذكي
@@ -1241,9 +1275,11 @@
         if(localStorage.getItem('nightMode') === 'on') { document.body.classList.add('dark-mode'); }
         
         bindTimerLongPress();
-        loadSongsFromJSON(false);
-        refreshUI();
+        refreshUI(); // ⚡ الفتح الفوري المباشر من الذاكرة اللحظية في أقل من ثانية
         updateHeaderStyles(90);
+
+        // تشغيل الفحص الخفيف الذكي للبصمة الرقمية في الخلفية بعد الفتح بكسر من الثانية
+        setTimeout(checkSongsUpdateSmart, 800);
     }
 
     function refreshUI() {
@@ -1646,15 +1682,11 @@
         var cleanCurrentKey = currentKey.split(' ')[0].replace(/[^a-zA-Z#m]/g, '');
         var compatibleKeys = relativeKeysMap[cleanCurrentKey] || [];
         
-        var currentLyricsNorm = normalizeArabic(currentSong.lyrics || "");
-        var currentWords = extractThematicKeywords(currentLyricsNorm);
-
         var list = [];
         for (var i = 0; i < songs.length; i++) {
             var s = songs[i];
             if (!s || Number(s.id) === Number(currentSong.id)) continue;
 
-            var score = 0;
             var sKey = (s.key || "No Scale").trim();
             var cleanSKey = sKey.split(' ')[0].replace(/[^a-zA-Z#m]/g, '');
 
@@ -1665,36 +1697,17 @@
                     break;
                 }
             }
-            if (isCompatible) {
-                score += 100; 
-            } else if (cleanSKey === cleanCurrentKey && cleanCurrentKey !== "NoScale") {
-                score += 60;
-            }
 
-            var sLyricsNorm = normalizeArabic(s.lyrics || "");
-            var sWords = extractThematicKeywords(sLyricsNorm);
-            
-            var sharedWordsCount = 0;
-            for (var w = 0; w < currentWords.length; w++) {
-                var word = currentWords[w];
-                for (var sw = 0; sw < sWords.length; sw++) {
-                    if (sWords[sw] === word) {
-                        sharedWordsCount++;
-                        break;
-                    }
-                }
-            }
-            score += (sharedWordsCount * 15);
+            var isSameKey = (cleanSKey === cleanCurrentKey && cleanCurrentKey !== "NoScale");
 
-            if (score > 0) {
+            if (isCompatible || isSameKey) {
+                var score = isCompatible ? 100 : 60;
                 list.push({ song: s, score: score });
+                if (list.length >= 80) break;
             }
         }
 
-        list.sort(function(a, b) {
-            return b.score - a.score;
-        });
-
+        list.sort(function(a, b) { return b.score - a.score; });
         return list; 
     }
 
@@ -2960,14 +2973,11 @@
         if ('wakeLock' in navigator) {
             navigator.wakeLock.request('screen').then(function (lock) {
                 wakeLockRef = lock;
-            }).catch(function () {
-                // المتصفح رفض الطلب أو مش مدعوم - نتجاهل بهدوء من غير ما نزعج المستخدم
-            });
+            }).catch(function () {});
         }
     }
     requestWakeLock();
     document.addEventListener('visibilitychange', function () {
-        // الـ Wake Lock بيتلغي تلقائي لما التطبيق يروح للخلفية، فلازم نطلبه تاني لما يرجع يظهر
         if (document.visibilityState === 'visible') {
             requestWakeLock();
         }
