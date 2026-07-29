@@ -1,6 +1,6 @@
 // Service Worker لتطبيق Scales - يشتغل التطبيق أوفلاين بالكامل
 // لو عدّلت في التطبيق، غيّر رقم الإصدار ده عشان الكاش يتحدث عند المستخدمين
-const CACHE_VERSION = 'scales-cache-v3';
+const CACHE_VERSION = 'scales-cache-v2';
 
 // الملفات الأساسية اللي لازم تتخزن عشان التطبيق يفتح أوفلاين
 const CORE_ASSETS = [
