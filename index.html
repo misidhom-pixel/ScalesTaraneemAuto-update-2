@@ -563,6 +563,9 @@
         
         <!-- زرار تثبيت التطبيق -->
         <button class="btn-big" id="installAppBtn" style="max-width: 320px; font-size: 1.3rem; padding: 16px 20px; background:#16a085; cursor: pointer;" onclick="installApp()">Install App</button>
+
+        <!-- زرار سجل أوقات الخدمات -->
+        <button class="btn-big" style="max-width: 320px; font-size: 1.3rem; padding: 16px 20px; background:#34495e;" onclick="openServiceHistoryModal()">⏱ سجل أوقات الخدمات</button>
     </div>
 </div>
 
@@ -589,6 +592,17 @@
         <div class="modal-buttons">
             <button class="btn-cancel" onclick="closeTimerSetModal()">إلغاء</button>
             <button class="btn-save" onclick="saveTimerTarget()">حفظ</button>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة سجل أوقات الخدمات -->
+<div class="modal" id="serviceHistoryModal">
+    <div class="modal-content" style="max-height: 85vh;">
+        <h3 style="margin:0 0 10px 0">⏱ سجل أوقات الخدمات</h3>
+        <div id="serviceHistoryList" style="flex:1; overflow-y:auto; -webkit-overflow-scrolling: touch;"></div>
+        <div class="modal-buttons" style="margin-top:10px;">
+            <button class="btn-cancel" onclick="closeServiceHistoryModal()">إغلاق</button>
         </div>
     </div>
 </div>
@@ -733,6 +747,8 @@
     var savedPreps = localStorage.getItem('myPreparations');
     var preparations = savedPreps ? JSON.parse(savedPreps) : [];
     var activePrepId = null;
+    var savedHistory = localStorage.getItem('serviceTimeHistory');
+    var serviceTimeHistory = savedHistory ? JSON.parse(savedHistory) : [];
     var tempPrepSongQuery = "";
     
     var currentActivePrepItemIndex = null;
@@ -838,6 +854,35 @@
     }
 
     function resetTimer() {
+        // لو فيه وقت متسجل والمستخدم فاتح تحضير معين، اعتبر اللمسة المطولة دي "إنهاء الخدمة"
+        // وسجل المدة دي في التحضير وفي سجل الأوقات، قبل ما نصفّر العداد لجلسة جديدة
+        if (timerSeconds > 0 && activePrepId !== null) {
+            var activePrep = null;
+            for (var x = 0; x < preparations.length; x++) {
+                if (Number(preparations[x].id) === Number(activePrepId)) { activePrep = preparations[x]; break; }
+            }
+            if (activePrep) {
+                var durationText = formatDurationHMS(timerSeconds);
+                var confirmMsg = 'هل انتهت الخدمة؟\nهيتم تسجيل المدة (' + durationText + ') كمدة نهائية لتحضير "' + activePrep.title + '".';
+                if (confirm(confirmMsg)) {
+                    activePrep.recordedDurationSeconds = timerSeconds;
+                    savePreparations();
+
+                    serviceTimeHistory.unshift({
+                        id: Date.now(),
+                        prepTitle: activePrep.title,
+                        durationSeconds: timerSeconds,
+                        date: Date.now()
+                    });
+                    localStorage.setItem('serviceTimeHistory', JSON.stringify(serviceTimeHistory));
+
+                    if (activePrepId !== null) { renderPreparationDetail(activePrepId); }
+                } else {
+                    return; // المستخدم اختار إنه لسه مش عايز ينهي، سيبنا العداد زي ما هو من غير تصفير
+                }
+            }
+        }
+
         clearInterval(timerInterval);
         isTimerRunning = false;
         timerSeconds = 0;
@@ -846,6 +891,85 @@
         btn.classList.remove('paused');
         updateTimerDisplay();
         openTimerSetModal();
+    }
+
+    function formatDurationHMS(totalSeconds) {
+        var hrs = Math.floor(totalSeconds / 3600);
+        var mins = Math.floor((totalSeconds % 3600) / 60);
+        var secs = totalSeconds % 60;
+        return (hrs < 10 ? "0" + hrs : hrs) + ":" + (mins < 10 ? "0" + mins : mins) + ":" + (secs < 10 ? "0" + secs : secs);
+    }
+
+    function openServiceHistoryModal() {
+        renderServiceHistoryList();
+        document.getElementById('serviceHistoryModal').style.display = 'flex';
+    }
+
+    function closeServiceHistoryModal() {
+        document.getElementById('serviceHistoryModal').style.display = 'none';
+    }
+
+    function renderServiceHistoryList() {
+        var container = document.getElementById('serviceHistoryList');
+        container.innerHTML = "";
+
+        if (serviceTimeHistory.length === 0) {
+            var emptyMsg = document.createElement('div');
+            emptyMsg.style.padding = '20px 10px';
+            emptyMsg.style.color = '#999';
+            emptyMsg.style.textAlign = 'center';
+            emptyMsg.style.fontSize = '0.9rem';
+            emptyMsg.innerText = 'لا يوجد سجل أوقات بعد.';
+            container.appendChild(emptyMsg);
+            return;
+        }
+
+        for (var i = 0; i < serviceTimeHistory.length; i++) {
+            (function(entry) {
+                var row = document.createElement('div');
+                row.style.display = 'flex';
+                row.style.justifyContent = 'space-between';
+                row.style.alignItems = 'center';
+                row.style.padding = '10px 5px';
+                row.style.borderBottom = '1px solid #eee';
+
+                var infoSpan = document.createElement('span');
+                infoSpan.style.textAlign = 'right';
+                infoSpan.style.flex = '1';
+                var d = new Date(entry.date);
+                var dateStr = d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+                infoSpan.innerHTML = '<bdi>' + entry.prepTitle + '</bdi><br><span style="font-size:0.75rem; color:#888;">' + dateStr + '</span>';
+
+                var durationSpan = document.createElement('span');
+                durationSpan.style.fontWeight = 'bold';
+                durationSpan.style.color = '#16a085';
+                durationSpan.style.margin = '0 10px';
+                durationSpan.style.fontFamily = 'monospace';
+                durationSpan.innerText = formatDurationHMS(entry.durationSeconds);
+
+                var delBtn = document.createElement('span');
+                delBtn.className = 'prep-song-delete';
+                delBtn.innerText = '✕';
+                delBtn.title = 'حذف من السجل';
+                delBtn.onclick = function() { deleteServiceHistoryEntry(entry.id); };
+
+                row.appendChild(infoSpan);
+                row.appendChild(durationSpan);
+                row.appendChild(delBtn);
+                container.appendChild(row);
+            })(serviceTimeHistory[i]);
+        }
+    }
+
+    function deleteServiceHistoryEntry(entryId) {
+        if (!confirm('هل تريد حذف هذا السجل؟')) return;
+        var updated = [];
+        for (var i = 0; i < serviceTimeHistory.length; i++) {
+            if (serviceTimeHistory[i].id !== entryId) updated.push(serviceTimeHistory[i]);
+        }
+        serviceTimeHistory = updated;
+        localStorage.setItem('serviceTimeHistory', JSON.stringify(serviceTimeHistory));
+        renderServiceHistoryList();
     }
 
     function openTimerSetModal() {
@@ -2115,6 +2239,15 @@
                 bindDragEvents(div, index, null);
 
                 div.appendChild(titleSpan);
+                if (prep.recordedDurationSeconds) {
+                    var durationBadge = document.createElement('span');
+                    durationBadge.style.fontSize = '0.7rem';
+                    durationBadge.style.color = '#16a085';
+                    durationBadge.style.marginRight = '8px';
+                    durationBadge.style.fontWeight = 'bold';
+                    durationBadge.innerText = '⏱ ' + formatDurationHMS(prep.recordedDurationSeconds);
+                    div.appendChild(durationBadge);
+                }
                 div.appendChild(countBadge);
 
                 div.onclick = function() {
@@ -2151,6 +2284,16 @@
         prepTitleEl.style.padding = '4px';
         prepTitleEl.innerHTML = '📌 <bdi>' + prep.title + '</bdi>';
         controlDiv.appendChild(prepTitleEl);
+
+        if (prep.recordedDurationSeconds) {
+            var durationEl = document.createElement('div');
+            durationEl.style.textAlign = 'center';
+            durationEl.style.fontSize = '0.85rem';
+            durationEl.style.color = '#16a085';
+            durationEl.style.fontWeight = 'bold';
+            durationEl.innerText = '⏱ آخر مدة مسجلة: ' + formatDurationHMS(prep.recordedDurationSeconds);
+            controlDiv.appendChild(durationEl);
+        }
 
         var btnRow = document.createElement('div');
         btnRow.style.display = 'flex';
