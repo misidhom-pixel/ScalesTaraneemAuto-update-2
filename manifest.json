@@ -1,33 +1,24 @@
 {
-  "name": "Scales -  الترانيم بالسلالم الموسيقية و تحضيرات الخدمات",
-  "short_name": "ScalesPre",
-  "description": "تطبيق إدارة الترانيم والتسبيحات مع السلالم الموسيقية - يعمل بدون إنترنت",
-  "start_url": "./index.html",
-  "scope": "./",
+  "name": "Scales",
+  "short_name": "Scales",
+  "description": "تطبيق Scales للترانيم والسلالم الموسيقية والتحضيرات",
+  "start_url": "index.html",
   "display": "standalone",
+  "background_color": "#5d28a6",
+  "theme_color": "#5d28a6",
   "orientation": "any",
-  "background_color": "#f4f7f6",
-  "theme_color": "#2c3e50",
-  "lang": "ar",
-  "dir": "rtl",
   "icons": [
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "icons/icon-192.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icons/icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
