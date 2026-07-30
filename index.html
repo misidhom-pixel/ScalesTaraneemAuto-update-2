@@ -1359,7 +1359,7 @@
     // ============================================================
     function exportPrepsData() {
         try {
-            var dataStr = JSON.stringify(preparations);
+            var dataStr = JSON.stringify({ preparations: preparations, serviceHistory: serviceTimeHistory });
             var file = new File([dataStr], "preparations_backup.json", {type: "application/json"});
 
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -1397,9 +1397,11 @@
             try {
                 var importedData = JSON.parse(e.target.result);
                 var newPreps = null;
+                var newHistory = null;
 
                 if (importedData && typeof importedData === 'object' && !Array.isArray(importedData) && importedData.preparations) {
                     newPreps = importedData.preparations;
+                    newHistory = importedData.serviceHistory || null;
                 } else if (Array.isArray(importedData)) {
                     newPreps = importedData;
                 }
@@ -1423,6 +1425,24 @@
 
                         preparations = mergedPreps;
                         localStorage.setItem('myPreparations', JSON.stringify(preparations));
+
+                        // الدمج الذكي لسجل أوقات الخدمات (بدون تكرار حسب المعرّف)
+                        if (newHistory && Array.isArray(newHistory)) {
+                            var historyIds = {};
+                            for (var h = 0; h < serviceTimeHistory.length; h++) {
+                                if (serviceTimeHistory[h] && serviceTimeHistory[h].id) historyIds[serviceTimeHistory[h].id] = true;
+                            }
+                            for (var k = 0; k < newHistory.length; k++) {
+                                var hEntry = newHistory[k];
+                                if (hEntry && hEntry.id && !historyIds[hEntry.id]) {
+                                    serviceTimeHistory.push(hEntry);
+                                    historyIds[hEntry.id] = true;
+                                }
+                            }
+                            serviceTimeHistory.sort(function(a, b) { return b.date - a.date; });
+                            localStorage.setItem('serviceTimeHistory', JSON.stringify(serviceTimeHistory));
+                        }
+
                         alert("تم دمج وإضافة التحضيرات بنجاح!");
                         location.reload();
                     }
